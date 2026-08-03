@@ -1,89 +1,817 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon TCG Tracker</title>
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --surface2: #22222f;
+      --border: #2e2e40;
+      --text: #e8e8f0;
+      --text-muted: #8888a8;
+      --accent: #7c4dff;
+      --accent-hover: #9c6fff;
+      --danger: #ff4d6d;
+      --success: #00c875;
+      --warning: #ffb74d;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.17.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.17.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.17.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ---- Login ---- */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .login-logo { font-size: 3.5rem; }
+
+    .login-card h1 { font-size: 1.8rem; font-weight: 700; }
+
+    .login-card p { color: var(--text-muted); line-height: 1.5; }
+
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: white;
+      color: #333;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 13px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-google:hover { opacity: 0.92; }
+
+    /* ---- App shell ---- */
+    #app { display: none; }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 8px;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--accent);
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+
+    .nav-pills { display: flex; gap: 4px; }
+
+    .nav-pill {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .nav-pill:hover { background: var(--surface2); color: var(--text); }
+    .nav-pill.active { background: var(--accent); color: white; }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .btn-signout {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-signout:hover { border-color: var(--text-muted); color: var(--text); }
+
+    /* ---- Pages ---- */
+    .page { display: none; padding: 24px 20px; max-width: 1200px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .page-title { font-size: 1.4rem; font-weight: 700; }
+
+    .stat-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ---- Search ---- */
+    .search-bar-wrap {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text-muted); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .search-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* ---- Card grid ---- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 14px;
+    }
+
+    .card-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .card-item:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+    .card-img-wrap {
+      aspect-ratio: 2.5 / 3.5;
+      background: var(--surface2);
+      overflow: hidden;
+    }
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-info { padding: 10px 12px 8px; }
+
+    .card-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Add button on search results */
+    .btn-add {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-add:hover { background: var(--accent-hover); }
+    .btn-add.in-coll {
+      background: var(--surface2);
+      color: var(--success);
+      cursor: default;
+    }
+
+    /* Qty controls on collection cards */
+    .qty-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-qty {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .btn-qty:hover { background: var(--accent); border-color: var(--accent); }
+
+    .qty-num {
+      font-weight: 700;
+      font-size: 1rem;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    .condition-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .ordered-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: var(--warning);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      padding: 0 12px 10px;
+    }
+
+    .btn-sm {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-sm:hover { border-color: var(--accent); color: var(--text); }
+    .btn-sm.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+    /* ---- Modal ---- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .modal h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-group > label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .form-select:focus { border-color: var(--accent); }
+
+    .checkbox-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .checkbox-wrap input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+    /* ---- Empty / loading states ---- */
+    .empty-state {
+      text-align: center;
+      padding: 64px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 1.15rem; color: var(--text); margin-bottom: 6px; }
+
+    .loading {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ======================== LOGIN ======================== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🎴</div>
+    <h1>Pokémon TCG Tracker</h1>
+    <p>Track your collection, plan your binders, and manage your wishlist — from any device.</p>
+    <button class="btn-google" id="btn-google-login">
+      <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/>
+        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
+      </svg>
+      Sign in with Google
+    </button>
+  </div>
+</div>
+
+<!-- ======================== APP ======================== -->
+<div id="app">
+  <nav class="nav">
+    <span class="nav-logo">🎴 TCG Tracker</span>
+    <div class="nav-pills">
+      <button class="nav-pill active" data-page="search">Search</button>
+      <button class="nav-pill" data-page="collection">Collection</button>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+    <div class="nav-right">
+      <img id="user-avatar" src="" alt="avatar">
+      <button class="btn-signout" id="btn-signout">Sign out</button>
+    </div>
+  </nav>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+  <!-- SEARCH PAGE -->
+  <div class="page active" id="page-search">
+    <div class="page-header">
+      <h2 class="page-title">Search Cards</h2>
+    </div>
+    <div class="search-bar-wrap">
+      <input class="search-input" id="search-input" type="text"
+        placeholder='Try "pikachu", "charizard 4", or just "25"' />
+      <button class="btn-primary" id="btn-search">Search</button>
+    </div>
+    <p class="search-hint">Search by name · number · or name + number together (e.g. "pikachu 25")</p>
+    <div id="search-results"></div>
+  </div>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
+  <!-- COLLECTION PAGE -->
+  <div class="page" id="page-collection">
+    <div class="page-header">
+      <h2 class="page-title">My Collection</h2>
+      <span class="stat-chip" id="collection-stat">0 cards</span>
+    </div>
+    <div id="collection-grid" class="card-grid"></div>
+  </div>
+</div>
+
+<!-- ======================== EDIT MODAL ======================== -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3 id="edit-modal-name">Edit Card</h3>
+    <div class="form-group">
+      <label>Condition</label>
+      <select class="form-select" id="edit-condition">
+        <option value="NM">Near Mint (NM)</option>
+        <option value="LP">Lightly Played (LP)</option>
+        <option value="MP">Moderately Played (MP)</option>
+        <option value="HP">Heavily Played (HP)</option>
+        <option value="DMG">Damaged (DMG)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="checkbox-wrap">
+        <input type="checkbox" id="edit-ordered">
+        Ordered — waiting to receive
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="edit-cancel">Cancel</button>
+      <button class="btn-primary" id="edit-save" style="flex:1">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SCRIPT ======================== -->
+<script type="module">
+  import { initializeApp }
+    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+  import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot }
+    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+  // ---- Firebase setup ----
+  const fbApp = initializeApp({
+    apiKey:            "AIzaSyCHGYmIdQQHHirsyGv_LCCHG_X2SFjv-Ds",
+    authDomain:        "pokemon-tcg-tracker-tlw.firebaseapp.com",
+    projectId:         "pokemon-tcg-tracker-tlw",
+    storageBucket:     "pokemon-tcg-tracker-tlw.firebasestorage.app",
+    messagingSenderId: "137900201924",
+    appId:             "1:137900201924:web:47e0adb3edacb142e0b691"
+  });
+
+  const auth     = getAuth(fbApp);
+  const db       = getFirestore(fbApp);
+  const provider = new GoogleAuthProvider();
+
+  // ---- App state ----
+  let currentUser   = null;
+  let collectionMap = {};   // cardId → saved data
+  let editingId     = null;
+  let unsubscribe   = null;
+
+  // ===== AUTH =====
+  document.getElementById('btn-google-login').addEventListener('click', () => {
+    signInWithPopup(auth, provider)
+      .catch(err => alert('Sign-in failed: ' + err.message));
+  });
+
+  document.getElementById('btn-signout').addEventListener('click', () => signOut(auth));
+
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+    if (user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      const av = document.getElementById('user-avatar');
+      if (user.photoURL) { av.src = user.photoURL; av.style.display = 'block'; }
+      startCollectionListener();
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+      collectionMap = {};
+    }
+  });
+
+  // ===== NAVIGATION =====
+  document.querySelectorAll('.nav-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      document.getElementById('page-' + pill.dataset.page).classList.add('active');
+    });
+  });
+
+  // ===== SEARCH =====
+  function buildQuery(raw) {
+    const tokens = raw.trim().split(/\s+/);
+    const nums   = tokens.filter(t => /^\d+$/.test(t));
+    const words  = tokens.filter(t => !/^\d+$/.test(t));
+    const parts  = [];
+    if (words.length) parts.push(`name:${words.join(' ')}*`);
+    if (nums.length)  parts.push(`number:${nums[0]}`);
+    return parts.join(' ') || raw;
+  }
+
+  async function doSearch() {
+    const raw = document.getElementById('search-input').value.trim();
+    if (!raw) return;
+
+    const resultsEl = document.getElementById('search-results');
+    resultsEl.innerHTML = '<div class="loading">Searching…</div>';
+    document.getElementById('btn-search').disabled = true;
+
+    try {
+      const q   = buildQuery(raw);
+      const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30&select=id,name,number,set,images`;
+      const res = await fetch(url);
+      const { data } = await res.json();
+
+      if (!data || data.length === 0) {
+        resultsEl.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">🔍</div>
+            <h3>No results</h3>
+            <p>Try a different search — e.g. "pikachu" or "charizard 4"</p>
+          </div>`;
+        return;
+      }
+      renderSearchResults(data);
+    } catch (e) {
+      resultsEl.innerHTML = `<div class="empty-state"><h3>Search failed</h3><p>Please try again.</p></div>`;
+      console.error(e);
+    } finally {
+      document.getElementById('btn-search').disabled = false;
+    }
+  }
+
+  document.getElementById('btn-search').addEventListener('click', doSearch);
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  function renderSearchResults(cards) {
+    const el = document.getElementById('search-results');
+    el.innerHTML = `<div class="card-grid">${cards.map(c => {
+      const owned = !!collectionMap[c.id];
+      const dataAttr = encodeURIComponent(JSON.stringify(c));
+      return `
+        <div class="card-item">
+          <div class="card-img-wrap">
+            <img src="${c.images?.small || ''}" alt="${c.name}" loading="lazy">
+          </div>
+          <div class="card-info">
+            <div class="card-name">${c.name}</div>
+            <div class="card-meta">${c.set?.name || ''} · #${c.number || ''}</div>
+          </div>
+          <button class="btn-add${owned ? ' in-coll' : ''}"
+            data-id="${c.id}"
+            data-card="${dataAttr}"
+            onclick="window._addCard(this)">
+            ${owned ? '✓ In Collection' : '+ Add to Collection'}
+          </button>
+        </div>`;
+    }).join('')}</div>`;
+  }
+
+  // ===== COLLECTION LISTENER =====
+  function startCollectionListener() {
+    if (!currentUser) return;
+    const colRef = collection(db, 'users', currentUser.uid, 'collection');
+    unsubscribe = onSnapshot(colRef, snap => {
+      collectionMap = {};
+      snap.forEach(d => { collectionMap[d.id] = d.data(); });
+      renderCollection();
+      // Refresh add-buttons in search results
+      document.querySelectorAll('.btn-add[data-id]').forEach(btn => {
+        const owned = !!collectionMap[btn.dataset.id];
+        btn.className = 'btn-add' + (owned ? ' in-coll' : '');
+        btn.textContent = owned ? '✓ In Collection' : '+ Add to Collection';
       });
-    </script>
-  </body>
+    });
+  }
+
+  // ===== RENDER COLLECTION =====
+  function renderCollection() {
+    const grid    = document.getElementById('collection-grid');
+    const entries = Object.entries(collectionMap);
+    const total   = entries.reduce((s, [, c]) => s + (c.quantity || 1), 0);
+
+    document.getElementById('collection-stat').textContent =
+      `${total} card${total !== 1 ? 's' : ''}`;
+
+    if (entries.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">📦</div>
+          <h3>Your collection is empty</h3>
+          <p>Search for cards and tap "+ Add to Collection"</p>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = entries.map(([id, c]) => `
+      <div class="card-item">
+        ${c.ordered ? '<div class="ordered-badge">ORDERED</div>' : ''}
+        <div class="card-img-wrap">
+          <img src="${c.image || ''}" alt="${c.name}" loading="lazy">
+        </div>
+        <div class="card-info">
+          <div class="card-name">${c.name}</div>
+          <div class="card-meta">${c.setName || ''} · #${c.number || ''}</div>
+        </div>
+        <div class="qty-row">
+          <div class="qty-controls">
+            <button class="btn-qty" onclick="window._changeQty('${id}', -1)">−</button>
+            <span class="qty-num">${c.quantity || 1}</span>
+            <button class="btn-qty" onclick="window._changeQty('${id}', 1)">+</button>
+          </div>
+          <span class="condition-badge">${c.condition || 'NM'}</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn-sm" onclick="window._openEdit('${id}')">Edit</button>
+          <button class="btn-sm danger" onclick="window._remove('${id}')">Remove</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // ===== CARD OPERATIONS =====
+  window._addCard = async function(btn) {
+    if (!currentUser) return;
+    const c   = JSON.parse(decodeURIComponent(btn.dataset.card));
+    const ref = doc(db, 'users', currentUser.uid, 'collection', c.id);
+    await setDoc(ref, {
+      name:      c.name,
+      number:    c.number    || '',
+      setId:     c.set?.id   || '',
+      setName:   c.set?.name || '',
+      image:     c.images?.small || '',
+      condition: 'NM',
+      quantity:  1,
+      ordered:   false,
+      addedAt:   new Date().toISOString()
+    }, { merge: true });
+  };
+
+  window._changeQty = async function(id, delta) {
+    if (!currentUser) return;
+    const c = collectionMap[id];
+    if (!c) return;
+    const newQty = Math.max(1, (c.quantity || 1) + delta);
+    await updateDoc(doc(db, 'users', currentUser.uid, 'collection', id), { quantity: newQty });
+  };
+
+  window._remove = async function(id) {
+    if (!currentUser) return;
+    if (!confirm('Remove this card from your collection?')) return;
+    await deleteDoc(doc(db, 'users', currentUser.uid, 'collection', id));
+  };
+
+  // ===== EDIT MODAL =====
+  window._openEdit = function(id) {
+    editingId = id;
+    const c   = collectionMap[id];
+    if (!c) return;
+    document.getElementById('edit-modal-name').textContent  = c.name;
+    document.getElementById('edit-condition').value         = c.condition || 'NM';
+    document.getElementById('edit-ordered').checked         = !!c.ordered;
+    document.getElementById('edit-modal').classList.add('open');
+  };
+
+  function closeModal() {
+    document.getElementById('edit-modal').classList.remove('open');
+    editingId = null;
+  }
+
+  document.getElementById('edit-cancel').addEventListener('click', closeModal);
+
+  document.getElementById('edit-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  document.getElementById('edit-save').addEventListener('click', async () => {
+    if (!editingId || !currentUser) return;
+    const condition = document.getElementById('edit-condition').value;
+    const ordered   = document.getElementById('edit-ordered').checked;
+    await updateDoc(
+      doc(db, 'users', currentUser.uid, 'collection', editingId),
+      { condition, ordered }
+    );
+    closeModal();
+  });
+</script>
+</body>
 </html>
