@@ -558,7 +558,7 @@
     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-  import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot }
+  import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot }
     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
   // ---- Firebase setup ----
@@ -577,7 +577,8 @@
 
   // ---- App state ----
   let currentUser   = null;
-  let collectionMap = {};   // cardId → saved data
+  let collectionMap = {};   // docId → saved data
+  let ownedCardIds  = new Set(); // cardIds that exist in collection (any condition)
   let editingId     = null;
   let unsubscribe   = null;
 
@@ -671,7 +672,7 @@
   function renderSearchResults(cards) {
     const el = document.getElementById('search-results');
     el.innerHTML = `<div class="card-grid">${cards.map(c => {
-      const owned = !!collectionMap[c.id];
+      const owned    = ownedCardIds.has(c.id);
       const dataAttr = encodeURIComponent(JSON.stringify(c));
       return `
         <div class="card-item">
@@ -698,11 +699,15 @@
     const colRef = collection(db, 'users', currentUser.uid, 'collection');
     unsubscribe = onSnapshot(colRef, snap => {
       collectionMap = {};
-      snap.forEach(d => { collectionMap[d.id] = d.data(); });
+      ownedCardIds  = new Set();
+      snap.forEach(d => {
+        collectionMap[d.id] = d.data();
+        ownedCardIds.add(d.data().cardId);
+      });
       renderCollection();
       // Refresh add-buttons in search results
       document.querySelectorAll('.btn-add[data-id]').forEach(btn => {
-        const owned = !!collectionMap[btn.dataset.id];
+        const owned = ownedCardIds.has(btn.dataset.id);
         btn.className = 'btn-add' + (owned ? ' in-coll' : '');
         btn.textContent = owned ? '✓ In Collection' : '+ Add to Collection';
       });
@@ -712,7 +717,8 @@
   // ===== RENDER COLLECTION =====
   function renderCollection() {
     const grid    = document.getElementById('collection-grid');
-    const entries = Object.entries(collectionMap);
+    const entries = Object.entries(collectionMap)
+      .sort(([,a],[,b]) => a.name.localeCompare(b.name) || a.condition.localeCompare(b.condition));
     const total   = entries.reduce((s, [, c]) => s + (c.quantity || 1), 0);
 
     document.getElementById('collection-stat').textContent =
@@ -756,9 +762,10 @@
   // ===== CARD OPERATIONS =====
   window._addCard = async function(btn) {
     if (!currentUser) return;
-    const c   = JSON.parse(decodeURIComponent(btn.dataset.card));
-    const ref = doc(db, 'users', currentUser.uid, 'collection', c.id);
-    await setDoc(ref, {
+    const c      = JSON.parse(decodeURIComponent(btn.dataset.card));
+    const colRef = collection(db, 'users', currentUser.uid, 'collection');
+    await addDoc(colRef, {
+      cardId:    c.id,
       name:      c.name,
       number:    c.number    || '',
       setId:     c.set?.id   || '',
@@ -768,7 +775,7 @@
       quantity:  1,
       ordered:   false,
       addedAt:   new Date().toISOString()
-    }, { merge: true });
+    });
   };
 
   window._changeQty = async function(id, delta) {
