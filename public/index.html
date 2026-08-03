@@ -246,17 +246,6 @@
       text-overflow: ellipsis;
     }
 
-    /* ---- Accent strip ---- */
-    .coll-strip {
-      background: var(--accent);
-      color: white;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 5px 8px;
-      letter-spacing: 0.02em;
-    }
-
     /* ---- Search qty controls ---- */
     .search-qty-row {
       display: flex;
@@ -286,6 +275,12 @@
       font-weight: 700;
       font-size: 0.95rem;
       padding: 8px 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sq-num.owned {
+      background: var(--accent);
+      color: white;
     }
 
     /* ---- Collection card badges ---- */
@@ -748,12 +743,11 @@
           <div class="card-name">${c.name}</div>
           <div class="card-meta">${c.set?.name || ''} · #${c.number || ''}</div>
         </div>
-        ${qty > 0 ? `<div class="coll-strip">In Collection · Qty: ${qty}</div>` : ''}
         <div class="search-qty-row">
           <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',-1)"
             ${qty === 0 ? 'disabled' : ''}>−</button>
           <div class="sq-divider"></div>
-          <span class="sq-num">${qty}</span>
+          <span class="sq-num${qty > 0 ? ' owned' : ''}">${qty}</span>
           <div class="sq-divider"></div>
           <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',1)">+</button>
         </div>
@@ -774,19 +768,13 @@
       if (!tile) return;
       const qty = getTotalQty(collectionMap[c.id]);
       tile.classList.toggle('owned', qty > 0);
-      let strip = tile.querySelector('.coll-strip');
-      if (qty > 0) {
-        if (!strip) {
-          strip = document.createElement('div');
-          strip.className = 'coll-strip';
-          tile.insertBefore(strip, tile.querySelector('.search-qty-row'));
-        }
-        strip.textContent = `In Collection · Qty: ${qty}`;
-      } else if (strip) { strip.remove(); }
       const num   = tile.querySelector('.sq-num');
       const minus = tile.querySelector('.btn-sq');
-      if (num)   num.textContent = qty;
-      if (minus) minus.disabled  = qty === 0;
+      if (num) {
+        num.textContent = qty;
+        num.classList.toggle('owned', qty > 0);
+      }
+      if (minus) minus.disabled = qty === 0;
     });
   }
 
