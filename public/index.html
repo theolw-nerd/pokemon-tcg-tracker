@@ -544,6 +544,34 @@
 
     .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
 
+    /* ===== SET DETAIL FILTER BAR ===== */
+    .set-filter-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .set-filter-bar .filter-input { flex: 1; min-width: 160px; }
+
+    .ownership-pills { display: flex; gap: 4px; flex-shrink: 0; }
+
+    .ownership-pill {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .ownership-pill:hover { border-color: var(--accent); color: var(--text); }
+    .ownership-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
+
     /* ===== EMPTY / LOADING ===== */
     .empty-state {
       text-align: center;
@@ -630,6 +658,14 @@
         </div>
         <span class="stat-chip" id="set-detail-stat"></span>
       </div>
+      <div class="set-filter-bar">
+        <input class="filter-input" id="set-search" placeholder="Search within set…">
+        <div class="ownership-pills">
+          <button class="ownership-pill active" data-ownership="all">All</button>
+          <button class="ownership-pill" data-ownership="owned">Owned</button>
+          <button class="ownership-pill" data-ownership="missing">Missing</button>
+        </div>
+      </div>
       <div id="set-detail-grid" class="card-grid"></div>
     </div>
   </div>
@@ -702,6 +738,8 @@
 
   let setsData        = null;    // cached sets list from API
   let currentSetId    = null;
+  let setNameFilter   = '';
+  let setOwnershipFilter = 'all'; // 'all' | 'owned' | 'missing'
 
   let editingId       = null;
   let editConditions  = [];
@@ -935,6 +973,46 @@
     document.getElementById('sets-content').innerHTML = html;
   }
 
+  function renderSetDetailCards() {
+    const grid = document.getElementById('set-detail-grid');
+    if (!grid) return;
+
+    let cards = lastSetCards;
+
+    if (setNameFilter) {
+      const q = setNameFilter.toLowerCase();
+      cards = cards.filter(c => c.name.toLowerCase().includes(q));
+    }
+
+    if (setOwnershipFilter === 'owned') {
+      cards = cards.filter(c => getTotalQty(collectionMap[c.id]) > 0);
+    } else if (setOwnershipFilter === 'missing') {
+      cards = cards.filter(c => getTotalQty(collectionMap[c.id]) === 0);
+    }
+
+    if (cards.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No cards match</h3><p>Try a different search or filter</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = cards.map(c => qtyCardHTML(c, 'set')).join('');
+  }
+
+  // Filter bar event listeners
+  document.getElementById('set-search').addEventListener('input', e => {
+    setNameFilter = e.target.value.trim();
+    renderSetDetailCards();
+  });
+
+  document.querySelectorAll('.ownership-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.ownership-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      setOwnershipFilter = pill.dataset.ownership;
+      renderSetDetailCards();
+    });
+  });
+
   window._openSet = async function(setId) {
     const set = setsData?.find(s => s.id === setId);
     if (!set) return;
@@ -949,6 +1027,13 @@
     logo.style.display = set.images?.logo ? 'block' : 'none';
     document.getElementById('set-detail-name').textContent = set.name;
     document.getElementById('set-detail-meta').textContent = `${set.series} · ${formatDate(set.releaseDate)} · ${set.total} cards`;
+
+    // Reset filters when opening a set
+    setNameFilter      = '';
+    setOwnershipFilter = 'all';
+    document.getElementById('set-search').value = '';
+    document.querySelectorAll('.ownership-pill').forEach(p =>
+      p.classList.toggle('active', p.dataset.ownership === 'all'));
 
     const grid = document.getElementById('set-detail-grid');
     grid.innerHTML = '<div class="loading" style="grid-column:1/-1">Loading cards…</div>';
@@ -968,7 +1053,7 @@
         grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>No cards found</h3></div>';
         return;
       }
-      grid.innerHTML = cards.map(c => qtyCardHTML(c, 'set')).join('');
+      renderSetDetailCards();
     } catch {
       grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>Failed to load cards</h3><p>Please try again.</p></div>';
     }
@@ -998,7 +1083,8 @@
       snap.forEach(d => { collectionMap[d.id] = d.data(); });
       renderCollection();
       refreshQtyGrid(lastSearchCards, 'src');
-      refreshQtyGrid(lastSetCards, 'set');
+      if (setOwnershipFilter !== 'all' || setNameFilter) renderSetDetailCards();
+      else refreshQtyGrid(lastSetCards, 'set');
       if (currentSetId) updateSetDetailStat();
       if (setsData) renderSetsList();
     });
