@@ -210,9 +210,7 @@
     }
 
     /* ---- Collection filter ---- */
-    .filter-wrap {
-      margin-bottom: 16px;
-    }
+    .filter-wrap { margin-bottom: 16px; }
 
     .filter-input {
       width: 100%;
@@ -279,7 +277,7 @@
       text-overflow: ellipsis;
     }
 
-    /* ---- Accent strip (shows qty when card is owned) ---- */
+    /* ---- Accent strip ---- */
     .coll-strip {
       background: var(--accent);
       color: white;
@@ -327,41 +325,11 @@
     }
 
     /* ---- Collection card controls ---- */
-    .qty-row {
+    .cond-badges {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 12px;
-    }
-
-    .qty-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-qty {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      color: var(--text);
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-      line-height: 1;
-    }
-    .btn-qty:hover { background: var(--accent); border-color: var(--accent); }
-
-    .qty-num-coll {
-      font-weight: 700;
-      font-size: 1rem;
-      min-width: 22px;
-      text-align: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 4px 12px 6px;
     }
 
     .condition-badge {
@@ -427,7 +395,9 @@
       border-radius: var(--radius);
       padding: 28px;
       width: 100%;
-      max-width: 380px;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .modal h3 {
@@ -445,21 +415,100 @@
       display: block;
       font-size: 0.82rem;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
     }
 
-    .form-select {
-      width: 100%;
+    /* ---- Condition rows in modal ---- */
+    .cond-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      padding: 10px 12px;
+      margin-bottom: 6px;
+    }
+
+    .cond-row-label {
+      font-weight: 700;
+      font-size: 0.9rem;
+      min-width: 40px;
+    }
+
+    .cond-row-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-qty-modal {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .btn-qty-modal:hover { background: var(--accent); border-color: var(--accent); }
+
+    .cond-qty-num {
+      font-weight: 700;
+      font-size: 1rem;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .cond-remove-note {
+      font-size: 0.72rem;
+      color: var(--danger);
+      margin-left: 8px;
+    }
+
+    /* ---- Add condition row ---- */
+    .add-cond-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .form-select {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
       color: var(--text);
       font-size: 0.95rem;
       outline: none;
       cursor: pointer;
     }
     .form-select:focus { border-color: var(--accent); }
+
+    .btn-add-cond {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 9px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-add-cond:hover { background: var(--accent-hover); }
+    .btn-add-cond:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .checkbox-wrap {
       display: flex;
@@ -583,22 +632,36 @@
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <h3 id="edit-modal-name">Edit Card</h3>
+
+    <!-- Condition rows (rendered dynamically) -->
     <div class="form-group">
-      <label>Condition</label>
-      <select class="form-select" id="edit-condition">
-        <option value="NM">Near Mint (NM)</option>
-        <option value="LP">Lightly Played (LP)</option>
-        <option value="MP">Moderately Played (MP)</option>
-        <option value="HP">Heavily Played (HP)</option>
-        <option value="DMG">Damaged (DMG)</option>
-      </select>
+      <label>Copies by condition</label>
+      <div id="edit-conditions-list"></div>
     </div>
+
+    <!-- Add a new condition -->
+    <div class="form-group" id="add-cond-section">
+      <label>Add a condition</label>
+      <div class="add-cond-row">
+        <select class="form-select" id="add-cond-select">
+          <option value="NM">Near Mint (NM)</option>
+          <option value="LP">Lightly Played (LP)</option>
+          <option value="MP">Moderately Played (MP)</option>
+          <option value="HP">Heavily Played (HP)</option>
+          <option value="DMG">Damaged (DMG)</option>
+        </select>
+        <button class="btn-add-cond" id="btn-add-cond">Add</button>
+      </div>
+    </div>
+
+    <!-- Ordered -->
     <div class="form-group">
       <label class="checkbox-wrap">
         <input type="checkbox" id="edit-ordered">
         Ordered — waiting to receive
       </label>
     </div>
+
     <div class="modal-actions">
       <button class="btn-secondary" id="edit-cancel">Cancel</button>
       <button class="btn-primary" id="edit-save" style="flex:1">Save changes</button>
@@ -631,9 +694,23 @@
 
   // ---- State ----
   let currentUser   = null;
-  let collectionMap = {};   // cardId → saved data (one entry per card)
+  let collectionMap = {};   // cardId → saved data
   let editingId     = null;
+  let editConditions = [];  // working copy of conditions while modal is open
   let unsubscribe   = null;
+
+  // ---- Helpers ----
+  // Normalise old flat-format docs ({condition, quantity}) to the new array format
+  function getConditions(entry) {
+    if (!entry) return [];
+    if (Array.isArray(entry.conditions)) return entry.conditions;
+    // Legacy single-condition format
+    return [{ condition: entry.condition || 'NM', quantity: entry.quantity || 1 }];
+  }
+
+  function getTotalQty(entry) {
+    return getConditions(entry).reduce((s, c) => s + (c.quantity || 0), 0);
+  }
 
   // ===== AUTH =====
   document.getElementById('btn-google-login').addEventListener('click', () => {
@@ -720,7 +797,7 @@
 
   function searchCardHTML(c) {
     const entry = collectionMap[c.id];
-    const qty   = entry?.quantity || 0;
+    const qty   = getTotalQty(entry);
     const data  = encodeURIComponent(JSON.stringify(c));
     return `
       <div class="card-item${qty > 0 ? ' owned' : ''}" id="src-${c.id}">
@@ -756,12 +833,10 @@
       const tile = document.getElementById('src-' + c.id);
       if (!tile) return;
       const entry = collectionMap[c.id];
-      const qty   = entry?.quantity || 0;
+      const qty   = getTotalQty(entry);
 
-      // Border
       tile.classList.toggle('owned', qty > 0);
 
-      // Strip
       let strip = tile.querySelector('.coll-strip');
       if (qty > 0) {
         if (!strip) {
@@ -774,11 +849,9 @@
         strip.remove();
       }
 
-      // Qty number
       const num = tile.querySelector('.sq-num');
       if (num) num.textContent = qty;
 
-      // Minus button enabled state
       const minus = tile.querySelector('.btn-sq');
       if (minus) minus.disabled = qty === 0;
     });
@@ -817,7 +890,7 @@
     }
 
     const total = Object.values(collectionMap)
-      .reduce((s, c) => s + (c.quantity || 1), 0);
+      .reduce((s, c) => s + getTotalQty(c), 0);
     document.getElementById('collection-stat').textContent =
       `${total} card${total !== 1 ? 's' : ''}`;
 
@@ -841,35 +914,36 @@
       return;
     }
 
-    grid.innerHTML = entries.map(([id, c]) => `
-      <div class="card-item owned">
-        ${c.ordered ? '<div class="ordered-badge">ORDERED</div>' : ''}
-        <div class="card-img-wrap">
-          <img src="${c.image || ''}" alt="${c.name}" loading="lazy">
-        </div>
-        <div class="card-info">
-          <div class="card-name">${c.name}</div>
-          <div class="card-meta">${c.setName || ''} · #${c.number || ''}</div>
-        </div>
-        <div class="coll-strip">Qty: ${c.quantity || 1}</div>
-        <div class="qty-row">
-          <div class="qty-controls">
-            <button class="btn-qty" onclick="window._changeQty('${id}',-1)">−</button>
-            <span class="qty-num-coll">${c.quantity || 1}</span>
-            <button class="btn-qty" onclick="window._changeQty('${id}',1)">+</button>
+    grid.innerHTML = entries.map(([id, c]) => {
+      const conds    = getConditions(c);
+      const totalQty = getTotalQty(c);
+      const badgesHTML = conds.map(row =>
+        `<span class="condition-badge">${row.quantity}× ${row.condition}</span>`
+      ).join('');
+
+      return `
+        <div class="card-item owned">
+          ${c.ordered ? '<div class="ordered-badge">ORDERED</div>' : ''}
+          <div class="card-img-wrap">
+            <img src="${c.image || ''}" alt="${c.name}" loading="lazy">
           </div>
-          <span class="condition-badge">${c.condition || 'NM'}</span>
-        </div>
-        <div class="card-actions">
-          <button class="btn-sm" onclick="window._openEdit('${id}')">Edit</button>
-          <button class="btn-sm danger" onclick="window._remove('${id}')">Remove</button>
-        </div>
-      </div>`).join('');
+          <div class="card-info">
+            <div class="card-name">${c.name}</div>
+            <div class="card-meta">${c.setName || ''} · #${c.number || ''}</div>
+          </div>
+          <div class="coll-strip">Qty: ${totalQty}</div>
+          <div class="cond-badges">${badgesHTML}</div>
+          <div class="card-actions">
+            <button class="btn-sm" onclick="window._openEdit('${id}')">Edit</button>
+            <button class="btn-sm danger" onclick="window._remove('${id}')">Remove</button>
+          </div>
+        </div>`;
+    }).join('');
   }
 
   // ===== CARD OPERATIONS =====
 
-  // Search page: + / − buttons
+  // Search page + / − : always adjusts NM
   window._sqChange = async function(cardId, dataEnc, delta) {
     if (!currentUser) return;
     const c     = JSON.parse(decodeURIComponent(dataEnc));
@@ -877,41 +951,56 @@
     const ref   = doc(db, 'users', currentUser.uid, 'collection', cardId);
 
     if (!entry && delta > 0) {
-      // First time adding — create with NM default
+      // First ever add — create with NM qty 1
       await setDoc(ref, {
-        name:      c.name,
-        number:    c.number    || '',
-        setId:     c.set?.id   || '',
-        setName:   c.set?.name || '',
-        image:     c.images?.small || '',
-        condition: 'NM',
-        quantity:  1,
-        ordered:   false,
-        addedAt:   new Date().toISOString()
+        name:       c.name,
+        number:     c.number    || '',
+        setId:      c.set?.id   || '',
+        setName:    c.set?.name || '',
+        image:      c.images?.small || '',
+        ordered:    false,
+        addedAt:    new Date().toISOString(),
+        conditions: [{ condition: 'NM', quantity: 1 }]
       });
-    } else if (entry) {
-      const newQty = (entry.quantity || 1) + delta;
-      if (newQty <= 0) {
-        await deleteDoc(ref);
-      } else {
-        await updateDoc(ref, { quantity: newQty });
-      }
+      return;
     }
+
+    if (!entry) return; // delta < 0 but nothing to remove
+
+    const conds = getConditions(entry);
+    adjustConditionsAndSave(ref, conds, delta, entry);
   };
 
-  // Collection page: + / − buttons
-  window._changeQty = async function(id, delta) {
-    if (!currentUser) return;
-    const c = collectionMap[id];
-    if (!c) return;
-    const newQty = (c.quantity || 1) + delta;
-    const ref    = doc(db, 'users', currentUser.uid, 'collection', id);
-    if (newQty <= 0) {
+  // Shared helper: adjust qty (NM first, then first condition); save or delete
+  async function adjustConditionsAndSave(ref, conds, delta, existingEntry) {
+    const updated = conds.map(r => ({ ...r }));
+
+    if (delta < 0) {
+      // Decrement NM first; fall back to first condition
+      let target = updated.find(r => r.condition === 'NM') || updated[0];
+      if (!target) return;
+      target.quantity += delta;
+      if (target.quantity <= 0) {
+        // Remove that condition entry
+        const idx = updated.indexOf(target);
+        updated.splice(idx, 1);
+      }
+    } else {
+      // Increment NM (or add NM entry if missing)
+      let nmRow = updated.find(r => r.condition === 'NM');
+      if (nmRow) {
+        nmRow.quantity += delta;
+      } else {
+        updated.unshift({ condition: 'NM', quantity: delta });
+      }
+    }
+
+    if (updated.length === 0) {
       await deleteDoc(ref);
     } else {
-      await updateDoc(ref, { quantity: newQty });
+      await updateDoc(ref, { conditions: updated });
     }
-  };
+  }
 
   window._remove = async function(id) {
     if (!currentUser) return;
@@ -920,19 +1009,77 @@
   };
 
   // ===== EDIT MODAL =====
+
+  // All condition options
+  const ALL_CONDITIONS = ['NM', 'LP', 'MP', 'HP', 'DMG'];
+
+  function renderEditConditions() {
+    const list = document.getElementById('edit-conditions-list');
+    if (editConditions.length === 0) {
+      list.innerHTML = `<p style="color:var(--text-muted);font-size:0.85rem;">No copies — use "Add a condition" below.</p>`;
+    } else {
+      list.innerHTML = editConditions.map((row, i) => `
+        <div class="cond-row" data-idx="${i}">
+          <span class="cond-row-label">${row.condition}</span>
+          <div class="cond-row-controls">
+            <button class="btn-qty-modal" onclick="window._editQty(${i},-1)">−</button>
+            <span class="cond-qty-num">${row.quantity}</span>
+            <button class="btn-qty-modal" onclick="window._editQty(${i},1)">+</button>
+            ${row.quantity <= 1 ? '<span class="cond-remove-note">Remove on −</span>' : ''}
+          </div>
+        </div>`).join('');
+    }
+
+    // Refresh the "Add" dropdown — only show conditions not already present
+    const presentConds = new Set(editConditions.map(r => r.condition));
+    const select = document.getElementById('add-cond-select');
+    select.innerHTML = ALL_CONDITIONS
+      .filter(c => !presentConds.has(c))
+      .map(c => `<option value="${c}">${c}</option>`)
+      .join('');
+
+    const section = document.getElementById('add-cond-section');
+    // Hide "Add" section if all conditions are already represented
+    section.style.display = presentConds.size >= ALL_CONDITIONS.length ? 'none' : 'block';
+  }
+
+  window._editQty = function(idx, delta) {
+    const row = editConditions[idx];
+    if (!row) return;
+    row.quantity += delta;
+    if (row.quantity <= 0) editConditions.splice(idx, 1);
+    renderEditConditions();
+  };
+
+  document.getElementById('btn-add-cond').addEventListener('click', () => {
+    const select = document.getElementById('add-cond-select');
+    const cond   = select.value;
+    if (!cond) return;
+    // Don't add if already present (safety check)
+    if (!editConditions.find(r => r.condition === cond)) {
+      editConditions.push({ condition: cond, quantity: 1 });
+    }
+    renderEditConditions();
+  });
+
   window._openEdit = function(id) {
-    editingId = id;
-    const c   = collectionMap[id];
-    if (!c) return;
-    document.getElementById('edit-modal-name').textContent = c.name;
-    document.getElementById('edit-condition').value        = c.condition || 'NM';
-    document.getElementById('edit-ordered').checked        = !!c.ordered;
+    editingId      = id;
+    const entry    = collectionMap[id];
+    if (!entry) return;
+
+    // Deep copy conditions so we don't mutate the live map
+    editConditions = getConditions(entry).map(r => ({ ...r }));
+
+    document.getElementById('edit-modal-name').textContent = entry.name;
+    document.getElementById('edit-ordered').checked = !!entry.ordered;
+    renderEditConditions();
     document.getElementById('edit-modal').classList.add('open');
   };
 
   function closeModal() {
     document.getElementById('edit-modal').classList.remove('open');
-    editingId = null;
+    editingId      = null;
+    editConditions = [];
   }
 
   document.getElementById('edit-cancel').addEventListener('click', closeModal);
@@ -942,12 +1089,19 @@
 
   document.getElementById('edit-save').addEventListener('click', async () => {
     if (!editingId || !currentUser) return;
-    const condition = document.getElementById('edit-condition').value;
-    const ordered   = document.getElementById('edit-ordered').checked;
-    await updateDoc(
-      doc(db, 'users', currentUser.uid, 'collection', editingId),
-      { condition, ordered }
-    );
+    const ordered = document.getElementById('edit-ordered').checked;
+    const ref     = doc(db, 'users', currentUser.uid, 'collection', editingId);
+
+    if (editConditions.length === 0) {
+      // All copies removed — delete the card
+      if (confirm('All copies removed. Delete this card from your collection?')) {
+        await deleteDoc(ref);
+      } else {
+        return; // Let them keep editing
+      }
+    } else {
+      await updateDoc(ref, { conditions: editConditions, ordered });
+    }
     closeModal();
   });
 </script>
