@@ -54,9 +54,7 @@
     }
 
     .login-logo { font-size: 3.5rem; }
-
     .login-card h1 { font-size: 1.8rem; font-weight: 700; }
-
     .login-card p { color: var(--text-muted); line-height: 1.5; }
 
     .btn-google {
@@ -153,7 +151,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 10px;
     }
@@ -169,7 +167,7 @@
       color: var(--text-muted);
     }
 
-    /* ---- Search ---- */
+    /* ---- Search bar ---- */
     .search-bar-wrap {
       display: flex;
       gap: 10px;
@@ -211,6 +209,25 @@
       margin-bottom: 20px;
     }
 
+    /* ---- Collection filter ---- */
+    .filter-wrap {
+      margin-bottom: 16px;
+    }
+
+    .filter-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .filter-input:focus { border-color: var(--accent); }
+    .filter-input::placeholder { color: var(--text-muted); }
+
     /* ---- Card grid ---- */
     .card-grid {
       display: grid;
@@ -225,8 +242,11 @@
       overflow: hidden;
       position: relative;
       transition: transform 0.15s, border-color 0.15s;
+      display: flex;
+      flex-direction: column;
     }
     .card-item:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .card-item.owned { border-color: var(--accent); }
 
     .card-img-wrap {
       aspect-ratio: 2.5 / 3.5;
@@ -259,26 +279,54 @@
       text-overflow: ellipsis;
     }
 
-    /* Add button on search results */
-    .btn-add {
-      width: 100%;
+    /* ---- Accent strip (shows qty when card is owned) ---- */
+    .coll-strip {
       background: var(--accent);
       color: white;
-      border: none;
-      padding: 9px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn-add:hover { background: var(--accent-hover); }
-    .btn-add.in-coll {
-      background: var(--surface2);
-      color: var(--success);
-      cursor: default;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 5px 8px;
+      letter-spacing: 0.02em;
     }
 
-    /* Qty controls on collection cards */
+    /* ---- Search qty controls (− qty +) ---- */
+    .search-qty-row {
+      display: flex;
+      align-items: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-sq {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1.1rem;
+      padding: 8px 0;
+      cursor: pointer;
+      transition: background 0.15s;
+      line-height: 1;
+    }
+    .btn-sq:hover:not(:disabled) { background: var(--surface2); }
+    .btn-sq:disabled { color: var(--border); cursor: default; }
+
+    .sq-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .sq-num {
+      flex: 1;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 0;
+    }
+
+    /* ---- Collection card controls ---- */
     .qty-row {
       display: flex;
       align-items: center;
@@ -309,7 +357,7 @@
     }
     .btn-qty:hover { background: var(--accent); border-color: var(--accent); }
 
-    .qty-num {
+    .qty-num-coll {
       font-weight: 700;
       font-size: 1rem;
       min-width: 22px;
@@ -343,6 +391,7 @@
       display: flex;
       gap: 6px;
       padding: 0 12px 10px;
+      margin-top: auto;
     }
 
     .btn-sm {
@@ -446,11 +495,12 @@
     }
     .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
 
-    /* ---- Empty / loading states ---- */
+    /* ---- Empty / loading ---- */
     .empty-state {
       text-align: center;
       padding: 64px 20px;
       color: var(--text-muted);
+      grid-column: 1 / -1;
     }
     .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
     .empty-state h3 { font-size: 1.15rem; color: var(--text); margin-bottom: 6px; }
@@ -521,6 +571,10 @@
       <h2 class="page-title">My Collection</h2>
       <span class="stat-chip" id="collection-stat">0 cards</span>
     </div>
+    <div class="filter-wrap">
+      <input class="filter-input" id="collection-filter" type="text"
+        placeholder="Filter by name or set…" />
+    </div>
     <div id="collection-grid" class="card-grid"></div>
   </div>
 </div>
@@ -558,10 +612,10 @@
     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-  import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot }
+  import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot }
     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
-  // ---- Firebase setup ----
+  // ---- Firebase ----
   const fbApp = initializeApp({
     apiKey:            "AIzaSyCHGYmIdQQHHirsyGv_LCCHG_X2SFjv-Ds",
     authDomain:        "pokemon-tcg-tracker-tlw.firebaseapp.com",
@@ -575,10 +629,9 @@
   const db       = getFirestore(fbApp);
   const provider = new GoogleAuthProvider();
 
-  // ---- App state ----
+  // ---- State ----
   let currentUser   = null;
-  let collectionMap = {};   // docId → saved data
-  let ownedCardIds  = new Set(); // cardIds that exist in collection (any condition)
+  let collectionMap = {};   // cardId → saved data (one entry per card)
   let editingId     = null;
   let unsubscribe   = null;
 
@@ -622,12 +675,8 @@
     const nums   = tokens.filter(t => /^\d+$/.test(t));
     const words  = tokens.filter(t => !/^\d+$/.test(t));
     const parts  = [];
-    if (words.length === 1) {
-      parts.push(`name:${words[0]}*`);
-    } else if (words.length > 1) {
-      // Quote multi-word name queries so the API treats them as a phrase
-      parts.push(`name:"${words.join(' ')}"`);
-    }
+    if (words.length === 1) parts.push(`name:${words[0]}*`);
+    else if (words.length > 1) parts.push(`name:"${words.join(' ')}"`);
     if (nums.length) parts.push(`number:${nums[0]}`);
     return parts.join(' ') || raw;
   }
@@ -669,28 +718,70 @@
     if (e.key === 'Enter') doSearch();
   });
 
+  function searchCardHTML(c) {
+    const entry = collectionMap[c.id];
+    const qty   = entry?.quantity || 0;
+    const data  = encodeURIComponent(JSON.stringify(c));
+    return `
+      <div class="card-item${qty > 0 ? ' owned' : ''}" id="src-${c.id}">
+        <div class="card-img-wrap">
+          <img src="${c.images?.small || ''}" alt="${c.name}" loading="lazy">
+        </div>
+        <div class="card-info">
+          <div class="card-name">${c.name}</div>
+          <div class="card-meta">${c.set?.name || ''} · #${c.number || ''}</div>
+        </div>
+        ${qty > 0 ? `<div class="coll-strip">In Collection · Qty: ${qty}</div>` : ''}
+        <div class="search-qty-row">
+          <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',-1)"
+            ${qty === 0 ? 'disabled' : ''}>−</button>
+          <div class="sq-divider"></div>
+          <span class="sq-num">${qty}</span>
+          <div class="sq-divider"></div>
+          <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',1)">+</button>
+        </div>
+      </div>`;
+  }
+
+  let lastSearchCards = [];
+
   function renderSearchResults(cards) {
+    lastSearchCards = cards;
     const el = document.getElementById('search-results');
-    el.innerHTML = `<div class="card-grid">${cards.map(c => {
-      const owned    = ownedCardIds.has(c.id);
-      const dataAttr = encodeURIComponent(JSON.stringify(c));
-      return `
-        <div class="card-item">
-          <div class="card-img-wrap">
-            <img src="${c.images?.small || ''}" alt="${c.name}" loading="lazy">
-          </div>
-          <div class="card-info">
-            <div class="card-name">${c.name}</div>
-            <div class="card-meta">${c.set?.name || ''} · #${c.number || ''}</div>
-          </div>
-          <button class="btn-add${owned ? ' in-coll' : ''}"
-            data-id="${c.id}"
-            data-card="${dataAttr}"
-            onclick="window._addCard(this)">
-            ${owned ? '✓ In Collection' : '+ Add to Collection'}
-          </button>
-        </div>`;
-    }).join('')}</div>`;
+    el.innerHTML = `<div class="card-grid">${cards.map(searchCardHTML).join('')}</div>`;
+  }
+
+  function refreshSearchCards() {
+    lastSearchCards.forEach(c => {
+      const tile = document.getElementById('src-' + c.id);
+      if (!tile) return;
+      const entry = collectionMap[c.id];
+      const qty   = entry?.quantity || 0;
+
+      // Border
+      tile.classList.toggle('owned', qty > 0);
+
+      // Strip
+      let strip = tile.querySelector('.coll-strip');
+      if (qty > 0) {
+        if (!strip) {
+          strip = document.createElement('div');
+          strip.className = 'coll-strip';
+          tile.insertBefore(strip, tile.querySelector('.search-qty-row'));
+        }
+        strip.textContent = `In Collection · Qty: ${qty}`;
+      } else if (strip) {
+        strip.remove();
+      }
+
+      // Qty number
+      const num = tile.querySelector('.sq-num');
+      if (num) num.textContent = qty;
+
+      // Minus button enabled state
+      const minus = tile.querySelector('.btn-sq');
+      if (minus) minus.disabled = qty === 0;
+    });
   }
 
   // ===== COLLECTION LISTENER =====
@@ -699,43 +790,59 @@
     const colRef = collection(db, 'users', currentUser.uid, 'collection');
     unsubscribe = onSnapshot(colRef, snap => {
       collectionMap = {};
-      ownedCardIds  = new Set();
-      snap.forEach(d => {
-        collectionMap[d.id] = d.data();
-        ownedCardIds.add(d.data().cardId);
-      });
+      snap.forEach(d => { collectionMap[d.id] = d.data(); });
       renderCollection();
-      // Refresh add-buttons in search results
-      document.querySelectorAll('.btn-add[data-id]').forEach(btn => {
-        const owned = ownedCardIds.has(btn.dataset.id);
-        btn.className = 'btn-add' + (owned ? ' in-coll' : '');
-        btn.textContent = owned ? '✓ In Collection' : '+ Add to Collection';
-      });
+      refreshSearchCards();
     });
   }
 
   // ===== RENDER COLLECTION =====
+  let collectionFilter = '';
+
+  document.getElementById('collection-filter').addEventListener('input', e => {
+    collectionFilter = e.target.value.toLowerCase();
+    renderCollection();
+  });
+
   function renderCollection() {
     const grid    = document.getElementById('collection-grid');
-    const entries = Object.entries(collectionMap)
-      .sort(([,a],[,b]) => a.name.localeCompare(b.name) || a.condition.localeCompare(b.condition));
-    const total   = entries.reduce((s, [, c]) => s + (c.quantity || 1), 0);
+    let   entries = Object.entries(collectionMap)
+      .sort(([,a],[,b]) => a.name.localeCompare(b.name));
 
+    if (collectionFilter) {
+      entries = entries.filter(([,c]) =>
+        c.name.toLowerCase().includes(collectionFilter) ||
+        (c.setName || '').toLowerCase().includes(collectionFilter)
+      );
+    }
+
+    const total = Object.values(collectionMap)
+      .reduce((s, c) => s + (c.quantity || 1), 0);
     document.getElementById('collection-stat').textContent =
       `${total} card${total !== 1 ? 's' : ''}`;
 
-    if (entries.length === 0) {
+    if (Object.keys(collectionMap).length === 0) {
       grid.innerHTML = `
         <div class="empty-state">
           <div class="icon">📦</div>
           <h3>Your collection is empty</h3>
-          <p>Search for cards and tap "+ Add to Collection"</p>
+          <p>Search for cards and use the + button to add them</p>
+        </div>`;
+      return;
+    }
+
+    if (entries.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">🔍</div>
+          <h3>No matches</h3>
+          <p>Try a different filter</p>
         </div>`;
       return;
     }
 
     grid.innerHTML = entries.map(([id, c]) => `
-      <div class="card-item">
+      <div class="card-item owned">
         ${c.ordered ? '<div class="ordered-badge">ORDERED</div>' : ''}
         <div class="card-img-wrap">
           <img src="${c.image || ''}" alt="${c.name}" loading="lazy">
@@ -744,11 +851,12 @@
           <div class="card-name">${c.name}</div>
           <div class="card-meta">${c.setName || ''} · #${c.number || ''}</div>
         </div>
+        <div class="coll-strip">Qty: ${c.quantity || 1}</div>
         <div class="qty-row">
           <div class="qty-controls">
-            <button class="btn-qty" onclick="window._changeQty('${id}', -1)">−</button>
-            <span class="qty-num">${c.quantity || 1}</span>
-            <button class="btn-qty" onclick="window._changeQty('${id}', 1)">+</button>
+            <button class="btn-qty" onclick="window._changeQty('${id}',-1)">−</button>
+            <span class="qty-num-coll">${c.quantity || 1}</span>
+            <button class="btn-qty" onclick="window._changeQty('${id}',1)">+</button>
           </div>
           <span class="condition-badge">${c.condition || 'NM'}</span>
         </div>
@@ -760,30 +868,49 @@
   }
 
   // ===== CARD OPERATIONS =====
-  window._addCard = async function(btn) {
+
+  // Search page: + / − buttons
+  window._sqChange = async function(cardId, dataEnc, delta) {
     if (!currentUser) return;
-    const c      = JSON.parse(decodeURIComponent(btn.dataset.card));
-    const colRef = collection(db, 'users', currentUser.uid, 'collection');
-    await addDoc(colRef, {
-      cardId:    c.id,
-      name:      c.name,
-      number:    c.number    || '',
-      setId:     c.set?.id   || '',
-      setName:   c.set?.name || '',
-      image:     c.images?.small || '',
-      condition: 'NM',
-      quantity:  1,
-      ordered:   false,
-      addedAt:   new Date().toISOString()
-    });
+    const c     = JSON.parse(decodeURIComponent(dataEnc));
+    const entry = collectionMap[cardId];
+    const ref   = doc(db, 'users', currentUser.uid, 'collection', cardId);
+
+    if (!entry && delta > 0) {
+      // First time adding — create with NM default
+      await setDoc(ref, {
+        name:      c.name,
+        number:    c.number    || '',
+        setId:     c.set?.id   || '',
+        setName:   c.set?.name || '',
+        image:     c.images?.small || '',
+        condition: 'NM',
+        quantity:  1,
+        ordered:   false,
+        addedAt:   new Date().toISOString()
+      });
+    } else if (entry) {
+      const newQty = (entry.quantity || 1) + delta;
+      if (newQty <= 0) {
+        await deleteDoc(ref);
+      } else {
+        await updateDoc(ref, { quantity: newQty });
+      }
+    }
   };
 
+  // Collection page: + / − buttons
   window._changeQty = async function(id, delta) {
     if (!currentUser) return;
     const c = collectionMap[id];
     if (!c) return;
-    const newQty = Math.max(1, (c.quantity || 1) + delta);
-    await updateDoc(doc(db, 'users', currentUser.uid, 'collection', id), { quantity: newQty });
+    const newQty = (c.quantity || 1) + delta;
+    const ref    = doc(db, 'users', currentUser.uid, 'collection', id);
+    if (newQty <= 0) {
+      await deleteDoc(ref);
+    } else {
+      await updateDoc(ref, { quantity: newQty });
+    }
   };
 
   window._remove = async function(id) {
@@ -797,9 +924,9 @@
     editingId = id;
     const c   = collectionMap[id];
     if (!c) return;
-    document.getElementById('edit-modal-name').textContent  = c.name;
-    document.getElementById('edit-condition').value         = c.condition || 'NM';
-    document.getElementById('edit-ordered').checked         = !!c.ordered;
+    document.getElementById('edit-modal-name').textContent = c.name;
+    document.getElementById('edit-condition').value        = c.condition || 'NM';
+    document.getElementById('edit-ordered').checked        = !!c.ordered;
     document.getElementById('edit-modal').classList.add('open');
   };
 
@@ -809,7 +936,6 @@
   }
 
   document.getElementById('edit-cancel').addEventListener('click', closeModal);
-
   document.getElementById('edit-modal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
