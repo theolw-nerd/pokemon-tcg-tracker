@@ -29,7 +29,7 @@
       min-height: 100vh;
     }
 
-    /* ---- Login ---- */
+    /* ===== LOGIN ===== */
     #login-screen {
       display: flex;
       align-items: center;
@@ -74,7 +74,7 @@
     }
     .btn-google:hover { opacity: 0.92; }
 
-    /* ---- App shell ---- */
+    /* ===== APP SHELL ===== */
     #app { display: none; }
 
     .nav {
@@ -91,7 +91,6 @@
     }
 
     .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--accent); margin-right: 8px; white-space: nowrap; }
-
     .nav-pills { display: flex; gap: 4px; }
 
     .nav-pill {
@@ -110,7 +109,6 @@
     .nav-pill.active { background: var(--accent); color: white; }
 
     .nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-
     #user-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: none; }
 
     .btn-signout {
@@ -125,17 +123,16 @@
     }
     .btn-signout:hover { border-color: var(--text-muted); color: var(--text); }
 
-    /* ---- Pages ---- */
+    /* ===== PAGES ===== */
     .page { display: none; padding: 24px 20px; max-width: 1200px; margin: 0 auto; }
     .page.active { display: block; }
 
     .page-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
       margin-bottom: 16px;
       flex-wrap: wrap;
-      gap: 10px;
     }
 
     .page-title { font-size: 1.4rem; font-weight: 700; }
@@ -147,9 +144,51 @@
       padding: 4px 14px;
       font-size: 0.85rem;
       color: var(--text-muted);
+      margin-left: auto;
     }
 
-    /* ---- Search bar ---- */
+    /* ===== SHARED BUTTONS ===== */
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+    .btn-back {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-back:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ===== SEARCH BAR ===== */
     .search-bar-wrap { display: flex; gap: 10px; margin-bottom: 8px; }
 
     .search-input {
@@ -166,24 +205,9 @@
     .search-input:focus { border-color: var(--accent); }
     .search-input::placeholder { color: var(--text-muted); }
 
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 12px 22px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-      white-space: nowrap;
-    }
-    .btn-primary:hover { background: var(--accent-hover); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .search-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; }
 
-    /* ---- Collection filter ---- */
+    /* ===== FILTER ===== */
     .filter-wrap { margin-bottom: 16px; }
 
     .filter-input {
@@ -200,7 +224,7 @@
     .filter-input:focus { border-color: var(--accent); }
     .filter-input::placeholder { color: var(--text-muted); }
 
-    /* ---- Card grid ---- */
+    /* ===== CARD GRID (search + set detail + collection) ===== */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
@@ -220,38 +244,15 @@
     .card-item:hover { transform: translateY(-2px); border-color: var(--accent); }
     .card-item.owned { border-color: var(--accent); }
 
-    .card-img-wrap {
-      aspect-ratio: 2.5 / 3.5;
-      background: var(--surface2);
-      overflow: hidden;
-    }
+    .card-img-wrap { aspect-ratio: 2.5 / 3.5; background: var(--surface2); overflow: hidden; }
     .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     .card-info { padding: 10px 12px 8px; }
+    .card-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .card-name {
-      font-size: 0.85rem;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card-meta {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* ---- Search qty controls ---- */
-    .search-qty-row {
-      display: flex;
-      align-items: center;
-      border-top: 1px solid var(--border);
-    }
+    /* Search qty controls */
+    .search-qty-row { display: flex; align-items: center; border-top: 1px solid var(--border); }
 
     .btn-sq {
       flex: 1;
@@ -277,19 +278,19 @@
       padding: 8px 0;
       transition: background 0.15s, color 0.15s;
     }
+    .sq-num.owned { background: var(--accent); color: white; }
 
-    .sq-num.owned {
+    /* Collection card badges */
+    .coll-strip {
       background: var(--accent);
       color: white;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 5px 8px;
     }
 
-    /* ---- Collection card badges ---- */
-    .cond-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 4px 12px 6px;
-    }
+    .cond-badges { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 12px 6px; }
 
     .condition-badge {
       font-size: 0.7rem;
@@ -300,11 +301,7 @@
       border: 1px solid var(--border);
       color: var(--text-muted);
     }
-
-    .condition-badge.is-ordered {
-      border-color: var(--warning);
-      color: var(--warning);
-    }
+    .condition-badge.is-ordered { border-color: var(--warning); color: var(--warning); }
 
     .ordered-badge {
       position: absolute;
@@ -316,15 +313,9 @@
       font-weight: 800;
       padding: 2px 7px;
       border-radius: 4px;
-      letter-spacing: 0.03em;
     }
 
-    .card-actions {
-      display: flex;
-      gap: 6px;
-      padding: 0 12px 10px;
-      margin-top: auto;
-    }
+    .card-actions { display: flex; gap: 6px; padding: 0 12px 10px; margin-top: auto; }
 
     .btn-sm {
       flex: 1;
@@ -340,7 +331,115 @@
     .btn-sm:hover { border-color: var(--accent); color: var(--text); }
     .btn-sm.danger:hover { border-color: var(--danger); color: var(--danger); }
 
-    /* ---- Modal ---- */
+    /* ===== SETS TAB ===== */
+    .series-section { margin-bottom: 32px; }
+
+    .series-header {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .set-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+    }
+
+    .set-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .set-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .set-card.has-cards { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+
+    .set-logo {
+      width: 72px;
+      height: 52px;
+      object-fit: contain;
+      flex-shrink: 0;
+      border-radius: 6px;
+      background: var(--surface2);
+    }
+
+    .set-logo-placeholder {
+      width: 72px;
+      height: 52px;
+      border-radius: 6px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .set-info { flex: 1; min-width: 0; }
+
+    .set-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+
+    .set-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
+
+    .set-progress-bar {
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .set-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .set-progress-text {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .set-progress-text .owned-count { color: var(--accent); font-weight: 700; }
+
+    /* Set detail header */
+    .set-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .set-detail-logo {
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .set-detail-meta { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* ===== MODAL ===== */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -364,14 +463,7 @@
       overflow-y: auto;
     }
 
-    .modal h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .form-group { margin-bottom: 16px; }
 
@@ -384,7 +476,6 @@
       letter-spacing: 0.06em;
     }
 
-    /* ---- Condition rows in modal ---- */
     .cond-row {
       display: flex;
       align-items: center;
@@ -395,24 +486,11 @@
       margin-bottom: 6px;
       gap: 8px;
     }
+    .cond-row.is-ordered { border-color: var(--warning); }
 
-    .cond-row.is-ordered {
-      border-color: var(--warning);
-    }
+    .cond-row-label { font-weight: 700; font-size: 0.88rem; flex: 1; min-width: 0; }
 
-    .cond-row-label {
-      font-weight: 700;
-      font-size: 0.88rem;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .cond-row-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    .cond-row-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
     .btn-qty-modal {
       width: 28px;
@@ -432,24 +510,12 @@
     }
     .btn-qty-modal:hover { background: var(--accent); border-color: var(--accent); }
 
-    .cond-qty-num {
-      font-weight: 700;
-      font-size: 1rem;
-      min-width: 24px;
-      text-align: center;
-    }
+    .cond-qty-num { font-weight: 700; font-size: 1rem; min-width: 24px; text-align: center; }
 
-    /* ---- Add condition section ---- */
-    .add-cond-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    .add-cond-row { display: flex; gap: 8px; align-items: center; }
 
     .form-select {
       flex: 1;
-      min-width: 110px;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
@@ -478,20 +544,7 @@
 
     .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
 
-    .btn-secondary {
-      flex: 1;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: var(--radius-sm);
-      padding: 10px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      transition: all 0.15s;
-    }
-    .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
-
-    /* ---- Empty / loading ---- */
+    /* ===== EMPTY / LOADING ===== */
     .empty-state {
       text-align: center;
       padding: 64px 20px;
@@ -510,7 +563,7 @@
 </head>
 <body>
 
-<!-- ======================== LOGIN ======================== -->
+<!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">🎴</div>
@@ -528,12 +581,13 @@
   </div>
 </div>
 
-<!-- ======================== APP ======================== -->
+<!-- ===== APP ===== -->
 <div id="app">
   <nav class="nav">
     <span class="nav-logo">🎴 TCG Tracker</span>
     <div class="nav-pills">
       <button class="nav-pill active" data-page="search">Search</button>
+      <button class="nav-pill" data-page="sets">Sets</button>
       <button class="nav-pill" data-page="collection">Collection</button>
     </div>
     <div class="nav-right">
@@ -542,67 +596,80 @@
     </div>
   </nav>
 
-  <!-- SEARCH PAGE -->
+  <!-- SEARCH -->
   <div class="page active" id="page-search">
     <div class="page-header">
       <h2 class="page-title">Search Cards</h2>
     </div>
     <div class="search-bar-wrap">
       <input class="search-input" id="search-input" type="text"
-        placeholder='Try "pikachu", "charizard 4", or just "25"' />
+        placeholder='Try "pikachu", "charizard 4", or "mega darkrai"' />
       <button class="btn-primary" id="btn-search">Search</button>
     </div>
     <p class="search-hint">Search by name · number · or name + number together (e.g. "pikachu 25")</p>
     <div id="search-results"></div>
   </div>
 
-  <!-- COLLECTION PAGE -->
+  <!-- SETS -->
+  <div class="page" id="page-sets">
+    <!-- Sets list -->
+    <div id="sets-list-view">
+      <div class="page-header">
+        <h2 class="page-title">Sets</h2>
+      </div>
+      <div id="sets-content"></div>
+    </div>
+    <!-- Set detail -->
+    <div id="set-detail-view" style="display:none">
+      <div class="set-detail-header">
+        <button class="btn-back" id="btn-back-sets">← Sets</button>
+        <img class="set-detail-logo" id="set-detail-logo" src="" alt="">
+        <div>
+          <div class="page-title" id="set-detail-name"></div>
+          <div class="set-detail-meta" id="set-detail-meta"></div>
+        </div>
+        <span class="stat-chip" id="set-detail-stat"></span>
+      </div>
+      <div id="set-detail-grid" class="card-grid"></div>
+    </div>
+  </div>
+
+  <!-- COLLECTION -->
   <div class="page" id="page-collection">
     <div class="page-header">
       <h2 class="page-title">My Collection</h2>
       <span class="stat-chip" id="collection-stat">0 cards</span>
     </div>
     <div class="filter-wrap">
-      <input class="filter-input" id="collection-filter" type="text"
-        placeholder="Filter by name or set…" />
+      <input class="filter-input" id="collection-filter" type="text" placeholder="Filter by name or set…" />
     </div>
     <div id="collection-grid" class="card-grid"></div>
   </div>
 </div>
 
-<!-- ======================== EDIT MODAL ======================== -->
+<!-- ===== EDIT MODAL ===== -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <h3 id="edit-modal-name">Edit Card</h3>
-
     <div class="form-group">
       <span class="form-label">Copies by condition</span>
       <div id="edit-conditions-list"></div>
     </div>
-
     <div class="form-group" id="add-cond-section">
       <span class="form-label">Add a row</span>
       <div class="add-cond-row">
-        <select class="form-select" id="add-cond-select">
-          <option value="Ordered">Ordered</option>
-          <option value="NM">NM</option>
-          <option value="LP">LP</option>
-          <option value="MP">MP</option>
-          <option value="HP">HP</option>
-          <option value="DMG">DMG</option>
-        </select>
+        <select class="form-select" id="add-cond-select"></select>
         <button class="btn-add-cond" id="btn-add-cond">Add</button>
       </div>
     </div>
-
     <div class="modal-actions">
-      <button class="btn-secondary" id="edit-cancel">Cancel</button>
+      <button class="btn-secondary" id="edit-cancel" style="flex:1">Cancel</button>
       <button class="btn-primary" id="edit-save" style="flex:1">Save changes</button>
     </div>
   </div>
 </div>
 
-<!-- ======================== SCRIPT ======================== -->
+<!-- ===== SCRIPT ===== -->
 <script type="module">
   import { initializeApp }
     from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
@@ -624,16 +691,27 @@
   const db       = getFirestore(fbApp);
   const provider = new GoogleAuthProvider();
 
+  // ── State ──────────────────────────────────────────────
   let currentUser    = null;
-  let collectionMap  = {};
-  let editingId      = null;
-  let editConditions = [];
+  let collectionMap  = {};       // cardId → Firestore data
   let unsubscribe    = null;
 
-  // ---- Data helpers ----
+  let lastSearchCards = [];      // cards shown in search results
+  let lastSetCards    = [];      // cards shown in set detail
+  let activePage      = 'search';
 
-  // Normalise any saved format to an array of { condition, quantity }
-  // "Ordered" is now just another condition value.
+  let setsData        = null;    // cached sets list from API
+  let currentSetId    = null;
+
+  let editingId       = null;
+  let editConditions  = [];
+
+  const searchCache = new Map(); // query → card array
+  const setCardCache = new Map();// setId → card array
+
+  const ALL_CONDITIONS = ['Ordered', 'NM', 'LP', 'MP', 'HP', 'DMG'];
+
+  // ── Data helpers ───────────────────────────────────────
   function getConditions(entry) {
     if (!entry) return [];
     if (Array.isArray(entry.conditions)) {
@@ -642,23 +720,31 @@
         quantity:  r.quantity  || 1
       }));
     }
-    // Legacy flat format (old ordered boolean → convert to "Ordered" condition)
-    if (entry.condition) {
-      const rows = [{ condition: entry.condition, quantity: entry.quantity || 1 }];
-      if (entry.ordered) rows.unshift({ condition: 'Ordered', quantity: entry.quantity || 1 });
-      return rows.filter((_, i) => i === 0); // just take one row for old data
-    }
-    return [{ condition: 'NM', quantity: 1 }];
+    return [{ condition: entry.condition || 'NM', quantity: entry.quantity || 1 }];
   }
 
   function getTotalQty(entry) {
     return getConditions(entry).reduce((s, r) => s + r.quantity, 0);
   }
 
-  // ===== AUTH =====
-  document.getElementById('btn-google-login').addEventListener('click', () => {
-    signInWithPopup(auth, provider).catch(err => alert('Sign-in failed: ' + err.message));
-  });
+  // ── Fetch helper with auto-retry ───────────────────────
+  async function fetchWithRetry(url, retries = 3, delayMs = 800) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        if (i === retries - 1) throw e;
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+    }
+  }
+
+  // ── AUTH ───────────────────────────────────────────────
+  document.getElementById('btn-google-login').addEventListener('click', () =>
+    signInWithPopup(auth, provider).catch(e => alert('Sign-in failed: ' + e.message)));
+
   document.getElementById('btn-signout').addEventListener('click', () => signOut(auth));
 
   onAuthStateChanged(auth, user => {
@@ -677,19 +763,19 @@
     }
   });
 
-  // ===== NAVIGATION =====
+  // ── NAVIGATION ─────────────────────────────────────────
   document.querySelectorAll('.nav-pill').forEach(pill => {
     pill.addEventListener('click', () => {
+      activePage = pill.dataset.page;
       document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
-      document.getElementById('page-' + pill.dataset.page).classList.add('active');
+      document.getElementById('page-' + activePage).classList.add('active');
+      if (activePage === 'sets' && !setsData) loadSets();
     });
   });
 
-  // ===== SEARCH =====
-  const searchCache = new Map(); // query string → results array
-
+  // ── SEARCH ─────────────────────────────────────────────
   function buildQuery(raw) {
     const tokens = raw.trim().split(/\s+/);
     const nums   = tokens.filter(t => /^\d+$/.test(t));
@@ -701,29 +787,14 @@
     return parts.join(' ') || raw;
   }
 
-  async function fetchWithRetry(url, retries = 3, delayMs = 800) {
-    for (let attempt = 0; attempt < retries; attempt++) {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
-      } catch (e) {
-        if (attempt === retries - 1) throw e;
-        await new Promise(r => setTimeout(r, delayMs));
-      }
-    }
-  }
-
   async function doSearch() {
     const raw = document.getElementById('search-input').value.trim();
     if (!raw) return;
     const resultsEl = document.getElementById('search-results');
     document.getElementById('btn-search').disabled = true;
-
     const q   = buildQuery(raw);
     const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30&select=id,name,number,set,images`;
 
-    // Return cached results instantly if available
     if (searchCache.has(q)) {
       renderSearchResults(searchCache.get(q));
       document.getElementById('btn-search').disabled = false;
@@ -731,23 +802,16 @@
     }
 
     resultsEl.innerHTML = '<div class="loading">Searching…</div>';
-
     try {
       const { data } = await fetchWithRetry(url);
       if (!data || data.length === 0) {
-        resultsEl.innerHTML = `
-          <div class="empty-state">
-            <div class="icon">🔍</div>
-            <h3>No results</h3>
-            <p>Try a different search</p>
-          </div>`;
+        resultsEl.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>No results</h3><p>Try a different search</p></div>`;
         return;
       }
-      // Cache result (keep at most 20 entries)
       searchCache.set(q, data);
       if (searchCache.size > 20) searchCache.delete(searchCache.keys().next().value);
       renderSearchResults(data);
-    } catch (e) {
+    } catch {
       resultsEl.innerHTML = `<div class="empty-state"><h3>Search failed</h3><p>Please try again.</p></div>`;
     } finally {
       document.getElementById('btn-search').disabled = false;
@@ -757,12 +821,12 @@
   document.getElementById('btn-search').addEventListener('click', doSearch);
   document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
-  function searchCardHTML(c) {
+  function qtyCardHTML(c, gridId) {
     const entry = collectionMap[c.id];
     const qty   = getTotalQty(entry);
     const data  = encodeURIComponent(JSON.stringify(c));
     return `
-      <div class="card-item${qty > 0 ? ' owned' : ''}" id="src-${c.id}">
+      <div class="card-item${qty > 0 ? ' owned' : ''}" id="${gridId}-${c.id}">
         <div class="card-img-wrap">
           <img src="${c.images?.small || ''}" alt="${c.name}" loading="lazy">
         </div>
@@ -771,8 +835,7 @@
           <div class="card-meta">${c.set?.name || ''} · #${c.number || ''}</div>
         </div>
         <div class="search-qty-row">
-          <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',-1)"
-            ${qty === 0 ? 'disabled' : ''}>−</button>
+          <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',-1)" ${qty === 0 ? 'disabled' : ''}>−</button>
           <div class="sq-divider"></div>
           <span class="sq-num${qty > 0 ? ' owned' : ''}">${qty}</span>
           <div class="sq-divider"></div>
@@ -781,31 +844,152 @@
       </div>`;
   }
 
-  let lastSearchCards = [];
-
   function renderSearchResults(cards) {
     lastSearchCards = cards;
     document.getElementById('search-results').innerHTML =
-      `<div class="card-grid">${cards.map(searchCardHTML).join('')}</div>`;
+      `<div class="card-grid">${cards.map(c => qtyCardHTML(c, 'src')).join('')}</div>`;
   }
 
-  function refreshSearchCards() {
-    lastSearchCards.forEach(c => {
-      const tile = document.getElementById('src-' + c.id);
+  function refreshQtyGrid(cards, gridId) {
+    cards.forEach(c => {
+      const tile = document.getElementById(`${gridId}-${c.id}`);
       if (!tile) return;
-      const qty = getTotalQty(collectionMap[c.id]);
+      const qty   = getTotalQty(collectionMap[c.id]);
       tile.classList.toggle('owned', qty > 0);
       const num   = tile.querySelector('.sq-num');
       const minus = tile.querySelector('.btn-sq');
-      if (num) {
-        num.textContent = qty;
-        num.classList.toggle('owned', qty > 0);
-      }
+      if (num)   { num.textContent = qty; num.classList.toggle('owned', qty > 0); }
       if (minus) minus.disabled = qty === 0;
     });
   }
 
-  // ===== COLLECTION LISTENER =====
+  // ── SETS ───────────────────────────────────────────────
+  async function loadSets() {
+    document.getElementById('sets-content').innerHTML = '<div class="loading">Loading sets…</div>';
+    try {
+      const { data } = await fetchWithRetry(
+        'https://api.pokemontcg.io/v2/sets?orderBy=-releaseDate&pageSize=250&select=id,name,series,total,releaseDate,images'
+      );
+      setsData = data;
+      renderSetsList();
+    } catch {
+      document.getElementById('sets-content').innerHTML =
+        `<div class="empty-state"><h3>Failed to load sets</h3><p>Please try again.</p></div>`;
+    }
+  }
+
+  function ownedCountForSet(setId) {
+    return Object.values(collectionMap).filter(c => c.setId === setId).length;
+  }
+
+  function formatDate(str) {
+    if (!str) return '';
+    const [y, m, d] = str.split('/');
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function renderSetsList() {
+    if (!setsData) return;
+
+    // Group by series, preserving the order series first appear
+    const seriesOrder = [];
+    const grouped = {};
+    setsData.forEach(s => {
+      if (!grouped[s.series]) { grouped[s.series] = []; seriesOrder.push(s.series); }
+      grouped[s.series].push(s);
+    });
+
+    const html = seriesOrder.map(series => {
+      const sets = grouped[series];
+      const cardsHTML = sets.map(s => {
+        const owned   = ownedCountForSet(s.id);
+        const total   = s.total || 1;
+        const pct     = Math.min(100, Math.round((owned / total) * 100));
+        const hasCols = owned > 0;
+        const logo    = s.images?.logo
+          ? `<img class="set-logo" src="${s.images.logo}" alt="${s.name}" loading="lazy">`
+          : `<div class="set-logo-placeholder">🃏</div>`;
+        return `
+          <div class="set-card${hasCols ? ' has-cards' : ''}" onclick="window._openSet('${s.id}')">
+            ${logo}
+            <div class="set-info">
+              <div class="set-name">${s.name}</div>
+              <div class="set-date">${formatDate(s.releaseDate)}</div>
+              <div class="set-progress-bar">
+                <div class="set-progress-fill" style="width:${pct}%"></div>
+              </div>
+              <div class="set-progress-text">
+                <span><span class="owned-count">${owned}</span> of ${total}</span>
+                <span>${pct}%</span>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+      return `
+        <div class="series-section">
+          <div class="series-header">${series}</div>
+          <div class="set-grid">${cardsHTML}</div>
+        </div>`;
+    }).join('');
+
+    document.getElementById('sets-content').innerHTML = html;
+  }
+
+  window._openSet = async function(setId) {
+    const set = setsData?.find(s => s.id === setId);
+    if (!set) return;
+    currentSetId = setId;
+
+    // Switch to detail view
+    document.getElementById('sets-list-view').style.display = 'none';
+    document.getElementById('set-detail-view').style.display = 'block';
+
+    const logo = document.getElementById('set-detail-logo');
+    logo.src = set.images?.logo || '';
+    logo.style.display = set.images?.logo ? 'block' : 'none';
+    document.getElementById('set-detail-name').textContent = set.name;
+    document.getElementById('set-detail-meta').textContent = `${set.series} · ${formatDate(set.releaseDate)} · ${set.total} cards`;
+
+    const grid = document.getElementById('set-detail-grid');
+    grid.innerHTML = '<div class="loading" style="grid-column:1/-1">Loading cards…</div>';
+    updateSetDetailStat();
+
+    try {
+      let cards = setCardCache.get(setId);
+      if (!cards) {
+        const { data } = await fetchWithRetry(
+          `https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=250&select=id,name,number,set,images`
+        );
+        cards = data || [];
+        setCardCache.set(setId, cards);
+      }
+      lastSetCards = cards;
+      if (cards.length === 0) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>No cards found</h3></div>';
+        return;
+      }
+      grid.innerHTML = cards.map(c => qtyCardHTML(c, 'set')).join('');
+    } catch {
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>Failed to load cards</h3><p>Please try again.</p></div>';
+    }
+  };
+
+  function updateSetDetailStat() {
+    if (!currentSetId) return;
+    const set   = setsData?.find(s => s.id === currentSetId);
+    const owned = ownedCountForSet(currentSetId);
+    const total = set?.total || '?';
+    document.getElementById('set-detail-stat').textContent = `${owned} / ${total} owned`;
+  }
+
+  document.getElementById('btn-back-sets').addEventListener('click', () => {
+    currentSetId = null;
+    lastSetCards = [];
+    document.getElementById('set-detail-view').style.display  = 'none';
+    document.getElementById('sets-list-view').style.display   = 'block';
+  });
+
+  // ── COLLECTION ─────────────────────────────────────────
   function startCollectionListener() {
     if (!currentUser) return;
     const colRef = collection(db, 'users', currentUser.uid, 'collection');
@@ -813,11 +997,13 @@
       collectionMap = {};
       snap.forEach(d => { collectionMap[d.id] = d.data(); });
       renderCollection();
-      refreshSearchCards();
+      refreshQtyGrid(lastSearchCards, 'src');
+      refreshQtyGrid(lastSetCards, 'set');
+      if (currentSetId) updateSetDetailStat();
+      if (setsData) renderSetsList();
     });
   }
 
-  // ===== RENDER COLLECTION =====
   let collectionFilter = '';
 
   document.getElementById('collection-filter').addEventListener('input', e => {
@@ -839,34 +1025,22 @@
     document.getElementById('collection-stat').textContent = `${total} card${total !== 1 ? 's' : ''}`;
 
     if (Object.keys(collectionMap).length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <div class="icon">📦</div>
-          <h3>Your collection is empty</h3>
-          <p>Search for cards and use the + button to add them</p>
-        </div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="icon">📦</div><h3>Your collection is empty</h3><p>Search for cards and use the + button to add them</p></div>`;
       return;
     }
     if (entries.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <div class="icon">🔍</div>
-          <h3>No matches</h3>
-          <p>Try a different filter</p>
-        </div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try a different filter</p></div>`;
       return;
     }
 
     grid.innerHTML = entries.map(([id, c]) => {
-      const conds    = getConditions(c);
-      const totalQty = getTotalQty(c);
+      const conds      = getConditions(c);
+      const totalQty   = getTotalQty(c);
       const anyOrdered = conds.some(r => r.condition === 'Ordered');
-
       const badgesHTML = conds.map(r => {
         const isOrd = r.condition === 'Ordered';
         return `<span class="condition-badge${isOrd ? ' is-ordered' : ''}">${r.quantity}× ${r.condition}</span>`;
       }).join('');
-
       return `
         <div class="card-item owned">
           ${anyOrdered ? '<div class="ordered-badge">ORDERED</div>' : ''}
@@ -887,9 +1061,7 @@
     }).join('');
   }
 
-  // ===== CARD OPERATIONS =====
-
-  // Search + / −: adjusts NM in-hand row (ordered: false)
+  // ── CARD OPERATIONS ────────────────────────────────────
   window._sqChange = async function(cardId, dataEnc, delta) {
     if (!currentUser) return;
     const c     = JSON.parse(decodeURIComponent(dataEnc));
@@ -911,21 +1083,18 @@
     if (!entry) return;
 
     const conds = getConditions(entry);
-
     if (delta > 0) {
-      // Add to NM row; create one if it doesn't exist
       const nmRow = conds.find(r => r.condition === 'NM');
-      if (nmRow) { nmRow.quantity++; }
-      else { conds.unshift({ condition: 'NM', quantity: 1 }); }
+      if (nmRow) nmRow.quantity++;
+      else conds.unshift({ condition: 'NM', quantity: 1 });
       await updateDoc(ref, { conditions: conds });
     } else {
-      // Remove from NM first; fall back to first row
       const target = conds.find(r => r.condition === 'NM') || conds[0];
       if (!target) return;
       target.quantity--;
       const cleaned = conds.filter(r => r.quantity > 0);
-      if (cleaned.length === 0) { await deleteDoc(ref); }
-      else { await updateDoc(ref, { conditions: cleaned }); }
+      if (cleaned.length === 0) await deleteDoc(ref);
+      else await updateDoc(ref, { conditions: cleaned });
     }
   };
 
@@ -935,38 +1104,25 @@
     await deleteDoc(doc(db, 'users', currentUser.uid, 'collection', id));
   };
 
-  // ===== EDIT MODAL =====
-
-  const ALL_CONDITIONS = ['Ordered', 'NM', 'LP', 'MP', 'HP', 'DMG'];
-
+  // ── EDIT MODAL ─────────────────────────────────────────
   function renderEditConditions() {
     const list = document.getElementById('edit-conditions-list');
-
-    if (editConditions.length === 0) {
-      list.innerHTML = `<p style="color:var(--text-muted);font-size:0.85rem;padding:4px 0;">No copies — use "Add a row" below.</p>`;
-    } else {
-      list.innerHTML = editConditions.map((row, i) => {
-        const isOrd = row.condition === 'Ordered';
-        return `
-          <div class="cond-row${isOrd ? ' is-ordered' : ''}">
+    list.innerHTML = editConditions.length === 0
+      ? `<p style="color:var(--text-muted);font-size:0.85rem;padding:4px 0">No copies — use "Add a row" below.</p>`
+      : editConditions.map((row, i) => `
+          <div class="cond-row${row.condition === 'Ordered' ? ' is-ordered' : ''}">
             <span class="cond-row-label">${row.condition}</span>
             <div class="cond-row-controls">
               <button class="btn-qty-modal" onclick="window._editQty(${i},-1)">−</button>
               <span class="cond-qty-num">${row.quantity}</span>
               <button class="btn-qty-modal" onclick="window._editQty(${i},1)">+</button>
             </div>
-          </div>`;
-      }).join('');
-    }
+          </div>`).join('');
 
-    // Rebuild dropdown — only show conditions not already present
     const used   = new Set(editConditions.map(r => r.condition));
     const select = document.getElementById('add-cond-select');
-    select.innerHTML = ALL_CONDITIONS
-      .filter(c => !used.has(c))
-      .map(c => `<option value="${c}">${c}</option>`)
-      .join('');
-
+    select.innerHTML = ALL_CONDITIONS.filter(c => !used.has(c))
+      .map(c => `<option value="${c}">${c}</option>`).join('');
     document.getElementById('add-cond-section').style.display =
       used.size >= ALL_CONDITIONS.length ? 'none' : 'block';
   }
@@ -998,22 +1154,18 @@
 
   function closeModal() {
     document.getElementById('edit-modal').classList.remove('open');
-    editingId      = null;
-    editConditions = [];
+    editingId = null; editConditions = [];
   }
 
   document.getElementById('edit-cancel').addEventListener('click', closeModal);
-  document.getElementById('edit-modal').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeModal();
-  });
+  document.getElementById('edit-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 
   document.getElementById('edit-save').addEventListener('click', async () => {
     if (!editingId || !currentUser) return;
     const ref = doc(db, 'users', currentUser.uid, 'collection', editingId);
     if (editConditions.length === 0) {
-      if (confirm('All copies removed. Delete this card from your collection?')) {
-        await deleteDoc(ref);
-      } else { return; }
+      if (confirm('All copies removed. Delete this card from your collection?')) await deleteDoc(ref);
+      else return;
     } else {
       await updateDoc(ref, { conditions: editConditions });
     }
