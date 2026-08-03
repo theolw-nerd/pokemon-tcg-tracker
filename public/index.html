@@ -688,28 +688,52 @@
   });
 
   // ===== SEARCH =====
+  const searchCache = new Map(); // query string → results array
+
   function buildQuery(raw) {
     const tokens = raw.trim().split(/\s+/);
     const nums   = tokens.filter(t => /^\d+$/.test(t));
     const words  = tokens.filter(t => !/^\d+$/.test(t));
     const parts  = [];
-    if (words.length === 1) parts.push(`name:${words[0]}*`);
+    if (words.length === 1) parts.push(`name:*${words[0]}*`);
     else if (words.length > 1) parts.push(`name:"${words.join(' ')}"`);
     if (nums.length) parts.push(`number:${nums[0]}`);
     return parts.join(' ') || raw;
+  }
+
+  async function fetchWithRetry(url, retries = 3, delayMs = 800) {
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        if (attempt === retries - 1) throw e;
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+    }
   }
 
   async function doSearch() {
     const raw = document.getElementById('search-input').value.trim();
     if (!raw) return;
     const resultsEl = document.getElementById('search-results');
-    resultsEl.innerHTML = '<div class="loading">Searching…</div>';
     document.getElementById('btn-search').disabled = true;
+
+    const q   = buildQuery(raw);
+    const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30&select=id,name,number,set,images`;
+
+    // Return cached results instantly if available
+    if (searchCache.has(q)) {
+      renderSearchResults(searchCache.get(q));
+      document.getElementById('btn-search').disabled = false;
+      return;
+    }
+
+    resultsEl.innerHTML = '<div class="loading">Searching…</div>';
+
     try {
-      const q   = buildQuery(raw);
-      const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30&select=id,name,number,set,images`;
-      const res = await fetch(url);
-      const { data } = await res.json();
+      const { data } = await fetchWithRetry(url);
       if (!data || data.length === 0) {
         resultsEl.innerHTML = `
           <div class="empty-state">
@@ -719,6 +743,9 @@
           </div>`;
         return;
       }
+      // Cache result (keep at most 20 entries)
+      searchCache.set(q, data);
+      if (searchCache.size > 20) searchCache.delete(searchCache.keys().next().value);
       renderSearchResults(data);
     } catch (e) {
       resultsEl.innerHTML = `<div class="empty-state"><h3>Search failed</h3><p>Please try again.</p></div>`;
