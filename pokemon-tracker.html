@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-accent="purple">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokémon TCG Tracker</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── ACCENT COLORS ── */
+html[data-accent="purple"]{--accent:#7c3aed;--accent2:#6d28d9;--accent-rgb:124,58,237}
+html[data-accent="blue"]{--accent:#3b82f6;--accent2:#2563eb;--accent-rgb:55,130,246}
+html[data-accent="pink"]{--accent:#ec4899;--accent2:#db2777;--accent-rgb:236,72,153}
+html[data-accent="red"]{--accent:#ef4444;--accent2:#dc2626;--accent-rgb:239,68,68}
+html[data-accent="orange"]{--accent:#f97316;--accent2:#ea580c;--accent-rgb:249,115,22}
+html[data-accent="yellow"]{--accent:#eab308;--accent2:#ca8a04;--accent-rgb:234,179,8}
+html[data-accent="green"]{--accent:#22c55e;--accent2:#16a34a;--accent-rgb:34,197,94}
+html[data-accent="teal"]{--accent:#10b981;--accent2:#059669;--accent-rgb:16,185,129}
+html[data-accent="mono"]{--accent:#94a3b8;--accent2:#64748b;--accent-rgb:148,163,184}
+
+/* ── DARK THEME (default) ── */
+html[data-theme="dark"]{
+  --bg:#111113;--surface:#1c1c1f;--surface2:#252528;--surface3:#2e2e33;
+  --border:#2e2e33;--border2:#3a3a42;
+  --text:#f0f0f2;--text2:#9999aa;--text3:#5a5a6a;
+  --nav-bg:#1c1c1f;--card-shadow:0 2px 12px rgba(0,0,0,.4);
+  --modal-bg:#1c1c1f;--input-bg:#252528;
+}
+/* ── LIGHT THEME ── */
+html[data-theme="light"]{
+  --bg:#f0f2f5;--surface:#ffffff;--surface2:#f5f5f8;--surface3:#eaeaee;
+  --border:#e2e8f0;--border2:#d0d5df;
+  --text:#1e293b;--text2:#64748b;--text3:#94a3b8;
+  --nav-bg:#ffffff;--card-shadow:0 2px 8px rgba(0,0,0,.08);
+  --modal-bg:#ffffff;--input-bg:#f5f5f8;
+}
+
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;transition:background .2s,color .2s}
+
+/* ── NAV ── */
+.topbar{position:sticky;top:0;z-index:200;padding:10px 24px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-bottom:1px solid var(--border)}
+.nav-pill{background:var(--nav-bg);border:1px solid var(--border);border-radius:40px;display:flex;align-items:center;gap:2px;padding:4px;box-shadow:var(--card-shadow)}
+.nav-btn{padding:7px 16px;border-radius:30px;border:none;background:none;color:var(--text2);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:inherit;display:flex;align-items:center;gap:5px;position:relative}
+.nav-btn:hover{color:var(--text);background:var(--surface2)}
+.nav-btn.active{background:var(--accent);color:#fff}
+.nav-btn.active:hover{background:var(--accent2)}
+.nav-right{position:absolute;right:24px;display:flex;align-items:center;gap:8px}
+.nav-icon-btn{background:none;border:none;color:var(--text2);cursor:pointer;padding:7px;border-radius:50%;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.nav-icon-btn:hover{background:var(--surface2);color:var(--text)}
+
+/* Tools dropdown */
+.dropdown-wrap{position:relative}
+.dropdown-menu{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);min-width:160px;overflow:hidden;display:none;z-index:300}
+.dropdown-wrap:hover .dropdown-menu,.dropdown-menu:hover{display:block}
+.dropdown-item{display:flex;align-items:center;gap:8px;padding:10px 16px;font-size:.83rem;color:var(--text);cursor:pointer;transition:background .1s;border:none;background:none;width:100%;font-family:inherit}
+.dropdown-item:hover{background:var(--surface2);color:var(--accent)}
+
+/* ── PAGE ── */
+.page{display:none;max-width:1200px;margin:0 auto;padding:28px 24px}
+.page.active{display:block}
+.page-title{font-size:1.6rem;font-weight:800;margin-bottom:20px;font-style:italic}
+
+/* ── CARDS / SURFACES ── */
+.surface{background:var(--surface);border-radius:14px;border:1px solid var(--border)}
+.surface2{background:var(--surface2);border-radius:10px;border:1px solid var(--border)}
+
+/* ── DASHBOARD ── */
+.dash-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.dash-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .15s}
+.dash-stat:hover{border-color:var(--accent)}
+.ds-label{font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.ds-value{font-size:1.4rem;font-weight:700}
+.ds-sub{font-size:.72rem;color:var(--text2);margin-top:2px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:6px}
+.view-all{font-size:.78rem;color:var(--accent);cursor:pointer;background:none;border:none;font-family:inherit}
+.view-all:hover{text-decoration:underline}
+.recent-cards{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.recent-card{flex-shrink:0;width:100px;cursor:pointer;border-radius:8px;overflow:hidden;background:var(--surface2);transition:transform .15s}
+.recent-card:hover{transform:translateY(-3px)}
+.recent-card img{width:100%;height:auto;display:block}
+.recent-card-name{font-size:.62rem;padding:5px 6px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── SEARCH PAGE ── */
+.search-bar-wrap{position:relative;margin-bottom:16px}
+.search-bar-wrap input{width:100%;padding:12px 48px 12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:.95rem;font-family:inherit;transition:border-color .15s}
+.search-bar-wrap input:focus{outline:none;border-color:var(--accent)}
+.search-bar-wrap .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:1rem;pointer-events:none}
+.search-bar-wrap input{padding-left:40px}
+.search-results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.src-card{cursor:pointer;border-radius:10px;overflow:hidden;background:var(--surface);border:2px solid transparent;transition:all .15s;position:relative}
+.src-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--card-shadow)}
+.src-card img{width:100%;height:auto;display:block}
+.src-card-footer{padding:7px 9px;background:var(--surface)}
+.src-card-name{font-size:.72rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-card-meta{font-size:.62rem;color:var(--text2);margin-top:1px}
+.src-card-price{font-size:.7rem;font-weight:700;color:var(--accent);margin-top:2px}
+.src-card .owned-badge{position:absolute;top:5px;right:5px;background:var(--accent);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+
+/* ── COLLECTION ── */
+.coll-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.coll-controls input,.coll-controls select{padding:7px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.82rem;font-family:inherit}
+.coll-controls input:focus,.coll-controls select:focus{outline:none;border-color:var(--accent)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.cg-card{border-radius:10px;overflow:hidden;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all .15s;position:relative}
+.cg-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.cg-card img{width:100%;height:auto;display:block}
+.cg-card-info{padding:7px 9px}
+.cg-card-name{font-size:.72rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cg-card-sub{font-size:.6rem;color:var(--text2);margin-top:1px}
+.cg-card-price{font-size:.7rem;font-weight:700;color:var(--accent);margin-top:2px}
+.qty-badge{position:absolute;top:5px;right:5px;background:var(--accent);color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.coll-table{width:100%;border-collapse:collapse}
+.coll-table th{padding:9px 12px;text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);background:var(--surface2);border-bottom:1px solid var(--border)}
+.coll-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:.82rem}
+.coll-table tr:last-child td{border-bottom:none}
+.coll-table tr:hover td{background:var(--surface2)}
+.coll-table img{width:26px;height:36px;object-fit:contain;border-radius:3px}
+.view-toggle-btn{padding:7px 13px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:.78rem;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:5px}
+.view-toggle-btn:hover,.view-toggle-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── EXPANSIONS ── */
+.exp-card{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;margin-bottom:10px}
+.exp-card:hover{border-color:var(--accent);transform:translateX(3px)}
+.exp-logo{width:80px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.exp-logo img{max-width:100%;max-height:100%;object-fit:contain}
+.exp-info{flex:1;min-width:0}
+.exp-name{font-weight:700;font-size:.9rem;margin-bottom:2px}
+.exp-meta{font-size:.72rem;color:var(--text2);margin-bottom:6px}
+.exp-bar-wrap{background:var(--surface2);border-radius:20px;height:4px;width:100%}
+.exp-bar{height:100%;background:var(--accent);border-radius:20px;transition:width .3s}
+.exp-counts{font-size:.68rem;color:var(--text2);margin-top:3px}
+.exp-counts .done{color:var(--accent)}
+.exp-series-hdr{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.exp-series-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── SET DETAIL ── */
+.set-detail-hdr{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:14px}
+.set-detail-logo{height:52px;object-fit:contain}
+.set-detail-info{flex:1}
+.set-detail-name{font-size:1.1rem;font-weight:700;margin-bottom:2px}
+.set-detail-sub{font-size:.78rem;color:var(--text2)}
+.set-filter-btns{display:flex;gap:6px;margin-left:auto}
+.sfb{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:.75rem;cursor:pointer;transition:all .15s;font-family:inherit}
+.sfb.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.set-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.sc-item{position:relative;border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .15s}
+.sc-item:hover{transform:scale(1.05)}
+.sc-item.missing img{filter:grayscale(80%) opacity(.35)}
+.sc-item img{width:100%;height:auto;display:block;border-radius:7px}
+.sc-owned-check{position:absolute;top:3px;right:3px;background:var(--accent);color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.sc-num{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 3px;text-align:center}
+.sc-add-overlay{position:absolute;inset:0;background:rgba(var(--accent-rgb),.85);color:#fff;display:none;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border-radius:7px}
+.sc-item:hover .sc-add-overlay{display:flex}
+
+/* ── POKÉDEX ── */
+.dex-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.dex-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px}
+.dex-stat-label{font-weight:700;font-size:.82rem;margin-bottom:2px}
+.dex-stat-val{font-size:.78rem;color:var(--text2)}
+.dex-gen-hdr{font-size:.85rem;font-weight:700;color:var(--text2);margin:18px 0 10px;text-transform:uppercase;letter-spacing:.5px}
+.dex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-bottom:4px}
+.dex-mon{border-radius:10px;background:var(--surface);border:2px solid transparent;cursor:pointer;transition:all .15s;text-align:center;padding:8px 4px;position:relative}
+.dex-mon:hover{border-color:var(--accent);transform:scale(1.04)}
+.dex-mon.owned{border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.dex-mon img{width:56px;height:56px;object-fit:contain;image-rendering:pixelated}
+.dex-mon-name{font-size:.6rem;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dex-mon-num{font-size:.55rem;color:var(--text3);margin-bottom:2px}
+.dex-owned-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* ── FOLDERS ── */
+.folder-layout{display:flex;gap:16px}
+.folder-sidebar{width:220px;flex-shrink:0}
+.folder-item{padding:11px 14px;border-radius:10px;cursor:pointer;border:1px solid var(--border);margin-bottom:6px;background:var(--surface);transition:all .15s}
+.folder-item:hover{border-color:var(--accent)}
+.folder-item.active{border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.folder-item-name{font-weight:600;font-size:.85rem;margin-bottom:2px}
+.folder-item-meta{font-size:.68rem;color:var(--text2)}
+.folder-main{flex:1;min-width:0}
+.folder-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.fcard{position:relative;border-radius:8px;overflow:hidden;background:var(--surface);border:1px solid var(--border)}
+.fcard img{width:100%;height:auto;display:block}
+.fcard-info{padding:6px 8px}
+.fcard-name{font-size:.68rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fcard-price{font-size:.65rem;color:var(--accent);font-weight:600}
+.fcard-rm{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.fcard:hover .fcard-rm{display:flex}
+
+/* ── GRADING ── */
+.grading-info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:16px}
+.grade-info-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px}
+.grade-info-box-name{font-weight:700;margin-bottom:4px}
+.grade-info-box-fees{font-size:.75rem;color:var(--text2);line-height:1.8}
+.grade-info-box a{font-size:.7rem;color:var(--accent)}
+
+/* ── BINDER ── */
+.binder-layout{display:flex;gap:16px}
+.binder-sidebar{width:220px;flex-shrink:0}
+.binder-item{padding:11px 14px;border-radius:10px;cursor:pointer;border:1px solid var(--border);margin-bottom:6px;background:var(--surface);transition:all .15s}
+.binder-item:hover{border-color:var(--accent)}
+.binder-item.active{border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.binder-item-name{font-weight:600;font-size:.85rem;margin-bottom:2px}
+.binder-item-meta{font-size:.68rem;color:var(--text2)}
+.binder-main{flex:1;min-width:0}
+.binder-grid-wrap{background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:24px;display:flex;justify-content:center}
+.binder-grid{display:grid;gap:10px}
+.slot{aspect-ratio:63/88;border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;background:var(--surface2)}
+.slot:hover{border-color:var(--accent)}
+.slot.filled{border-style:solid;border-color:var(--border)}
+.slot img{width:100%;height:100%;object-fit:contain;border-radius:5px}
+.slot-remove{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.slot:hover .slot-remove{display:flex}
+.slot-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .15s}
+.slot.filled:hover .slot-label{opacity:1}
+.slot-add-icon{font-size:1.3rem;opacity:.25;pointer-events:none}
+
+/* ── SHARED COMPONENTS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .15s;white-space:nowrap;font-family:inherit}
+.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent2)}
+.btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.2)}.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-sm{padding:5px 10px;font-size:.75rem}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.65rem;font-weight:700}
+.badge-nm{background:rgba(34,197,94,.15);color:#22c55e}
+.badge-lp{background:rgba(59,130,246,.15);color:#3b82f6}
+.badge-mp{background:rgba(234,179,8,.15);color:#eab308}
+.badge-hp{background:rgba(249,115,22,.15);color:#f97316}
+.badge-dmg{background:rgba(239,68,68,.15);color:#ef4444}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:.68rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.3px}
+.form-group input,.form-group select{padding:8px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.875rem;font-family:inherit;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--accent)}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.vpos{color:#22c55e;font-weight:600}.vneg{color:#ef4444;font-weight:600}.vmuted{color:var(--text2)}
+.empty-state{text-align:center;padding:56px 24px;color:var(--text2)}
+.empty-state .icon{font-size:2.5rem;margin-bottom:12px}
+.empty-state h3{color:var(--text);margin-bottom:6px;font-size:1rem}
+.empty-state p{font-size:.82rem}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(var(--accent-rgb),.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-center{display:flex;flex-direction:column;align-items:center;gap:14px;padding:60px;color:var(--text2)}
+.loading-center .spinner{width:32px;height:32px;border-width:3px}
+
+/* ── MODALS ── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--modal-bg);border-radius:16px;width:92%;max-width:500px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid var(--border)}
+.modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:.95rem;font-weight:700}
+.modal-close{background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text2);padding:4px}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.modal-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+
+/* ── PREFERENCES MODAL ── */
+.pref-section{margin-bottom:20px}
+.pref-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:10px}
+.mode-options{display:flex;gap:10px}
+.mode-opt{flex:1;border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:all .15s;background:var(--surface2)}
+.mode-opt.selected{border-color:var(--accent)}
+.mode-opt-preview{height:36px;border-radius:6px;margin-bottom:6px}
+.mode-opt-preview.dark-preview{background:linear-gradient(135deg,#111113,#252528)}
+.mode-opt-preview.light-preview{background:linear-gradient(135deg,#f0f2f5,#ffffff)}
+.mode-opt-label{font-size:.78rem;font-weight:600}
+.accent-options{display:flex;flex-wrap:wrap;gap:8px}
+.accent-opt{width:44px;height:44px;border-radius:10px;cursor:pointer;border:3px solid transparent;transition:all .15s;position:relative}
+.accent-opt.selected::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem}
+.accent-opt:hover{transform:scale(1.1)}
+
+/* ── CARD DETAIL MODAL ── */
+.card-modal-inner{display:flex;gap:20px;align-items:flex-start}
+.card-modal-img{width:200px;flex-shrink:0}
+.card-modal-img img{width:100%;border-radius:10px}
+.card-modal-info{flex:1}
+.card-modal-name{font-size:1.2rem;font-weight:800;margin-bottom:4px}
+.card-modal-meta{font-size:.75rem;color:var(--text2);margin-bottom:12px}
+.card-modal-price{font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:14px}
+
+/* ── PICKER ── */
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
+.picker-item{cursor:pointer;border-radius:8px;padding:4px;border:2px solid transparent;transition:all .15s;text-align:center}
+.picker-item:hover,.picker-item.selected{border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.picker-item img{width:100%;height:auto;border-radius:4px}
+.picker-name{font-size:.58rem;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── MISC ── */
+.gs{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:.78rem;background:var(--input-bg);color:var(--text);font-family:inherit}
+.gi{width:90px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:.875rem;font-family:inherit;background:var(--input-bg);color:var(--text)}
+.roi-pos td{background:rgba(34,197,94,.04)}.roi-neg td{background:rgba(239,68,68,.04)}
+.toast{position:fixed;bottom:20px;right:20px;padding:11px 18px;border-radius:10px;color:#fff;font-size:.875rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:2000;transform:translateY(80px);transition:transform .25s;pointer-events:none}
+.toast.show{transform:translateY(0)}.toast.t-success{background:var(--accent)}.toast.t-error{background:#ef4444}.toast.t-info{background:#64748b}
+@media(max-width:768px){.folder-layout,.binder-layout{flex-direction:column}.folder-sidebar,.binder-sidebar{width:100%}.dex-stats{grid-template-columns:1fr 1fr}.card-modal-inner{flex-direction:column}.page{padding:16px 12px}}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <nav class="nav-pill">
+    <button class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+    <button class="nav-btn" data-page="collection">📦 Collection</button>
+    <button class="nav-btn" data-page="pokedex">🔴 Pokédex</button>
+    <button class="nav-btn" data-page="expansions">📋 Expansions</button>
+    <button class="nav-btn" data-page="folders">📁 Folders</button>
+    <button class="nav-btn" data-page="search">🔍 Search</button>
+    <div class="dropdown-wrap">
+      <button class="nav-btn" id="tools-btn">🔧 Tools ▾</button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item" onclick="goPage('grading')">🏆 Grading ROI</button>
+        <button class="dropdown-item" onclick="goPage('binder')">📒 Binder Planner</button>
+      </div>
+    </div>
+  </nav>
+  <div class="nav-right">
+    <button class="nav-icon-btn" onclick="openPrefs()" title="Preferences">⚙️</button>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-title">Dashboard</div>
+  <div class="dash-stats" id="dash-stats"></div>
+  <div style="margin-bottom:20px">
+    <div class="section-hdr"><div class="section-title">🃏 Recent Cards</div><button class="view-all" onclick="goPage('collection')">View All →</button></div>
+    <div class="recent-cards" id="dash-recent-cards"><div style="color:var(--text2);font-size:.82rem;padding:12px">Add some cards to see them here.</div></div>
+  </div>
+  <div>
+    <div class="section-hdr"><div class="section-title">📋 Recent Expansions</div><button class="view-all" onclick="goPage('expansions')">View All →</button></div>
+    <div id="dash-recent-sets"></div>
+  </div>
+</div>
+
+<!-- ══ COLLECTION ══ -->
+<div class="page" id="page-collection">
+  <div class="page-title">Collection</div>
+  <div class="coll-controls">
+    <input type="text" id="coll-filter" placeholder="🔍 Filter cards…" oninput="renderCollection()" style="flex:1;min-width:160px">
+    <select id="coll-cond" onchange="renderCollection()">
+      <option value="">All conditions</option><option>NM</option><option>LP</option><option>MP</option><option>HP</option><option>DMG</option>
+    </select>
+    <select id="coll-sort" onchange="renderCollection()">
+      <option value="dateDesc">Newest first</option>
+      <option value="valueDesc">Highest value</option>
+      <option value="valueAsc">Lowest value</option>
+      <option value="nameAsc">Name A–Z</option>
+    </select>
+    <button class="view-toggle-btn active" id="coll-view-grid" onclick="setCollView('grid')">🖼 Grid</button>
+    <button class="view-toggle-btn" id="coll-view-table" onclick="setCollView('table')">📋 Table</button>
+    <button class="btn btn-ghost btn-sm" onclick="refreshPrices()">🔄 Refresh Prices</button>
+    <span id="refresh-status" style="font-size:.7rem;color:var(--text2)"></span>
+  </div>
+  <div id="coll-empty" class="empty-state" style="display:none"><div class="icon">📭</div><h3>No cards yet</h3><p>Use Search to find and add cards.</p></div>
+  <div id="coll-grid-wrap" class="card-grid"></div>
+  <div id="coll-table-wrap" style="display:none;overflow-x:auto">
+    <div class="surface" style="overflow:hidden">
+      <table class="coll-table"><thead><tr><th></th><th>Card</th><th>Set</th><th>#</th><th>Variant</th><th>Cond.</th><th>Qty</th><th>Market</th><th>Adj. Value</th><th>Total</th><th>Paid</th><th>G/L</th><th>Notes</th><th></th></tr></thead><tbody id="coll-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ POKÉDEX ══ -->
+<div class="page" id="page-pokedex">
+  <div class="page-title">Pokédex</div>
+  <div class="dex-stats" id="dex-overview"></div>
+  <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
+    <input type="text" id="dex-filter" placeholder="🔍 Filter Pokémon…" oninput="filterDex()" style="flex:1;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit">
+  </div>
+  <div id="dex-loading" class="loading-center"><div class="spinner"></div><div>Loading Pokédex…</div></div>
+  <div id="dex-content"></div>
+</div>
+
+<!-- ══ EXPANSIONS ══ -->
+<div class="page" id="page-expansions">
+  <div class="page-title" id="exp-page-title">Expansions</div>
+  <div id="exp-list-view">
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <input type="text" id="exp-filter" placeholder="🔍 Search expansions…" oninput="filterExpansions()" style="flex:1;min-width:180px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit">
+      <select id="exp-series" onchange="filterExpansions()" style="padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit">
+        <option value="">All series</option>
+      </select>
+    </div>
+    <div id="exp-loading" class="loading-center"><div class="spinner"></div><div>Loading expansions…</div></div>
+    <div id="exp-content" style="display:none"></div>
+  </div>
+  <div id="exp-detail-view" style="display:none">
+    <button class="btn btn-ghost btn-sm" onclick="showExpList()" style="margin-bottom:16px">← Back to Expansions</button>
+    <div class="set-detail-hdr" id="sd-hdr">
+      <img class="set-detail-logo" id="sd-logo" src="" alt="">
+      <div class="set-detail-info">
+        <div class="set-detail-name" id="sd-name"></div>
+        <div class="set-detail-sub" id="sd-sub"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <div class="exp-bar-wrap" style="flex:1"><div class="exp-bar" id="sd-bar" style="width:0%"></div></div>
+          <span id="sd-pct" style="font-size:.8rem;font-weight:700;color:var(--accent)">0%</span>
+          <span id="sd-counts" style="font-size:.75rem;color:var(--text2)"></span>
+        </div>
+      </div>
+      <div class="set-filter-btns">
+        <button class="sfb active" onclick="filterSetCards('all')" id="sdf-all">All</button>
+        <button class="sfb" onclick="filterSetCards('owned')" id="sdf-owned">Owned</button>
+        <button class="sfb" onclick="filterSetCards('missing')" id="sdf-missing">Missing</button>
+      </div>
+    </div>
+    <div id="sd-loading" class="loading-center"><div class="spinner"></div><div>Loading cards…</div></div>
+    <div class="set-cards-grid" id="sd-grid" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ══ FOLDERS ══ -->
+<div class="page" id="page-folders">
+  <div class="page-title">Folders</div>
+  <div class="folder-layout">
+    <div class="folder-sidebar">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <strong style="font-size:.82rem">My Folders</strong>
+        <button class="btn btn-accent btn-sm" onclick="createFolder()">+ New</button>
+      </div>
+      <div id="folder-list"></div>
+    </div>
+    <div class="folder-main">
+      <div id="folder-placeholder" class="empty-state surface" style="padding:48px"><div class="icon">📁</div><h3>Select a folder</h3><p>Or create a new one.</p></div>
+      <div id="folder-editor" style="display:none">
+        <div class="surface" style="margin-bottom:0;overflow:hidden">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+            <div id="folder-editor-title" style="font-weight:700;font-size:.95rem"></div>
+            <div id="folder-total-value" style="margin-left:auto;font-size:.82rem;font-weight:700;color:var(--accent)"></div>
+            <button class="btn btn-ghost btn-sm" onclick="openFolderAddModal()" id="folder-add-btn">+ Add Cards</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteFolder()">🗑</button>
+          </div>
+          <div id="folder-empty-msg" class="empty-state" style="display:none;padding:36px"><div class="icon">📭</div><h3>Empty</h3><p id="folder-empty-hint"></p></div>
+          <div class="folder-cards-grid" id="folder-cards-grid" style="padding:14px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEARCH ══ -->
+<div class="page" id="page-search">
+  <div class="page-title">Search</div>
+  <div class="search-bar-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="srch-input" placeholder="Search for any card…" autocomplete="off">
+  </div>
+  <div id="srch-hint" style="color:var(--text2);font-size:.82rem;margin-bottom:16px">Type a card name to search. Click any card to add it to your collection.</div>
+  <div id="srch-loading" style="display:none" class="loading-center"><div class="spinner"></div><div>Searching…</div></div>
+  <div id="srch-empty" class="empty-state" style="display:none"><div class="icon">🔍</div><h3>No results</h3><p>Try a different name.</p></div>
+  <div class="search-results-grid" id="srch-grid"></div>
+</div>
+
+<!-- ══ GRADING ══ -->
+<div class="page" id="page-grading">
+  <div class="page-title">Grading ROI</div>
+  <div class="surface" style="padding:16px;margin-bottom:14px;font-size:.82rem;color:var(--text2);line-height:1.8">
+    <strong style="color:var(--text)">ROI = Graded Sale Price − Raw Card Value − Grading Fee − (Shipping × 2)</strong><br>
+    Look up graded prices on <a href="https://www.psacard.com/priceguide" target="_blank" style="color:var(--accent)">PSA Price Guide</a>, <a href="https://www.pricecharting.com/category/pokemon-cards" target="_blank" style="color:var(--accent)">PriceCharting</a>, or <a href="https://www.ebay.com/sch/i.html?LH_Sold=1&_nkw=psa+10+pokemon" target="_blank" style="color:var(--accent)">eBay Sold</a>.
+  </div>
+  <div class="grading-info-grid">
+    <div class="grade-info-box"><div class="grade-info-box-name">PSA</div><div class="grade-info-box-fees">Value $25 · Regular $50<br>Express $150 · Super Express $300</div><a href="https://www.psacard.com/services/tradingcardgrading" target="_blank" style="color:var(--accent)">→ Current fees</a></div>
+    <div class="grade-info-box"><div class="grade-info-box-name">CGC</div><div class="grade-info-box-fees">Economy $22 · Standard $40<br>Express $75 · Walk-Through $200</div><a href="https://www.cgccomics.com/cards/services/pricing/" target="_blank" style="color:var(--accent)">→ Current fees</a></div>
+    <div class="grade-info-box"><div class="grade-info-box-name">Beckett (BGS)</div><div class="grade-info-box-fees">Standard $25 · Plus $50<br>Express $100 · Premium $150</div><a href="https://www.beckett.com/grading" target="_blank" style="color:var(--accent)">→ Current fees</a></div>
+    <div class="grade-info-box"><div class="grade-info-box-name">TAG</div><div class="grade-info-box-fees">Standard $25 · Plus $50<br>Express $75</div><a href="https://taggradingcompany.com" target="_blank" style="color:var(--accent)">→ Current fees</a></div>
+  </div>
+  <div class="surface" style="padding:14px;margin-bottom:14px">
+    <div style="font-weight:600;font-size:.82rem;margin-bottom:10px">Apply Defaults</div>
+    <div class="form-row" style="gap:8px">
+      <div class="form-group" style="flex:0 0 auto"><label>Service</label><select id="def-service" onchange="updateDefaultLevels()"><option>PSA</option><option>CGC</option><option>BGS</option><option>TAG</option></select></div>
+      <div class="form-group" style="flex:0 0 auto"><label>Level</label><select id="def-level"></select></div>
+      <div class="form-group" style="flex:0 0 auto"><label>Shipping Each Way ($)</label><input type="number" id="def-shipping" value="12" min="0" step="0.5"></div>
+      <button class="btn btn-ghost btn-sm" onclick="applyGradingDefaults()" style="align-self:flex-end">Apply to All</button>
+    </div>
+  </div>
+  <div id="grade-empty" class="empty-state"><div class="icon">🏆</div><h3>No cards yet</h3><p>Add cards to your collection first.</p></div>
+  <div id="grade-table-wrap" style="display:none;overflow-x:auto">
+    <div class="surface" style="overflow:hidden">
+      <table class="coll-table"><thead><tr><th></th><th>Card</th><th>Cond.</th><th>Raw Value</th><th>Service</th><th>Level</th><th>Fee</th><th>Ship×2</th><th>Grade</th><th>Est. Sale $</th><th>Net ROI</th></tr></thead><tbody id="grade-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BINDER ══ -->
+<div class="page" id="page-binder">
+  <div class="page-title">Binder Planner</div>
+  <div class="binder-layout">
+    <div class="binder-sidebar">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <strong style="font-size:.82rem">My Binders</strong>
+        <button class="btn btn-accent btn-sm" onclick="createBinder()">+ New</button>
+      </div>
+      <div id="binder-list"></div>
+    </div>
+    <div class="binder-main">
+      <div id="binder-placeholder" class="empty-state surface" style="padding:48px"><div class="icon">📒</div><h3>Select a binder</h3><p>Or create one to get started.</p></div>
+      <div id="binder-editor" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+          <div style="font-weight:700;font-size:1rem" id="binder-title"></div>
+          <select id="layout-select" class="gs" onchange="changeLayout()">
+            <option value="2x2">2×2 – 4/page</option>
+            <option value="3x3" selected>3×3 – 9/page</option>
+            <option value="3x4">3×4 – 12/page</option>
+            <option value="4x4">4×4 – 16/page</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="addBinderPage()">+ Page</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBinder()">🗑</button>
+          <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+            <button class="btn btn-ghost btn-sm" onclick="prevPage()">◀</button>
+            <span id="page-indicator" style="font-size:.82rem;font-weight:500;white-space:nowrap">Page 1 of 1</span>
+            <button class="btn btn-ghost btn-sm" onclick="nextPage()">▶</button>
+          </div>
+        </div>
+        <div class="binder-grid-wrap"><div class="binder-grid" id="binder-grid"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PREFERENCES MODAL ══ -->
+<div class="modal-backdrop" id="prefs-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hdr"><div class="modal-title">⚙️ Preferences</div><button class="modal-close" onclick="closePrefs()">✕</button></div>
+    <div class="modal-body">
+      <div class="pref-section">
+        <div class="pref-label">Mode</div>
+        <div class="mode-options">
+          <div class="mode-opt" id="pref-light" onclick="setTheme('light')">
+            <div class="mode-opt-preview light-preview"></div>
+            <div class="mode-opt-label">Light</div>
+          </div>
+          <div class="mode-opt selected" id="pref-dark" onclick="setTheme('dark')">
+            <div class="mode-opt-preview dark-preview"></div>
+            <div class="mode-opt-label">Dark</div>
+          </div>
+        </div>
+      </div>
+      <div class="pref-section">
+        <div class="pref-label">Accent Color</div>
+        <div class="accent-options" id="accent-options"></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-accent" onclick="closePrefs()">Done</button></div>
+  </div>
+</div>
+
+<!-- ══ ADD CARD MODAL ══ -->
+<div class="modal-backdrop" id="add-modal">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Add to Collection</div><button class="modal-close" onclick="closeAddModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="card-modal-inner" style="margin-bottom:16px">
+        <div class="card-modal-img"><img id="am-img" src="" alt=""></div>
+        <div class="card-modal-info">
+          <div class="card-modal-name" id="am-name"></div>
+          <div class="card-modal-meta" id="am-meta"></div>
+          <div class="card-modal-price" id="am-price-disp"></div>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="form-group" style="flex:1"><label>Condition</label>
+          <select id="am-condition"><option value="NM">NM – Near Mint</option><option value="LP">LP – Lightly Played</option><option value="MP">MP – Moderately Played</option><option value="HP">HP – Heavily Played</option><option value="DMG">DMG – Damaged</option></select>
+        </div>
+        <div class="form-group" style="flex:1"><label>Variant</label><select id="am-variant"></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex:.4"><label>Qty</label><input type="number" id="am-qty" value="1" min="1"></div>
+        <div class="form-group" style="flex:.6"><label>Paid ($)</label><input type="number" id="am-paid" step="0.01" placeholder="0.00"></div>
+        <div class="form-group" style="flex:1"><label>Notes</label><input type="text" id="am-notes" placeholder="Optional…"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeAddModal()">Cancel</button>
+      <button class="btn btn-accent" onclick="confirmAdd()">+ Add to Collection</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOLDER ADD MODAL ══ -->
+<div class="modal-backdrop" id="folder-add-modal">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="fam-title">Add Cards</div><button class="modal-close" onclick="closeFolderAddModal()">✕</button></div>
+    <div class="modal-body">
+      <input type="text" id="fam-search" placeholder="🔍 Search…" oninput="onFamSearch()" style="width:100%;padding:8px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;margin-bottom:10px">
+      <div class="picker-grid" id="fam-grid"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeFolderAddModal()">Done</button></div>
+  </div>
+</div>
+
+<!-- ══ BINDER PICKER MODAL ══ -->
+<div class="modal-backdrop" id="binder-picker-modal">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Choose a Card</div><button class="modal-close" onclick="closeBinderPicker()">✕</button></div>
+    <div class="modal-body">
+      <input type="text" id="bpicker-search" placeholder="🔍 Filter…" oninput="renderBinderPicker()" style="width:100%;padding:8px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;margin-bottom:10px">
+      <div class="picker-grid" id="bpicker-grid"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeBinderPicker()">Cancel</button>
+      <button class="btn btn-danger btn-sm" onclick="clearBinderSlot()">Remove</button>
+      <button class="btn btn-accent" onclick="confirmBinderPick()">Assign</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ STORAGE ══
+const KEYS={coll:'ptcg_coll',binders:'ptcg_binders',grading:'ptcg_grading',folders:'ptcg_folders',prefs:'ptcg_prefs'};
+const db={load:k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}},save:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+const getColl=()=>db.load(KEYS.coll)||{cards:[]};
+const saveColl=d=>db.save(KEYS.coll,d);
+const getBinders=()=>db.load(KEYS.binders)||{binders:[]};
+const saveBinders=d=>db.save(KEYS.binders,d);
+const getGrading=()=>db.load(KEYS.grading)||{};
+const saveGrading=d=>db.save(KEYS.grading,d);
+const getFolders=()=>db.load(KEYS.folders)||{folders:[]};
+const saveFolders=d=>db.save(KEYS.folders,d);
+const getPrefs=()=>db.load(KEYS.prefs)||{theme:'dark',accent:'purple'};
+const savePrefs=d=>db.save(KEYS.prefs,d);
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+const today=()=>new Date().toISOString().split('T')[0];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ══ API ══
+const API='https://api.pokemontcg.io/v2';
+const FIELDS='id,name,set,number,rarity,images,tcgplayer';
+async function apiSearch(q,pageSize=20){const r=await fetch(`${API}/cards?q=name:"${encodeURIComponent(q)}"&pageSize=${pageSize}&select=${FIELDS}`);if(!r.ok)throw new Error(r.status);return(await r.json()).data||[]}
+async function apiFetch(id){const r=await fetch(`${API}/cards/${id}?select=${FIELDS}`);if(!r.ok)throw new Error(r.status);return(await r.json()).data}
+async function apiSetCards(setId){const r=await fetch(`${API}/cards?q=set.id:${setId}&orderBy=number&pageSize=250&select=${FIELDS}`);if(!r.ok)throw new Error(r.status);return(await r.json()).data||[]}
+async function apiSets(){const r=await fetch(`${API}/sets?orderBy=-releaseDate&pageSize=250`);if(!r.ok)throw new Error(r.status);return(await r.json()).data||[]}
+
+const VLABELS={'normal':'Normal','holofoil':'Holofoil','reverseHolofoil':'Reverse Holo','1stEditionHolofoil':'1st Ed. Holo','1stEditionNormal':'1st Ed. Normal','unlimitedHolofoil':'Unlimited Holo','unlimited':'Unlimited'};
+const vLabel=k=>VLABELS[k]||k;
+function getVariants(c){return c?.tcgplayer?.prices?Object.keys(c.tcgplayer.prices):[]}
+function getMarketPrice(c,variant){
+  if(!c?.tcgplayer?.prices)return null;
+  const p=c.tcgplayer.prices;
+  if(variant&&p[variant]?.market!=null)return p[variant].market;
+  for(const k of['holofoil','1stEditionHolofoil','normal','reverseHolofoil','1stEditionNormal']){if(p[k]?.market!=null)return p[k].market}
+  for(const k of Object.keys(p)){if(p[k]?.market!=null)return p[k].market}
+  return null;
+}
+const COND={NM:1,LP:.8,MP:.65,HP:.5,DMG:.35};
+const adjPrice=(mp,cond)=>mp!=null?mp*(COND[cond]??1):null;
+const getAdj=c=>adjPrice(c.marketPrice,c.condition);
+
+// ══ THEMES ══
+const ACCENTS={
+  purple:{c:'#7c3aed'},blue:{c:'#3b82f6'},pink:{c:'#ec4899'},
+  red:{c:'#ef4444'},orange:{c:'#f97316'},yellow:{c:'#eab308'},
+  green:{c:'#22c55e'},teal:{c:'#10b981'},mono:{c:'#94a3b8'}
+};
+const ACCENT_NAMES={purple:'Purple',blue:'Blue',pink:'Pink',red:'Red',orange:'Orange',yellow:'Yellow',green:'Green',teal:'Teal',mono:'Mono'};
+
+function applyPrefs(){
+  const p=getPrefs();
+  document.documentElement.dataset.theme=p.theme;
+  document.documentElement.dataset.accent=p.accent;
+  document.getElementById('pref-dark').classList.toggle('selected',p.theme==='dark');
+  document.getElementById('pref-light').classList.toggle('selected',p.theme==='light');
+  document.querySelectorAll('.accent-opt').forEach(el=>{el.classList.toggle('selected',el.dataset.accentKey===p.accent)});
+}
+function setTheme(t){const p=getPrefs();p.theme=t;savePrefs(p);applyPrefs()}
+function setAccent(a){const p=getPrefs();p.accent=a;savePrefs(p);applyPrefs();renderExpContent();renderCollection();renderFolderList();renderFolderEditor();renderBinderList();renderBinderEditor()}
+function openPrefs(){buildAccentOptions();document.getElementById('prefs-modal').classList.add('open')}
+function closePrefs(){document.getElementById('prefs-modal').classList.remove('open')}
+function buildAccentOptions(){
+  const p=getPrefs();
+  document.getElementById('accent-options').innerHTML=Object.entries(ACCENTS).map(([k,v])=>`<div class="accent-opt ${k===p.accent?'selected':''}" data-accent-key="${k}" style="background:${v.c}" onclick="setAccent('${k}')" title="${ACCENT_NAMES[k]}"></div>`).join('');
+}
+
+// ══ NAVIGATION ══
+let currentPage='dashboard';
+function goPage(name){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+name));
+  currentPage=name;
+  if(name==='dashboard')renderDashboard();
+  if(name==='collection')renderCollection();
+  if(name==='expansions')loadExpansions();
+  if(name==='pokedex')loadPokedex();
+  if(name==='folders'){renderFolderList();renderFolderEditor()}
+  if(name==='grading')renderGrading();
+  if(name==='binder'){renderBinderList();renderBinderEditor()}
+}
+document.querySelectorAll('.nav-btn[data-page]').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.page)));
+
+// ══ DASHBOARD ══
+function renderDashboard(){
+  const coll=getColl();let cnt=0,val=0,paid=0,sets=new Set();
+  coll.cards.forEach(c=>{cnt+=c.quantity;const v=getAdj(c);if(v)val+=v*c.quantity;paid+=(c.purchasePrice||0)*c.quantity;if(c.setId)sets.add(c.setId)});
+  const gl=val-paid;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="dash-stat"><div class="ds-label">Cards Owned</div><div class="ds-value">${cnt}</div><div class="ds-sub">${coll.cards.length} unique</div></div>
+    <div class="dash-stat"><div class="ds-label">Market Value</div><div class="ds-value">$${val.toFixed(2)}</div></div>
+    <div class="dash-stat"><div class="ds-label">Total Paid</div><div class="ds-value">$${paid.toFixed(2)}</div></div>
+    <div class="dash-stat"><div class="ds-label">Gain / Loss</div><div class="ds-value ${gl>=0?'vpos':'vneg'}">${gl>=0?'+':''}$${gl.toFixed(2)}</div></div>
+    <div class="dash-stat"><div class="ds-label">Sets</div><div class="ds-value">${sets.size}</div></div>`;
+  // recent cards
+  const recent=[...coll.cards].sort((a,b)=>b.dateAdded.localeCompare(a.dateAdded)).slice(0,10);
+  document.getElementById('dash-recent-cards').innerHTML=recent.length?recent.map(c=>`<div class="recent-card" onclick="goPage('collection')"><img src="${c.imageSmall||''}" alt="${esc(c.name)}" onerror="this.src=''"><div class="recent-card-name">${esc(c.name)}</div></div>`).join(''):'<div style="color:var(--text2);font-size:.82rem;padding:12px">Add some cards to see them here.</div>';
+  // recent sets
+  if(allSets&&allSets.length){
+    const ownedBySet={};coll.cards.forEach(c=>{if(!ownedBySet[c.setId])ownedBySet[c.setId]=new Set();ownedBySet[c.setId].add(c.cardId)});
+    const setsWithOwned=allSets.filter(s=>ownedBySet[s.id]).slice(0,4);
+    document.getElementById('dash-recent-sets').innerHTML=setsWithOwned.map(s=>expansionCardHTML(s,ownedBySet)).join('');
+  }else{document.getElementById('dash-recent-sets').innerHTML='<div style="color:var(--text2);font-size:.82rem">Visit Expansions to load set data.</div>'}
+}
+
+// ══ COLLECTION ══
+let collView='grid';
+function setCollView(v){collView=v;document.getElementById('coll-view-grid').classList.toggle('active',v==='grid');document.getElementById('coll-view-table').classList.toggle('active',v==='table');renderCollection()}
+function renderCollection(){
+  const coll=getColl();
+  const q=document.getElementById('coll-filter').value.toLowerCase();
+  const fc=document.getElementById('coll-cond').value;
+  const sort=document.getElementById('coll-sort').value;
+  const empty=document.getElementById('coll-empty');
+  const gw=document.getElementById('coll-grid-wrap');
+  const tw=document.getElementById('coll-table-wrap');
+  if(!coll.cards.length){empty.style.display='';gw.innerHTML='';tw.style.display='none';return}
+  empty.style.display='none';
+  let cards=[...coll.cards];
+  if(q)cards=cards.filter(c=>c.name.toLowerCase().includes(q)||c.setName.toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q));
+  if(fc)cards=cards.filter(c=>c.condition===fc);
+  if(sort==='nameAsc')cards.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(sort==='valueDesc')cards.sort((a,b)=>(getAdj(b)||0)-(getAdj(a)||0));
+  else if(sort==='valueAsc')cards.sort((a,b)=>(getAdj(a)||0)-(getAdj(b)||0));
+  else cards.sort((a,b)=>b.dateAdded.localeCompare(a.dateAdded));
+  if(collView==='grid'){
+    tw.style.display='none';gw.style.display='';
+    gw.innerHTML=cards.map(c=>{const adj=getAdj(c);return`<div class="cg-card"><img src="${c.imageSmall||''}" alt="${esc(c.name)}" onerror="this.src=''"><div class="qty-badge">${c.quantity}</div><div class="cg-card-info"><div class="cg-card-name">${esc(c.name)}</div><div class="cg-card-sub">${esc(c.setName)} · <span class="badge badge-${c.condition.toLowerCase()}">${c.condition}</span></div><div class="cg-card-price">${adj?'$'+adj.toFixed(2):'—'}</div></div></div>`}).join('');
+  }else{
+    gw.innerHTML='';gw.style.display='none';tw.style.display='';
+    document.getElementById('coll-tbody').innerHTML=cards.map(c=>{
+      const adj=getAdj(c);const total=adj?adj*c.quantity:null;const pd=(c.purchasePrice||0)*c.quantity;const gl=total!==null?total-pd:null;
+      return`<tr><td><img src="${c.imageSmall||''}" onerror="this.style.display='none'"></td><td><strong>${esc(c.name)}</strong></td><td style="font-size:.75rem">${esc(c.setName)}</td><td style="font-size:.75rem">${esc(c.number)}</td><td style="font-size:.72rem">${c.variant?vLabel(c.variant):'—'}</td><td><span class="badge badge-${c.condition.toLowerCase()}">${c.condition}</span></td><td>${c.quantity}</td><td class="vmuted">${c.marketPrice?'$'+c.marketPrice.toFixed(2):'—'}</td><td>${adj?'$'+adj.toFixed(2):'<span class="vmuted">—</span>'}</td><td>${total?'<strong>$'+total.toFixed(2)+'</strong>':'<span class="vmuted">—</span>'}</td><td>$${pd.toFixed(2)}</td><td class="${gl===null?'vmuted':gl>=0?'vpos':'vneg'}">${gl!==null?(gl>=0?'+':'')+'$'+gl.toFixed(2):'—'}</td><td style="font-size:.72rem;color:var(--text2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.notes||'—')}</td><td><button class="btn btn-danger" style="padding:3px 7px;font-size:.7rem" onclick="removeCard('${c.id}')">🗑</button></td></tr>`;
+    }).join('');
+  }
+}
+function removeCard(id){if(!confirm('Remove this card?'))return;const c=getColl();c.cards=c.cards.filter(x=>x.id!==id);saveColl(c);renderCollection();toast('Removed.','info')}
+async function refreshPrices(){
+  const coll=getColl();if(!coll.cards.length)return;
+  const st=document.getElementById('refresh-status');st.innerHTML='<span class="spinner"></span>';
+  let n=0;
+  for(const c of coll.cards){try{const f=await apiFetch(c.cardId);const p=getMarketPrice(f,c.variant);if(p!=null){c.marketPrice=p;c.lastUpdated=today();n++}}catch(e){}await sleep(120)}
+  saveColl(coll);renderCollection();renderDashboard();
+  st.textContent=`Updated ${n} · ${new Date().toLocaleTimeString()}`;toast('Prices refreshed!','success');
+}
+
+// ══ SEARCH ══
+let srchTimer=null;
+document.getElementById('srch-input').addEventListener('input',function(){
+  clearTimeout(srchTimer);const q=this.value.trim();
+  if(q.length<2){document.getElementById('srch-grid').innerHTML='';document.getElementById('srch-hint').style.display='';return}
+  document.getElementById('srch-hint').style.display='none';
+  srchTimer=setTimeout(()=>doSearch(q),400);
+});
+async function doSearch(q){
+  const loading=document.getElementById('srch-loading');const grid=document.getElementById('srch-grid');const empty=document.getElementById('srch-empty');
+  loading.style.display='';grid.innerHTML='';empty.style.display='none';
+  try{
+    const cards=await apiSearch(q);loading.style.display='none';
+    if(!cards.length){empty.style.display='';return}
+    const ownedIds=new Set(getColl().cards.map(c=>c.cardId));
+    grid.innerHTML=cards.map(c=>{const p=getMarketPrice(c);const owned=ownedIds.has(c.id);return`<div class="src-card" onclick="openAddModal(${JSON.stringify(c).replace(/"/g,'&quot;')})"><img src="${c.images?.small||''}" alt="${esc(c.name)}" onerror="this.src=''"><div class="src-card-footer"><div class="src-card-name">${esc(c.name)}</div><div class="src-card-meta">${esc(c.set?.name||'')} · #${c.number||'?'}</div><div class="src-card-price">${p?'$'+p.toFixed(2):'No price'}</div></div>${owned?'<div class="owned-badge">✓</div>':''}</div>`}).join('');
+  }catch(e){loading.style.display='none';toast('Search failed. Check connection.','error')}
+}
+
+// ══ ADD CARD MODAL ══
+let addModalCard=null;
+function openAddModal(card){
+  addModalCard=card;
+  document.getElementById('am-img').src=card.images?.small||'';
+  document.getElementById('am-name').textContent=card.name;
+  document.getElementById('am-meta').textContent=`${card.set?.name||''} · #${card.number||'?'} · ${card.rarity||''}`;
+  const variants=getVariants(card);
+  const vsel=document.getElementById('am-variant');
+  vsel.innerHTML=variants.length?variants.map(v=>`<option value="${v}">${vLabel(v)}</option>`).join(''):'<option value="">None</option>';
+  const p=getMarketPrice(card,variants[0]);
+  document.getElementById('am-price-disp').textContent=p?`Market (NM): $${p.toFixed(2)}`:'No TCGPlayer price';
+  vsel.onchange=()=>{const p2=getMarketPrice(card,vsel.value);document.getElementById('am-price-disp').textContent=p2?`Market (NM, ${vLabel(vsel.value)}): $${p2.toFixed(2)}`:'No price'};
+  document.getElementById('am-qty').value=1;document.getElementById('am-paid').value='';document.getElementById('am-notes').value='';
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal(){document.getElementById('add-modal').classList.remove('open');addModalCard=null}
+function confirmAdd(){
+  if(!addModalCard){closeAddModal();return}
+  const c=addModalCard,condition=document.getElementById('am-condition').value,variant=document.getElementById('am-variant').value;
+  const qty=Math.max(1,parseInt(document.getElementById('am-qty').value)||1);
+  const purchasePrice=parseFloat(document.getElementById('am-paid').value)||0;
+  const notes=document.getElementById('am-notes').value.trim();
+  const price=getMarketPrice(c,variant);
+  const coll=getColl();
+  coll.cards.push({id:uid(),cardId:c.id,name:c.name,setName:c.set?.name||'',setId:c.set?.id||'',number:c.number||'',rarity:c.rarity||'',imageSmall:c.images?.small||'',imageLarge:c.images?.large||'',condition,variant,quantity:qty,purchasePrice,notes,marketPrice:price,lastUpdated:today(),dateAdded:today()});
+  saveColl(coll);closeAddModal();renderCollection();
+  toast(`Added ${c.name}!`,'success');
+  if(currentPage==='expansions')renderSetDetail();
+  if(currentPage==='pokedex')refreshDexOwned();
+}
+
+// ══ EXPANSIONS ══
+let allSets=null,currentSetId=null,setCards=[],setCardsFilter='all';
+async function loadExpansions(){
+  if(allSets){renderExpContent();return}
+  document.getElementById('exp-loading').style.display='';
+  document.getElementById('exp-content').style.display='none';
+  try{
+    allSets=await apiSets();
+    const series=[...new Set(allSets.map(s=>s.series).filter(Boolean))];
+    const sel=document.getElementById('exp-series');
+    sel.innerHTML='<option value="">All series</option>'+series.map(s=>`<option>${esc(s)}</option>`).join('');
+    document.getElementById('exp-loading').style.display='none';
+    document.getElementById('exp-content').style.display='';
+    renderExpContent();
+  }catch(e){document.getElementById('exp-loading').innerHTML='<div style="color:#ef4444;padding:20px">Failed to load. Check your connection.</div>'}
+}
+function expansionCardHTML(s,ownedBySet){
+  const owned=ownedBySet&&ownedBySet[s.id]?ownedBySet[s.id].size:0;
+  const total=s.printedTotal||s.total||0;
+  const pct=total?Math.round(owned/total*100):0;
+  return`<div class="exp-card" onclick="openExpSet('${esc(s.id)}')">
+    <div class="exp-logo"><img src="${s.images?.logo||s.images?.symbol||''}" alt="${esc(s.name)}" onerror="this.src=''"></div>
+    <div class="exp-info">
+      <div class="exp-name">${esc(s.name)}</div>
+      <div class="exp-meta">${s.releaseDate||''} · ${total} cards</div>
+      <div class="exp-bar-wrap"><div class="exp-bar" style="width:${pct}%"></div></div>
+      <div class="exp-counts">${owned>0?`<span class="done">${owned}</span> / ${total} owned`:`0 / ${total} owned`}</div>
+    </div>
+  </div>`;
+}
+function renderExpContent(){
+  if(!allSets)return;
+  const q=document.getElementById('exp-filter').value.toLowerCase();
+  const sf=document.getElementById('exp-series').value;
+  let sets=allSets;
+  if(q)sets=sets.filter(s=>s.name.toLowerCase().includes(q)||(s.series||'').toLowerCase().includes(q));
+  if(sf)sets=sets.filter(s=>s.series===sf);
+  const coll=getColl();const ownedBySet={};
+  coll.cards.forEach(c=>{if(!ownedBySet[c.setId])ownedBySet[c.setId]=new Set();ownedBySet[c.setId].add(c.cardId)});
+  const seriesOrder=[];const grouped={};
+  sets.forEach(s=>{const k=s.series||'Other';if(!grouped[k]){grouped[k]=[];seriesOrder.push(k)}grouped[k].push(s)});
+  document.getElementById('exp-content').innerHTML=seriesOrder.map(series=>`<div class="exp-series-hdr">${esc(series)}</div>${grouped[series].map(s=>expansionCardHTML(s,ownedBySet)).join('')}`).join('');
+}
+function filterExpansions(){renderExpContent()}
+async function openExpSet(setId){
+  const set=allSets.find(s=>s.id===setId);if(!set)return;
+  currentSetId=setId;setCardsFilter='all';
+  document.getElementById('exp-list-view').style.display='none';
+  document.getElementById('exp-detail-view').style.display='';
+  document.getElementById('exp-page-title').textContent=set.name;
+  document.getElementById('sd-logo').src=set.images?.logo||set.images?.symbol||'';
+  document.getElementById('sd-name').textContent=set.name;
+  document.getElementById('sd-sub').textContent=`${set.series||''} · ${set.releaseDate||''}`;
+  document.getElementById('sd-loading').style.display='';
+  document.getElementById('sd-grid').style.display='none';
+  updateSetFilters();
+  try{setCards=await apiSetCards(setId);renderSetDetail()}
+  catch(e){document.getElementById('sd-loading').innerHTML='<div style="color:#ef4444">Failed to load cards.</div>'}
+}
+function renderSetDetail(){
+  const ownedIds=new Set(getColl().cards.map(c=>c.cardId));
+  const total=setCards.length,owned=setCards.filter(c=>ownedIds.has(c.id)).length;
+  const pct=total?Math.round(owned/total*100):0;
+  document.getElementById('sd-bar').style.width=pct+'%';
+  document.getElementById('sd-pct').textContent=pct+'%';
+  document.getElementById('sd-counts').textContent=`${owned} / ${total}`;
+  let cards=setCards;
+  if(setCardsFilter==='owned')cards=cards.filter(c=>ownedIds.has(c.id));
+  if(setCardsFilter==='missing')cards=cards.filter(c=>!ownedIds.has(c.id));
+  document.getElementById('sd-loading').style.display='none';
+  const grid=document.getElementById('sd-grid');grid.style.display='';
+  grid.innerHTML=cards.map(c=>{
+    const isOwned=ownedIds.has(c.id);const price=getMarketPrice(c);
+    return`<div class="sc-item ${isOwned?'':'missing'}" onclick="openAddModal(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+      <img src="${c.images?.small||''}" alt="${esc(c.name)}" onerror="this.src=''">
+      ${isOwned?'<div class="sc-owned-check">✓</div>':''}
+      <div class="sc-add-overlay">+ Add</div>
+      <div class="sc-num">#${esc(c.number)}${price?' · $'+price.toFixed(2):''}</div>
+    </div>`;
+  }).join('');
+}
+function filterSetCards(f){setCardsFilter=f;updateSetFilters();if(setCards.length)renderSetDetail()}
+function updateSetFilters(){['all','owned','missing'].forEach(f=>{const el=document.getElementById('sdf-'+f);if(el)el.classList.toggle('active',f===setCardsFilter)})}
+function showExpList(){
+  document.getElementById('exp-list-view').style.display='';
+  document.getElementById('exp-detail-view').style.display='none';
+  document.getElementById('exp-page-title').textContent='Expansions';
+  currentSetId=null;
+}
+
+// ══ POKÉDEX ══
+const GENS=[{n:'Generation I',start:1,end:151},{n:'Generation II',start:152,end:251},{n:'Generation III',start:252,end:386},{n:'Generation IV',start:387,end:493},{n:'Generation V',start:494,end:649},{n:'Generation VI',start:650,end:721},{n:'Generation VII',start:722,end:809},{n:'Generation VIII',start:810,end:905},{n:'Generation IX',start:906,end:1025}];
+let dexData=null;
+async function loadPokedex(){
+  if(dexData){refreshDexOwned();return}
+  document.getElementById('dex-loading').style.display='';
+  document.getElementById('dex-content').innerHTML='';
+  try{
+    const r=await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0');
+    const json=await r.json();
+    dexData=json.results.map((p,i)=>({id:i+1,name:p.name.charAt(0).toUpperCase()+p.name.slice(1).replace(/-/g,' ')}));
+    document.getElementById('dex-loading').style.display='none';
+    refreshDexOwned();
+  }catch(e){document.getElementById('dex-loading').innerHTML='<div style="color:#ef4444;text-align:center;padding:20px">Failed to load Pokédex.</div>'}
+}
+function refreshDexOwned(){
+  const coll=getColl();
+  const ownedNames=new Set(coll.cards.map(c=>c.name.toLowerCase().split(' ')[0]));
+  const total=dexData.length;
+  const owned=dexData.filter(p=>ownedNames.has(p.name.toLowerCase())||ownedNames.has(p.name.toLowerCase().split(' ')[0])).length;
+  document.getElementById('dex-overview').innerHTML=`
+    <div class="dex-stat"><div class="dex-stat-label">Pokémon Collected</div><div class="dex-stat-val">${owned} of ${total}</div></div>
+    <div class="dex-stat"><div class="dex-stat-label">Total Cards</div><div class="dex-stat-val">${coll.cards.reduce((s,c)=>s+c.quantity,0)}</div></div>
+    <div class="dex-stat"><div class="dex-stat-label">Collection Value</div><div class="dex-stat-val">$${coll.cards.reduce((s,c)=>{const v=getAdj(c);return s+(v?v*c.quantity:0)},0).toFixed(2)}</div></div>`;
+  filterDex();
+}
+function filterDex(){
+  if(!dexData)return;
+  const q=document.getElementById('dex-filter').value.toLowerCase();
+  const coll=getColl();
+  const ownedNames=new Set(coll.cards.map(c=>c.name.toLowerCase()));
+  const spriteUrl=id=>`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+  function isOwned(p){return ownedNames.has(p.name.toLowerCase())||[...ownedNames].some(n=>n.includes(p.name.toLowerCase())||p.name.toLowerCase().includes(n.split(' ')[0]))}
+  const content=GENS.map(gen=>{
+    let mons=dexData.filter(p=>p.id>=gen.start&&p.id<=gen.end);
+    if(q)mons=mons.filter(p=>p.name.toLowerCase().includes(q));
+    if(!mons.length)return'';
+    return`<div class="dex-gen-hdr">${gen.n}</div><div class="dex-grid">${mons.map(p=>{const owned=isOwned(p);return`<div class="dex-mon ${owned?'owned':''}" onclick="searchDexPokemon('${p.name}')" title="${p.name}">${owned?'<div class="dex-owned-dot"></div>':''}<div class="dex-mon-num">#${p.id}</div><img src="${spriteUrl(p.id)}" alt="${p.name}" loading="lazy" onerror="this.src=''"><div class="dex-mon-name">${esc(p.name)}</div></div>`}).join('')}</div>`;
+  }).join('');
+  document.getElementById('dex-content').innerHTML=content||'<div style="color:var(--text2);padding:20px">No Pokémon match.</div>';
+}
+function searchDexPokemon(name){
+  goPage('search');
+  document.getElementById('srch-input').value=name;
+  doSearch(name);
+}
+
+// ══ FOLDERS ══
+let currentFolderId=null,folderAddMode='collection',famSelectedIds=new Set();
+function renderFolderList(){
+  const{folders}=getFolders();const el=document.getElementById('folder-list');
+  if(!folders.length){el.innerHTML='<div class="empty-state" style="padding:20px 8px;font-size:.78rem"><div class="icon" style="font-size:1.5rem">📁</div><p>No folders yet.</p></div>';return}
+  const coll=getColl();
+  el.innerHTML=folders.map(f=>{const val=calcFolderValue(f,coll);const cnt=f.type==='wishlist'?f.wishCards?.length||0:f.cardIds?.length||0;const icons={wishlist:'⭐',trade:'🔄',favorites:'❤️',custom:'📁'};return`<div class="folder-item ${f.id===currentFolderId?'active':''}" onclick="selectFolder('${f.id}')"><div class="folder-item-name">${icons[f.type]||'📁'} ${esc(f.name)}</div><div class="folder-item-meta">${cnt} card${cnt!==1?'s':''} · ${val>0?'$'+val.toFixed(2):'$0.00'}</div></div>`}).join('');
+}
+function calcFolderValue(f,coll){
+  if(f.type==='wishlist')return(f.wishCards||[]).reduce((s,c)=>s+(getMarketPrice(c)||0),0);
+  return(f.cardIds||[]).reduce((s,id)=>{const c=coll.cards.find(x=>x.id===id);return s+(c?getAdj(c)||0:0)},0);
+}
+function createFolder(){
+  const name=prompt('Folder name:');if(!name?.trim())return;
+  const choice=prompt('Type:\n0 = Wishlist\n1 = Trade Bait\n2 = Favorites\n3 = Custom','0')||'0';
+  const typeMap=['wishlist','trade','favorites','custom'];
+  const type=typeMap[parseInt(choice)]||'custom';
+  const fd=getFolders();fd.folders.push({id:uid(),name:name.trim(),type,cardIds:[],wishCards:[]});
+  saveFolders(fd);currentFolderId=fd.folders[fd.folders.length-1].id;
+  renderFolderList();renderFolderEditor();toast(`"${name.trim()}" created!`,'success');
+}
+function selectFolder(id){currentFolderId=id;renderFolderList();renderFolderEditor()}
+function renderFolderEditor(){
+  const{folders}=getFolders();const f=folders.find(x=>x.id===currentFolderId);
+  document.getElementById('folder-placeholder').style.display=f?'none':'';
+  document.getElementById('folder-editor').style.display=f?'':'none';
+  if(!f)return;
+  const icons={wishlist:'⭐',trade:'🔄',favorites:'❤️',custom:'📁'};
+  document.getElementById('folder-editor-title').textContent=(icons[f.type]||'📁')+' '+f.name;
+  const coll=getColl();const val=calcFolderValue(f,coll);
+  document.getElementById('folder-total-value').textContent=val>0?'$'+val.toFixed(2):'';
+  document.getElementById('folder-add-btn').textContent=f.type==='wishlist'?'+ Add Wishlist Cards':'+ Add from Collection';
+  const cards=f.type==='wishlist'?f.wishCards||[]:(f.cardIds||[]).map(id=>coll.cards.find(c=>c.id===id)).filter(Boolean);
+  const grid=document.getElementById('folder-cards-grid');const emsg=document.getElementById('folder-empty-msg');
+  if(!cards.length){emsg.style.display='';grid.innerHTML='';document.getElementById('folder-empty-hint').textContent=f.type==='wishlist'?'Click "+ Add Wishlist Cards" to search.':'Click "+ Add from Collection".';return}
+  emsg.style.display='none';
+  grid.innerHTML=cards.map((c,i)=>{const price=f.type==='wishlist'?getMarketPrice(c):getAdj(c);const rmId=f.type==='wishlist'?i:c.id;return`<div class="fcard"><img src="${c.imageSmall||c.images?.small||''}" alt="${esc(c.name)}" onerror="this.src=''"><button class="fcard-rm" onclick="removeFolderCard('${rmId}')">✕</button><div class="fcard-info"><div class="fcard-name">${esc(c.name)}</div><div class="fcard-price">${price?'$'+price.toFixed(2):'—'}</div></div></div>`}).join('');
+}
+function removeFolderCard(idOrIndex){
+  const fd=getFolders();const f=fd.folders.find(x=>x.id===currentFolderId);if(!f)return;
+  if(f.type==='wishlist')f.wishCards.splice(parseInt(idOrIndex),1);
+  else f.cardIds=f.cardIds.filter(id=>id!==idOrIndex);
+  saveFolders(fd);renderFolderList();renderFolderEditor();
+}
+function deleteFolder(){if(!confirm('Delete this folder?'))return;const fd=getFolders();fd.folders=fd.folders.filter(x=>x.id!==currentFolderId);saveFolders(fd);currentFolderId=null;renderFolderList();renderFolderEditor();toast('Folder deleted.','info')}
+function openFolderAddModal(){
+  const{folders}=getFolders();const f=folders.find(x=>x.id===currentFolderId);if(!f)return;
+  folderAddMode=f.type;famSelectedIds=new Set();
+  document.getElementById('fam-title').textContent=f.type==='wishlist'?'Search Cards to Wishlist':'Add from Collection';
+  document.getElementById('fam-search').value='';
+  if(f.type==='wishlist')document.getElementById('fam-grid').innerHTML='<div style="color:var(--text2);font-size:.82rem;padding:12px">Type a card name to search…</div>';
+  else renderFolderPicker();
+  document.getElementById('folder-add-modal').classList.add('open');
+}
+function closeFolderAddModal(){
+  document.getElementById('folder-add-modal').classList.remove('open');
+  if(folderAddMode!=='wishlist'&&famSelectedIds.size>0){
+    const fd=getFolders();const f=fd.folders.find(x=>x.id===currentFolderId);
+    if(f){famSelectedIds.forEach(id=>{if(!f.cardIds.includes(id))f.cardIds.push(id)});saveFolders(fd)}
+    renderFolderList();renderFolderEditor();
+  }
+}
+function renderFolderPicker(){
+  const q=document.getElementById('fam-search').value.toLowerCase();
+  const cards=q?getColl().cards.filter(c=>c.name.toLowerCase().includes(q)||c.setName.toLowerCase().includes(q)):getColl().cards;
+  const grid=document.getElementById('fam-grid');
+  if(!cards.length){grid.innerHTML='<div style="color:var(--text2);font-size:.82rem;padding:12px">No cards.</div>';return}
+  grid.innerHTML=cards.map(c=>`<div class="picker-item ${famSelectedIds.has(c.id)?'selected':''}" onclick="toggleFolderPick('${c.id}',this)"><img src="${c.imageSmall||''}" onerror="this.src=''"><div class="picker-name">${esc(c.name)}</div></div>`).join('');
+}
+function toggleFolderPick(id,el){if(famSelectedIds.has(id)){famSelectedIds.delete(id);el.classList.remove('selected')}else{famSelectedIds.add(id);el.classList.add('selected')}}
+let wishTimer=null;
+function onFamSearch(){
+  if(folderAddMode==='wishlist'){
+    clearTimeout(wishTimer);const q=document.getElementById('fam-search').value.trim();
+    if(q.length<2){document.getElementById('fam-grid').innerHTML='<div style="color:var(--text2);font-size:.82rem;padding:12px">Type a card name to search…</div>';return}
+    document.getElementById('fam-grid').innerHTML='<div style="padding:12px"><span class="spinner"></span></div>';
+    wishTimer=setTimeout(async()=>{
+      try{const cards=await apiSearch(q,12);const grid=document.getElementById('fam-grid');
+        grid.innerHTML=cards.map((c,i)=>`<div class="picker-item" data-card='${JSON.stringify(c).replace(/'/g,"\\'")}' onclick="addToWishlist(this)"><img src="${c.images?.small||''}" onerror="this.src=''"><div class="picker-name">${esc(c.name)}</div><div class="picker-name" style="font-size:.5rem">${esc(c.set?.name||'')}</div></div>`).join('');
+      }catch(e){document.getElementById('fam-grid').innerHTML='<div style="color:#ef4444;font-size:.82rem;padding:12px">Search failed.</div>'}
+    },420);
+  }else renderFolderPicker();
+}
+function addToWishlist(el){
+  try{const c=JSON.parse(el.dataset.card);const fd=getFolders();const f=fd.folders.find(x=>x.id===currentFolderId);if(!f)return;if(!f.wishCards)f.wishCards=[];f.wishCards.push({cardId:c.id,name:c.name,setName:c.set?.name||'',imageSmall:c.images?.small||'',tcgplayer:c.tcgplayer});saveFolders(fd);el.classList.add('selected');el.style.opacity='.5';renderFolderList();}catch(e){}
+}
+
+// ══ GRADING ══
+const FEES={PSA:{Value:25,Regular:50,Express:150,'Super Express':300},CGC:{Economy:22,Standard:40,Express:75,'Walk-Through':200},BGS:{Standard:25,Plus:50,Express:100,Premium:150},TAG:{Standard:25,Plus:50,Express:75}};
+function updateDefaultLevels(){const svc=document.getElementById('def-service').value;document.getElementById('def-level').innerHTML=Object.entries(FEES[svc]||FEES.PSA).map(([k,v])=>`<option value="${k}">${k} ($${v})</option>`).join('')}
+function applyGradingDefaults(){
+  const svc=document.getElementById('def-service').value,level=document.getElementById('def-level').value,ship=parseFloat(document.getElementById('def-shipping').value)||12;
+  const coll=getColl();const gd=getGrading();
+  coll.cards.forEach(c=>{if(!gd[c.id])gd[c.id]={};Object.assign(gd[c.id],{service:svc,level,shipping:ship})});
+  saveGrading(gd);renderGrading();toast('Defaults applied.','success');
+}
+function renderGrading(){
+  const coll=getColl();const gd=getGrading();
+  const empty=document.getElementById('grade-empty'),wrap=document.getElementById('grade-table-wrap');
+  if(!coll.cards.length){empty.style.display='';wrap.style.display='none';return}
+  empty.style.display='none';wrap.style.display='';
+  document.getElementById('grade-tbody').innerHTML=coll.cards.map(c=>{
+    const g=gd[c.id]||{};const svc=g.service||'PSA';const level=g.level||'Regular';const ship=g.shipping!==undefined?g.shipping:12;
+    const fees=FEES[svc]||FEES.PSA;const fee=fees[level]||Object.values(fees)[1]||50;
+    const rawVal=getAdj(c);const gradedVal=g.gradedValue||'';const grade=g.grade||'10';
+    const roi=gradedVal!==''&&rawVal!==null?parseFloat(gradedVal)-rawVal-fee-ship*2:null;
+    const lvlOpts=Object.entries(fees).map(([k,v])=>`<option value="${k}" ${k===level?'selected':''}>${k} ($${v})</option>`).join('');
+    return`<tr class="${roi===null?'':roi>=0?'roi-pos':'roi-neg'}" data-id="${c.id}">
+      <td><img src="${c.imageSmall||''}" style="width:26px;height:36px;object-fit:contain;border-radius:3px" onerror="this.style.display='none'"></td>
+      <td><strong>${esc(c.name)}</strong><br><span style="font-size:.65rem;color:var(--text2)">${esc(c.setName)}</span></td>
+      <td><span class="badge badge-${c.condition.toLowerCase()}">${c.condition}</span></td>
+      <td>${rawVal?'$'+rawVal.toFixed(2):'<span class="vmuted">—</span>'}</td>
+      <td><select class="gs" onchange="saveGD('${c.id}','service',this.value);rebuildLevels('${c.id}',this.value)">${['PSA','CGC','BGS','TAG'].map(s=>`<option ${s===svc?'selected':''}>${s}</option>`).join('')}</select></td>
+      <td><select class="gs" id="glvl-${c.id}" onchange="saveGD('${c.id}','level',this.value)">${lvlOpts}</select></td>
+      <td id="gfee-${c.id}">$${fee}</td>
+      <td>$${(ship*2).toFixed(2)}</td>
+      <td><select class="gs" onchange="saveGD('${c.id}','grade',this.value)">${['10','9.5','9','8.5','8','7','6','5'].map(g2=>`<option ${g2===grade?'selected':''}>${g2}</option>`).join('')}</select></td>
+      <td><input class="gi" type="number" placeholder="Est. $" step="0.01" value="${gradedVal}" onchange="saveGD('${c.id}','gradedValue',this.value)"></td>
+      <td id="groi-${c.id}">${roi===null?'<span class="vmuted">← enter sale $</span>':`<strong class="${roi>=0?'vpos':'vneg'}">${roi>=0?'+':'−'}$${Math.abs(roi).toFixed(2)}</strong>`}</td>
+    </tr>`;
+  }).join('');
+}
+function saveGD(id,field,value){const gd=getGrading();if(!gd[id])gd[id]={};gd[id][field]=value;saveGrading(gd);updateROIRow(id)}
+function updateROIRow(id){
+  const coll=getColl();const c=coll.cards.find(x=>x.id===id);if(!c)return;
+  const gd=getGrading();const g=gd[id]||{};const svc=g.service||'PSA';const level=g.level||'Regular';const ship=g.shipping!==undefined?g.shipping:12;
+  const fees=FEES[svc]||FEES.PSA;const fee=fees[level]||Object.values(fees)[1]||50;
+  const rawVal=getAdj(c);const gradedVal=g.gradedValue||'';
+  const roi=gradedVal!==''&&rawVal!==null?parseFloat(gradedVal)-rawVal-fee-ship*2:null;
+  const row=document.querySelector(`tr[data-id="${id}"]`);if(!row)return;
+  row.className=roi===null?'':roi>=0?'roi-pos':'roi-neg';
+  const feeEl=document.getElementById('gfee-'+id);if(feeEl)feeEl.textContent='$'+fee;
+  const roiEl=document.getElementById('groi-'+id);if(roiEl)roiEl.innerHTML=roi===null?'<span class="vmuted">← enter sale $</span>':`<strong class="${roi>=0?'vpos':'vneg'}">${roi>=0?'+':'−'}$${Math.abs(roi).toFixed(2)}</strong>`;
+}
+function rebuildLevels(id,svc){
+  const gd=getGrading();if(!gd[id])gd[id]={};gd[id].service=svc;
+  const fees=FEES[svc]||FEES.PSA;gd[id].level=Object.keys(fees)[1]||Object.keys(fees)[0];saveGrading(gd);
+  const sel=document.getElementById('glvl-'+id);if(sel)sel.innerHTML=Object.entries(fees).map(([k,v])=>`<option value="${k}" ${k===gd[id].level?'selected':''}>${k} ($${v})</option>`).join('');
+  updateROIRow(id);
+}
+
+// ══ BINDER ══
+const LAYOUTS={'2x2':{cols:2,per:4},'3x3':{cols:3,per:9},'3x4':{cols:4,per:12},'4x4':{cols:4,per:16}};
+let B={id:null,page:0,slotIdx:null,pickedId:null};
+function renderBinderList(){
+  const{binders}=getBinders();const el=document.getElementById('binder-list');
+  if(!binders.length){el.innerHTML='<div style="color:var(--text2);font-size:.78rem;padding:12px">No binders yet.</div>';return}
+  el.innerHTML=binders.map(b=>{const filled=b.pages.reduce((s,p)=>s+p.slots.filter(Boolean).length,0),total=b.pages.reduce((s,p)=>s+p.slots.length,0);return`<div class="binder-item ${b.id===B.id?'active':''}" onclick="selectBinder('${b.id}')"><div class="binder-item-name">📒 ${esc(b.name)}</div><div class="binder-item-meta">${b.layout} · ${b.pages.length}p · ${filled}/${total}</div></div>`}).join('');
+}
+function createBinder(){const name=prompt('Binder name:');if(!name?.trim())return;const layout=(prompt('Layout? 2x2, 3x3, 3x4, or 4x4','3x3')||'3x3').trim();const chosen=LAYOUTS[layout]?layout:'3x3';const bd=getBinders();const nb={id:uid(),name:name.trim(),layout:chosen,pages:[{slots:Array(LAYOUTS[chosen].per).fill(null)}]};bd.binders.push(nb);saveBinders(bd);B.id=nb.id;B.page=0;renderBinderList();renderBinderEditor();toast(`Binder "${nb.name}" created!`,'success')}
+function selectBinder(id){B.id=id;B.page=0;renderBinderList();renderBinderEditor()}
+function renderBinderEditor(){
+  const{binders}=getBinders();const b=binders.find(x=>x.id===B.id);
+  document.getElementById('binder-placeholder').style.display=b?'none':'';
+  document.getElementById('binder-editor').style.display=b?'':'none';
+  if(!b)return;
+  if(B.page>=b.pages.length)B.page=b.pages.length-1;
+  const page=b.pages[B.page];const layout=LAYOUTS[b.layout];
+  document.getElementById('binder-title').textContent=b.name;
+  document.getElementById('layout-select').value=b.layout;
+  document.getElementById('page-indicator').textContent=`Page ${B.page+1} of ${b.pages.length}`;
+  const grid=document.getElementById('binder-grid');
+  grid.style.gridTemplateColumns=`repeat(${layout.cols},1fr)`;
+  const coll=getColl();
+  grid.innerHTML=page.slots.map((cardId,i)=>{
+    const c=cardId?coll.cards.find(x=>x.id===cardId):null;
+    if(c)return`<div class="slot filled" onclick="openBinderPicker(${i})"><img src="${c.imageSmall||''}" alt="${esc(c.name)}" onerror="this.src=''"><button class="slot-remove" onclick="event.stopPropagation();removeSlot(${i})">✕</button><div class="slot-label">${esc(c.name)}</div></div>`;
+    return`<div class="slot" onclick="openBinderPicker(${i})"><span class="slot-add-icon">＋</span></div>`;
+  }).join('');
+}
+function changeLayout(){const bd=getBinders();const b=bd.binders.find(x=>x.id===B.id);if(!b)return;const nl=document.getElementById('layout-select').value;const per=LAYOUTS[nl].per;b.layout=nl;b.pages=b.pages.map(p=>{const s=Array(per).fill(null);p.slots.forEach((v,i)=>{if(i<per)s[i]=v});return{slots:s}});saveBinders(bd);renderBinderList();renderBinderEditor()}
+function addBinderPage(){const bd=getBinders();const b=bd.binders.find(x=>x.id===B.id);if(!b)return;b.pages.push({slots:Array(LAYOUTS[b.layout].per).fill(null)});saveBinders(bd);B.page=b.pages.length-1;renderBinderList();renderBinderEditor();toast('Page added.','info')}
+function prevPage(){if(B.page>0){B.page--;renderBinderEditor()}}
+function nextPage(){const{binders}=getBinders();const b=binders.find(x=>x.id===B.id);if(b&&B.page<b.pages.length-1){B.page++;renderBinderEditor()}}
+function deleteBinder(){if(!confirm('Delete this binder?'))return;const bd=getBinders();bd.binders=bd.binders.filter(x=>x.id!==B.id);saveBinders(bd);B.id=null;B.page=0;renderBinderList();renderBinderEditor();toast('Binder deleted.','info')}
+function removeSlot(i){setSlot(i,null)}
+function setSlot(i,cardId){const bd=getBinders();const b=bd.binders.find(x=>x.id===B.id);if(!b)return;b.pages[B.page].slots[i]=cardId;saveBinders(bd);renderBinderList();renderBinderEditor()}
+function openBinderPicker(idx){B.slotIdx=idx;B.pickedId=null;document.getElementById('bpicker-search').value='';renderBinderPicker();document.getElementById('binder-picker-modal').classList.add('open')}
+function closeBinderPicker(){document.getElementById('binder-picker-modal').classList.remove('open');B.slotIdx=null;B.pickedId=null}
+function renderBinderPicker(){
+  const q=document.getElementById('bpicker-search').value.toLowerCase();
+  let cards=getColl().cards;if(q)cards=cards.filter(c=>c.name.toLowerCase().includes(q)||c.setName.toLowerCase().includes(q));
+  const grid=document.getElementById('bpicker-grid');
+  if(!cards.length){grid.innerHTML='<div style="color:var(--text2);padding:12px">No cards.</div>';return}
+  grid.innerHTML=cards.map(c=>`<div class="picker-item ${c.id===B.pickedId?'selected':''}" onclick="B.pickedId='${c.id}';renderBinderPicker()"><img src="${c.imageSmall||''}" onerror="this.src=''"><div class="picker-name">${esc(c.name)}</div></div>`).join('');
+}
+function confirmBinderPick(){if(!B.pickedId){toast('Select a card.','error');return}setSlot(B.slotIdx,B.pickedId);closeBinderPicker()}
+function clearBinderSlot(){if(B.slotIdx===null)return;setSlot(B.slotIdx,null);closeBinderPicker()}
+
+// ══ UTILS ══
+function toast(msg,type='info'){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast t-${type} show`;clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2800)}
+
+// ══ INIT ══
+applyPrefs();
+updateDefaultLevels();
+renderDashboard();
+renderCollection();
+renderBinderList();
+renderFolderList();
+</script>
+</body>
+</html>
