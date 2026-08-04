@@ -16,6 +16,7 @@
       --accent-hover: #9c6fff;
       --danger: #ff4d6d;
       --warning: #ffb74d;
+      --success: #4caf82;
       --radius: 12px;
       --radius-sm: 8px;
     }
@@ -60,7 +61,7 @@
     .btn-back { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 6px 14px; font-size: 0.88rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .btn-back:hover { border-color: var(--accent); color: var(--text); }
 
-    /* ===== SEARCH BAR (API query) ===== */
+    /* ===== SEARCH BAR ===== */
     .search-bar-wrap { display: flex; gap: 10px; margin-bottom: 8px; }
     .search-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; color: var(--text); font-size: 1rem; outline: none; transition: border-color 0.15s; }
     .search-input:focus { border-color: var(--accent); }
@@ -102,10 +103,15 @@
 
     /* Collection card parts */
     .coll-strip { background: var(--accent); color: white; font-size: 0.78rem; font-weight: 700; text-align: center; padding: 5px 8px; }
-    .cond-badges { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 12px 6px; }
-    .condition-badge { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); }
-    .condition-badge.is-ordered { border-color: var(--warning); color: var(--warning); }
-    .ordered-badge { position: absolute; top: 8px; left: 8px; background: var(--warning); color: #000; font-size: 0.65rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; }
+    .cond-badges { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 12px 4px; }
+    .cond-badge { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); line-height: 1.3; }
+    .cond-badge.status-ordered   { border-color: var(--warning); color: var(--warning); background: color-mix(in srgb, var(--warning) 10%, transparent); }
+    .cond-badge.status-sale      { border-color: var(--success); color: var(--success); background: color-mix(in srgb, var(--success) 10%, transparent); }
+    .cond-badge.status-grading   { border-color: #60a5fa; color: #60a5fa; background: color-mix(in srgb, #60a5fa 10%, transparent); }
+    .status-corner-badge { position: absolute; top: 8px; left: 8px; font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.04em; }
+    .status-corner-badge.ordered   { background: var(--warning); color: #000; }
+    .status-corner-badge.for-sale  { background: var(--success); color: #fff; }
+    .status-corner-badge.grading   { background: #60a5fa; color: #000; }
     .card-actions { display: flex; gap: 6px; padding: 0 12px 10px; margin-top: auto; }
     .btn-sm { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: 5px 8px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; }
     .btn-sm:hover { border-color: var(--accent); color: var(--text); }
@@ -153,19 +159,23 @@
     /* ===== MODAL ===== */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.open { display: flex; }
-    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto; }
     .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .form-group { margin-bottom: 16px; }
     .form-label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .cond-row { display: flex; align-items: center; padding: 9px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; gap: 8px; }
-    .cond-row.is-ordered { border-color: var(--warning); }
-    .cond-row-label { font-weight: 700; font-size: 0.88rem; flex: 1; }
+    .cond-row { display: flex; align-items: center; padding: 9px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; gap: 10px; }
+    .cond-row.st-ordered { border-color: var(--warning); }
+    .cond-row.st-sale    { border-color: var(--success); }
+    .cond-row.st-grading { border-color: #60a5fa; }
+    .cond-row-labels { flex: 1; min-width: 0; }
+    .cond-row-cond { font-weight: 700; font-size: 0.9rem; display: block; }
+    .cond-row-status { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .cond-row-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .btn-qty-modal { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; line-height: 1; flex-shrink: 0; }
     .btn-qty-modal:hover { background: var(--accent); border-color: var(--accent); }
     .cond-qty-num { font-weight: 700; font-size: 1rem; min-width: 24px; text-align: center; }
-    .add-cond-row { display: flex; gap: 8px; align-items: center; }
-    .form-select { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text); font-size: 0.9rem; outline: none; cursor: pointer; }
+    .add-cond-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .form-select { flex: 1; min-width: 100px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text); font-size: 0.9rem; outline: none; cursor: pointer; }
     .form-select:focus { border-color: var(--accent); }
     .btn-add-cond { background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 9px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.15s; flex-shrink: 0; }
     .btn-add-cond:hover { background: var(--accent-hover); }
@@ -307,7 +317,14 @@
         <button class="fp" data-cc="MP">MP</button>
         <button class="fp" data-cc="HP">HP</button>
         <button class="fp" data-cc="DMG">DMG</button>
-        <button class="fp" data-cc="Ordered">Ordered</button>
+      </div>
+      <div class="filter-group">
+        <button class="fp active" data-cst="all">All</button>
+        <button class="fp" data-cst="Personal Collection">PC</button>
+        <button class="fp" data-cst="Ordered">Ordered</button>
+        <button class="fp" data-cst="For Sale/Trade">Sale</button>
+        <button class="fp" data-cst="Gradeable">Grade</button>
+        <button class="fp" data-cst="Submitted for Grading">Grading</button>
       </div>
       <button class="btn-clear" id="clear-collection">Clear</button>
     </div>
@@ -320,13 +337,14 @@
   <div class="modal">
     <h3 id="edit-modal-name">Edit Card</h3>
     <div class="form-group">
-      <span class="form-label">Copies by condition</span>
+      <span class="form-label">Copies</span>
       <div id="edit-conditions-list"></div>
     </div>
     <div class="form-group" id="add-cond-section">
-      <span class="form-label">Add a row</span>
+      <span class="form-label">Add copies</span>
       <div class="add-cond-row">
         <select class="form-select" id="add-cond-select"></select>
+        <select class="form-select" id="add-status-select"></select>
         <button class="btn-add-cond" id="btn-add-cond">Add</button>
       </div>
     </div>
@@ -352,57 +370,67 @@
   });
   const auth = getAuth(fbApp), db = getFirestore(fbApp), provider = new GoogleAuthProvider();
 
-  // ── Persistent state (sessionStorage-backed) ───────────
-  const ss = sessionStorage;
-  const S = {
-    get: k => ss.getItem(k),
-    set: (k,v) => ss.setItem(k, v),
-    del: (...ks) => ks.forEach(k => ss.removeItem(k))
-  };
+  // ── Session storage helpers ──────────────────────────
+  const S = { get: k=>sessionStorage.getItem(k), set:(k,v)=>sessionStorage.setItem(k,v), del:(...ks)=>ks.forEach(k=>sessionStorage.removeItem(k)) };
 
-  // Search
-  let rawSearchCards = [];
-  let searchOwn  = S.get('sr_own')  || 'all';
-  let searchSort = S.get('sr_sort') || 'default';
+  // ── Constants ────────────────────────────────────────
+  const ALL_CONDITIONS = ['NM','LP','MP','HP','DMG'];
+  const ALL_STATUSES   = ['Personal Collection','Ordered','For Sale/Trade','Gradeable','Submitted for Grading'];
+  const TYPE_COLORS    = { Grass:'#5DB85B',Fire:'#FF6B35',Water:'#4BA3C3',Lightning:'#F7C948',Psychic:'#A958B0',Fighting:'#C4783A',Darkness:'#4A4A4A',Metal:'#8C8C8C',Colorless:'#A8A8A8',Dragon:'#2B6CB0',Fairy:'#E84B8A' };
 
-  // Sets list
-  let setsQ        = S.get('sl_q')    || '';
-  let setsProgress = S.get('sl_prog') || 'all';
-  let setsSortBy   = S.get('sl_sort') || 'date';
+  // ── Filter state ─────────────────────────────────────
+  let searchOwn    = S.get('sr_own')   || 'all';
+  let searchSort   = S.get('sr_sort')  || 'default';
+  let setsQ        = S.get('sl_q')     || '';
+  let setsProgress = S.get('sl_prog')  || 'all';
+  let setsSortBy   = S.get('sl_sort')  || 'date';
+  let setQ         = '';
+  let setOwn       = S.get('sd_own')   || 'all';
+  let setSort      = S.get('sd_sort')  || '#';
+  let setView      = S.get('sd_view')  || 'grid';
+  let collQ        = S.get('co_q')     || '';
+  let collSort     = S.get('co_sort')  || 'name';
+  let collCond     = S.get('co_cond')  || 'all';
+  let collStatus   = S.get('co_stat')  || 'all';
 
-  // Set detail
-  let setQ   = '';
-  let setOwn  = S.get('sd_own')  || 'all';
-  let setSort = S.get('sd_sort') || '#';
-  let setView = S.get('sd_view') || 'grid';
-
-  // Collection
-  let collQ    = S.get('co_q')    || '';
-  let collSort = S.get('co_sort') || 'name';
-  let collCond = S.get('co_cond') || 'all';
-
-  // App state
+  // ── App state ────────────────────────────────────────
   let currentUser   = null;
   let collectionMap = {};
   let unsubscribe   = null;
   let activePage    = 'search';
   let setsData      = null;
   let currentSetId  = null;
-  let lastSetCards  = [];
-  let editingId     = null, editConditions = [];
+  let rawSearchCards = [];
+  let lastSetCards   = [];
+  let editingId      = null, editConditions = [];
 
   const searchCache  = new Map();
   const setCardCache = new Map();
-  const ALL_CONDITIONS = ['Ordered','NM','LP','MP','HP','DMG'];
-  const TYPE_COLORS = { Grass:'#5DB85B',Fire:'#FF6B35',Water:'#4BA3C3',Lightning:'#F7C948',Psychic:'#A958B0',Fighting:'#C4783A',Darkness:'#4A4A4A',Metal:'#8C8C8C',Colorless:'#A8A8A8',Dragon:'#2B6CB0',Fairy:'#E84B8A' };
 
-  // ── Helpers ────────────────────────────────────────────
+  // ── Data helpers ─────────────────────────────────────
+
+  // Normalise any stored format → [{condition, status, quantity}]
+  // Migration: old "Ordered" condition → NM condition + Ordered status
   function getConditions(e) {
     if (!e) return [];
-    if (Array.isArray(e.conditions)) return e.conditions.map(r=>({condition:r.condition||'NM',quantity:r.quantity||1}));
-    return [{condition:e.condition||'NM',quantity:e.quantity||1}];
+    let rows;
+    if (Array.isArray(e.conditions)) {
+      rows = e.conditions.map(r => ({
+        condition: r.condition === 'Ordered' ? 'NM' : (r.condition || 'NM'),
+        status:    r.condition === 'Ordered' ? 'Ordered' : (r.status || 'Personal Collection'),
+        quantity:  r.quantity  || 1
+      }));
+    } else {
+      const c = e.condition || 'NM';
+      rows = [{ condition: c === 'Ordered' ? 'NM' : c, status: c === 'Ordered' ? 'Ordered' : 'Personal Collection', quantity: e.quantity || 1 }];
+    }
+    return rows;
   }
+
   function getTotalQty(e) { return getConditions(e).reduce((s,r)=>s+r.quantity,0); }
+
+  // Rows that count toward "owned" (exclude Ordered — not in hand yet)
+  function getInHandQty(e) { return getConditions(e).filter(r=>r.status!=='Ordered').reduce((s,r)=>s+r.quantity,0); }
 
   async function fetchWithRetry(url, retries=3, delay=800) {
     for (let i=0; i<retries; i++) {
@@ -413,27 +441,50 @@
 
   function sortCards(cards, by) {
     const c=[...cards];
+    const natNum = s => { const n=parseInt(s); return isNaN(n)?s:n; };
+    const numCmp = (a,b) => { const na=natNum(a.number),nb=natNum(b.number); return typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1); };
     if (by==='name')   return c.sort((a,b)=>a.name.localeCompare(b.name));
-    if (by==='number') return c.sort((a,b)=>{const na=parseInt(a.number)||a.number||'',nb=parseInt(b.number)||b.number||'';return typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1);});
-    if (by==='set')    return c.sort((a,b)=>{const s=(a.set?.name||'').localeCompare(b.set?.name||'');return s||parseInt(a.number)-parseInt(b.number);});
-    if (by==='#')      return c.sort((a,b)=>{const na=parseInt(a.number)||a.number||'',nb=parseInt(b.number)||b.number||'';return typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1);});
+    if (by==='number') return c.sort(numCmp);
+    if (by==='#')      return c.sort(numCmp);
+    if (by==='set')    return c.sort((a,b)=>{ const s=(a.set?.name||'').localeCompare(b.set?.name||''); return s||numCmp(a,b); });
     return c;
   }
 
   function getTypeLabel(c) {
-    const sup=c.supertype||'', sub=Array.isArray(c.subtypes)?c.subtypes:[], typ=Array.isArray(c.types)?c.types:[];
-    if (sup==='Pokémon') return {label:typ.length?`Pokémon · ${typ.join(' / ')}`:'Pokémon',color:TYPE_COLORS[typ[0]]};
-    if (sup==='Trainer') return {label:sub.length?`Trainer · ${sub[0]}`:'Trainer',color:null};
-    if (sup==='Energy')  return {label:typ.length?`Energy · ${typ[0]}`:(sub.length?`Energy · ${sub[0]}`:'Energy'),color:TYPE_COLORS[typ[0]]};
+    const sup=c.supertype||'',sub=Array.isArray(c.subtypes)?c.subtypes:[],typ=Array.isArray(c.types)?c.types:[];
+    if(sup==='Pokémon') return {label:typ.length?`Pokémon · ${typ.join(' / ')}`:'Pokémon',color:TYPE_COLORS[typ[0]]};
+    if(sup==='Trainer') return {label:sub.length?`Trainer · ${sub[0]}`:'Trainer',color:null};
+    if(sup==='Energy')  return {label:typ.length?`Energy · ${typ[0]}`:(sub.length?`Energy · ${sub[0]}`:'Energy'),color:TYPE_COLORS[typ[0]]};
     return {label:sup,color:null};
   }
 
-  // ── Pill helpers ───────────────────────────────────────
+  // ── Pill helpers ─────────────────────────────────────
   function activatePill(attr, val) {
     document.querySelectorAll(`[${attr}]`).forEach(p=>p.classList.toggle('active',p.getAttribute(attr)===val));
   }
 
-  // ── Routing ────────────────────────────────────────────
+  // Status → CSS modifier class
+  function statusClass(s) {
+    if (s==='Ordered')              return 'status-ordered';
+    if (s==='For Sale/Trade')       return 'status-sale';
+    if (s==='Gradeable'||s==='Submitted for Grading') return 'status-grading';
+    return '';
+  }
+  function statusRowClass(s) {
+    if (s==='Ordered')              return 'st-ordered';
+    if (s==='For Sale/Trade')       return 'st-sale';
+    if (s==='Gradeable'||s==='Submitted for Grading') return 'st-grading';
+    return '';
+  }
+  function cornerBadge(conds) {
+    const statuses = conds.map(r=>r.status);
+    if (statuses.includes('Submitted for Grading')) return '<span class="status-corner-badge grading">GRADING</span>';
+    if (statuses.includes('For Sale/Trade'))         return '<span class="status-corner-badge for-sale">SALE</span>';
+    if (statuses.includes('Ordered'))                return '<span class="status-corner-badge ordered">ORDERED</span>';
+    return '';
+  }
+
+  // ── Routing ──────────────────────────────────────────
   function setHash(h) { history.replaceState(null,'',location.pathname+'#'+h); }
 
   function switchPage(page) {
@@ -443,18 +494,15 @@
   }
 
   async function restoreFromHash() {
-    const hash=(location.hash||'').replace('#','') || 'search';
+    const hash=(location.hash||'').replace('#','')||'search';
     if (hash.startsWith('sets/')) {
-      const setId=hash.slice(5);
-      switchPage('sets');
+      const setId=hash.slice(5); switchPage('sets');
       if (!setsData) await loadSets();
       await openSet(setId);
     } else if (hash==='sets') {
-      switchPage('sets');
-      if (!setsData) await loadSets();
+      switchPage('sets'); if(!setsData) await loadSets();
     } else if (hash==='collection') {
-      switchPage('collection');
-      restoreCollectionUI();
+      switchPage('collection'); restoreCollectionUI();
     } else {
       switchPage('search');
       const q=S.get('sr_q')||'';
@@ -463,114 +511,97 @@
   }
 
   function restoreCollectionUI() {
-    document.getElementById('collection-filter').value = collQ;
-    activatePill('data-cs', collSort);
-    activatePill('data-cc', collCond);
+    document.getElementById('collection-filter').value=collQ;
+    activatePill('data-cs',collSort); activatePill('data-cc',collCond); activatePill('data-cst',collStatus);
   }
 
-  // ── AUTH ───────────────────────────────────────────────
+  // ── Auth ─────────────────────────────────────────────
   document.getElementById('btn-google-login').addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>alert('Sign-in failed: '+e.message)));
   document.getElementById('btn-signout').addEventListener('click',()=>signOut(auth));
 
-  onAuthStateChanged(auth, user=>{
+  onAuthStateChanged(auth,user=>{
     currentUser=user;
     if (user) {
       document.getElementById('login-screen').style.display='none';
       document.getElementById('app').style.display='block';
       const av=document.getElementById('user-avatar');
-      if (user.photoURL){av.src=user.photoURL;av.style.display='block';}
+      if(user.photoURL){av.src=user.photoURL;av.style.display='block';}
       startCollectionListener();
       restoreFromHash();
     } else {
       document.getElementById('login-screen').style.display='flex';
       document.getElementById('app').style.display='none';
-      if (unsubscribe){unsubscribe();unsubscribe=null;}
+      if(unsubscribe){unsubscribe();unsubscribe=null;}
       collectionMap={};
     }
   });
 
-  // ── NAVIGATION ─────────────────────────────────────────
+  // ── Navigation ───────────────────────────────────────
   document.querySelectorAll('.nav-pill').forEach(pill=>{
     pill.addEventListener('click',()=>{
-      const page=pill.dataset.page;
-      switchPage(page); setHash(page);
-      if (page==='sets' && !setsData) loadSets();
-      if (page==='collection') restoreCollectionUI();
+      const page=pill.dataset.page; switchPage(page); setHash(page);
+      if(page==='sets'&&!setsData) loadSets();
+      if(page==='collection') restoreCollectionUI();
     });
   });
 
-  // ── SEARCH ─────────────────────────────────────────────
+  // ── Search ───────────────────────────────────────────
   function buildQuery(raw) {
-    const tokens=raw.trim().split(/\s+/), nums=tokens.filter(t=>/^\d+$/.test(t)), words=tokens.filter(t=>!/^\d+$/.test(t)), parts=[];
-    if (words.length===1) parts.push(`name:*${words[0]}*`);
-    else if (words.length>1) parts.push(`name:"${words.join(' ')}"`);
-    if (nums.length) parts.push(`number:${nums[0]}`);
+    const tokens=raw.trim().split(/\s+/),nums=tokens.filter(t=>/^\d+$/.test(t)),words=tokens.filter(t=>!/^\d+$/.test(t)),parts=[];
+    if(words.length===1) parts.push(`name:*${words[0]}*`);
+    else if(words.length>1) parts.push(`name:"${words.join(' ')}"`);
+    if(nums.length) parts.push(`number:${nums[0]}`);
     return parts.join(' ')||raw;
   }
 
   async function doSearch() {
-    const raw=document.getElementById('search-input').value.trim();
-    if (!raw) return;
-    const btn=document.getElementById('btn-search');
-    btn.disabled=true;
-    S.set('sr_q', raw);
+    const raw=document.getElementById('search-input').value.trim(); if(!raw) return;
+    const btn=document.getElementById('btn-search'); btn.disabled=true;
+    S.set('sr_q',raw);
     const q=buildQuery(raw);
     const url=`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30&select=id,name,number,set,images`;
-    if (searchCache.has(q)){renderSearchResults(searchCache.get(q));btn.disabled=false;return;}
+    if(searchCache.has(q)){renderSearchResults(searchCache.get(q));btn.disabled=false;return;}
     document.getElementById('search-results').innerHTML='<div class="loading">Searching…</div>';
     try {
       const {data}=await fetchWithRetry(url);
-      if (!data||data.length===0){document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No results</h3><p>Try a different search</p></div>`;return;}
+      if(!data||!data.length){document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No results</h3><p>Try a different search</p></div>`;return;}
       searchCache.set(q,data); if(searchCache.size>20) searchCache.delete(searchCache.keys().next().value);
-      rawSearchCards=data;
-      renderSearchResults(data);
+      rawSearchCards=data; renderSearchResults(data);
     } catch { document.getElementById('search-results').innerHTML=`<div class="empty-state"><h3>Search failed</h3><p>Please try again.</p></div>`; }
     finally { btn.disabled=false; }
   }
 
   function applySearchFilters(cards) {
     let c=[...cards];
-    if (searchOwn==='owned')   c=c.filter(x=>getTotalQty(collectionMap[x.id])>0);
-    if (searchOwn==='missing') c=c.filter(x=>getTotalQty(collectionMap[x.id])===0);
-    return sortCards(c, searchSort);
+    if(searchOwn==='owned')   c=c.filter(x=>getTotalQty(collectionMap[x.id])>0);
+    if(searchOwn==='missing') c=c.filter(x=>getTotalQty(collectionMap[x.id])===0);
+    return sortCards(c,searchSort);
   }
 
   function renderSearchResults(cards) {
     rawSearchCards=cards;
     const filtered=applySearchFilters(cards);
-    const fb=document.getElementById('search-filter-bar');
-    fb.style.display='flex';
-    activatePill('data-so', searchOwn);
-    activatePill('data-ss', searchSort);
-    if (filtered.length===0) {
-      document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try adjusting your filters</p></div>`;
-      return;
-    }
+    document.getElementById('search-filter-bar').style.display='flex';
+    activatePill('data-so',searchOwn); activatePill('data-ss',searchSort);
+    if(!filtered.length){document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try adjusting filters</p></div>`;return;}
     document.getElementById('search-results').innerHTML=`<div class="card-grid">${filtered.map(c=>qtyCardHTML(c,'src')).join('')}</div>`;
   }
 
   document.getElementById('btn-search').addEventListener('click',doSearch);
   document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
-
-  // Search filter controls
-  document.querySelectorAll('[data-so]').forEach(p=>p.addEventListener('click',()=>{
-    searchOwn=p.dataset.so; S.set('sr_own',searchOwn); renderSearchResults(rawSearchCards);
-  }));
-  document.querySelectorAll('[data-ss]').forEach(p=>p.addEventListener('click',()=>{
-    searchSort=p.dataset.ss; S.set('sr_sort',searchSort); renderSearchResults(rawSearchCards);
-  }));
+  document.querySelectorAll('[data-so]').forEach(p=>p.addEventListener('click',()=>{searchOwn=p.dataset.so;S.set('sr_own',searchOwn);renderSearchResults(rawSearchCards);}));
+  document.querySelectorAll('[data-ss]').forEach(p=>p.addEventListener('click',()=>{searchSort=p.dataset.ss;S.set('sr_sort',searchSort);renderSearchResults(rawSearchCards);}));
   document.getElementById('clear-search').addEventListener('click',()=>{
-    searchOwn='all'; searchSort='default';
-    S.del('sr_q','sr_own','sr_sort');
+    searchOwn='all';searchSort='default';S.del('sr_q','sr_own','sr_sort');
     document.getElementById('search-input').value='';
     document.getElementById('search-results').innerHTML='';
     document.getElementById('search-filter-bar').style.display='none';
     rawSearchCards=[];
   });
 
-  // ── CARD HTML ──────────────────────────────────────────
-  function qtyCardHTML(c, gridId) {
-    const qty=getTotalQty(collectionMap[c.id]), data=encodeURIComponent(JSON.stringify(c));
+  // ── Card HTML ─────────────────────────────────────────
+  function qtyCardHTML(c,gridId) {
+    const qty=getTotalQty(collectionMap[c.id]),data=encodeURIComponent(JSON.stringify(c));
     return `<div class="card-item${qty>0?' owned':''}" id="${gridId}-${c.id}">
       <div class="card-img-wrap"><img src="${c.images?.small||''}" alt="${c.name}" loading="lazy"></div>
       <div class="card-info"><div class="card-name">${c.name}</div><div class="card-meta">${c.set?.name||''} · #${c.number||''}</div></div>
@@ -584,7 +615,7 @@
   }
 
   function listCardHTML(c) {
-    const qty=getTotalQty(collectionMap[c.id]), data=encodeURIComponent(JSON.stringify(c)), ti=getTypeLabel(c);
+    const qty=getTotalQty(collectionMap[c.id]),data=encodeURIComponent(JSON.stringify(c)),ti=getTypeLabel(c);
     const dot=ti.color?`<span class="type-dot" style="background:${ti.color}"></span>`:'';
     const rar=c.rarity?`<span class="list-sub-sep">·</span><span>${c.rarity}</span>`:'';
     return `<div class="list-card-item${qty>0?' owned':''}" id="set-${c.id}">
@@ -601,18 +632,7 @@
       </div></div>`;
   }
 
-  function refreshQtyGrid(cards, gridId) {
-    cards.forEach(c=>{
-      const tile=document.getElementById(`${gridId}-${c.id}`); if(!tile) return;
-      const qty=getTotalQty(collectionMap[c.id]);
-      tile.classList.toggle('owned',qty>0);
-      const num=tile.querySelector('.sq-num,.sq-num-sm'), minus=tile.querySelector('.btn-sq,.btn-sq-sm');
-      if(num){num.textContent=qty;num.classList.toggle('owned',qty>0);}
-      if(minus) minus.disabled=qty===0;
-    });
-  }
-
-  // ── SETS LIST ──────────────────────────────────────────
+  // ── Sets list ─────────────────────────────────────────
   async function loadSets() {
     document.getElementById('sets-content').innerHTML='<div class="loading">Loading sets…</div>';
     try {
@@ -631,35 +651,26 @@
 
   function applySetListFilters(sets) {
     let s=[...sets];
-    if (setsQ) { const q=setsQ.toLowerCase(); s=s.filter(x=>x.name.toLowerCase().includes(q)); }
-    if (setsProgress==='started')  s=s.filter(x=>ownedCountForSet(x.id)>0);
-    if (setsProgress==='complete') s=s.filter(x=>ownedCountForSet(x.id)>=x.total);
-    if (setsSortBy==='name') s=[...s].sort((a,b)=>a.name.localeCompare(b.name));
+    if(setsQ){const q=setsQ.toLowerCase();s=s.filter(x=>x.name.toLowerCase().includes(q));}
+    if(setsProgress==='started')  s=s.filter(x=>ownedCountForSet(x.id)>0);
+    if(setsProgress==='complete') s=s.filter(x=>ownedCountForSet(x.id)>=x.total);
+    if(setsSortBy==='name') s=[...s].sort((a,b)=>a.name.localeCompare(b.name));
     return s;
   }
 
   function renderSetsList() {
-    if (!setsData) return;
-    // Update UI to match state
+    if(!setsData) return;
     document.getElementById('sets-search').value=setsQ;
-    activatePill('data-sp',setsProgress);
-    activatePill('data-st',setsSortBy);
-
+    activatePill('data-sp',setsProgress); activatePill('data-st',setsSortBy);
     const filtered=applySetListFilters(setsData);
-    if (filtered.length===0){
-      document.getElementById('sets-content').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No sets match</h3><p>Try a different search or filter</p></div>`;
-      return;
-    }
-
-    // Group by series (preserving order)
-    const seriesOrder=[], grouped={};
+    if(!filtered.length){document.getElementById('sets-content').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No sets match</h3><p>Try a different filter</p></div>`;return;}
+    const seriesOrder=[],grouped={};
     filtered.forEach(s=>{if(!grouped[s.series]){grouped[s.series]=[];seriesOrder.push(s.series);}grouped[s.series].push(s);});
-
     document.getElementById('sets-content').innerHTML=seriesOrder.map(series=>`
       <div class="series-section">
         <div class="series-header">${series}</div>
         <div class="set-grid">${grouped[series].map(s=>{
-          const owned=ownedCountForSet(s.id), total=s.total||1, pct=Math.min(100,Math.round(owned/total*100));
+          const owned=ownedCountForSet(s.id),total=s.total||1,pct=Math.min(100,Math.round(owned/total*100));
           const logo=s.images?.logo?`<img class="set-logo" src="${s.images.logo}" alt="${s.name}" loading="lazy">`:`<div class="set-logo-placeholder">🃏</div>`;
           return `<div class="set-card${owned>0?' has-cards':''}" onclick="window._openSet('${s.id}')">
             ${logo}
@@ -669,121 +680,102 @@
               <div class="set-progress-bar"><div class="set-progress-fill" style="width:${pct}%"></div></div>
               <div class="set-progress-text"><span><span class="owned-count">${owned}</span> of ${total}</span><span>${pct}%</span></div>
             </div></div>`;
-        }).join('')}</div>
-      </div>`).join('');
+        }).join('')}</div></div>`).join('');
   }
 
-  // Sets list filter controls
   document.getElementById('sets-search').addEventListener('input',e=>{setsQ=e.target.value;S.set('sl_q',setsQ);renderSetsList();});
   document.querySelectorAll('[data-sp]').forEach(p=>p.addEventListener('click',()=>{setsProgress=p.dataset.sp;S.set('sl_prog',setsProgress);renderSetsList();}));
   document.querySelectorAll('[data-st]').forEach(p=>p.addEventListener('click',()=>{setsSortBy=p.dataset.st;S.set('sl_sort',setsSortBy);renderSetsList();}));
   document.getElementById('clear-sets').addEventListener('click',()=>{
-    setsQ='';setsProgress='all';setsSortBy='date';
-    S.del('sl_q','sl_prog','sl_sort');
-    renderSetsList();
+    setsQ='';setsProgress='all';setsSortBy='date';S.del('sl_q','sl_prog','sl_sort');renderSetsList();
   });
 
-  // ── SET DETAIL ─────────────────────────────────────────
-  window._openSet = async function openSet(setId) {
+  // ── Set detail ───────────────────────────────────────
+  window._openSet = async function(setId) {
     const set=setsData?.find(s=>s.id===setId); if(!set) return;
     currentSetId=setId; setHash('sets/'+setId);
-
-    setQ=''; // reset in-set text search only
-    // restore persisted filters
-    activatePill('data-sdo', setOwn);
-    activatePill('data-sds', setSort);
-    activatePill('data-sdv', setView);
+    setQ='';
+    activatePill('data-sdo',setOwn); activatePill('data-sds',setSort); activatePill('data-sdv',setView);
     document.getElementById('set-search').value='';
-
     document.getElementById('sets-list-view').style.display='none';
     document.getElementById('set-detail-view').style.display='block';
     const logo=document.getElementById('set-detail-logo');
-    if (set.images?.logo){logo.src=set.images.logo;logo.style.display='block';}else{logo.style.display='none';}
+    if(set.images?.logo){logo.src=set.images.logo;logo.style.display='block';}else logo.style.display='none';
     document.getElementById('set-detail-name').textContent=set.name;
     document.getElementById('set-detail-meta').textContent=`${set.series} · ${formatDate(set.releaseDate)} · ${set.total} cards`;
     updateSetDetailStat();
-
     const grid=document.getElementById('set-detail-grid');
     grid.innerHTML='<div class="loading" style="grid-column:1/-1">Loading cards…</div>';
-
     try {
       let cards=setCardCache.get(setId);
-      if (!cards){
-        const {data}=await fetchWithRetry(`https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=250&select=id,name,number,set,images,supertype,subtypes,types,rarity`);
-        cards=data||[]; setCardCache.set(setId,cards);
-      }
+      if(!cards){const {data}=await fetchWithRetry(`https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=250&select=id,name,number,set,images,supertype,subtypes,types,rarity`);cards=data||[];setCardCache.set(setId,cards);}
       lastSetCards=cards;
-      if (cards.length===0){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>No cards found</h3></div>';return;}
+      if(!cards.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>No cards found</h3></div>';return;}
       renderSetDetailCards();
     } catch { document.getElementById('set-detail-grid').innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>Failed to load</h3><p>Please try again.</p></div>'; }
   };
-  // expose for restoreFromHash
-  const openSet = window._openSet;
+  const openSet=window._openSet;
 
   function applySetDetailFilters(cards) {
     let c=[...cards];
-    if (setQ){const q=setQ.toLowerCase();c=c.filter(x=>x.name.toLowerCase().includes(q));}
-    if (setOwn==='owned')   c=c.filter(x=>getTotalQty(collectionMap[x.id])>0);
-    if (setOwn==='missing') c=c.filter(x=>getTotalQty(collectionMap[x.id])===0);
-    return sortCards(c, setSort);
+    if(setQ){const q=setQ.toLowerCase();c=c.filter(x=>x.name.toLowerCase().includes(q));}
+    if(setOwn==='owned')   c=c.filter(x=>getTotalQty(collectionMap[x.id])>0);
+    if(setOwn==='missing') c=c.filter(x=>getTotalQty(collectionMap[x.id])===0);
+    return sortCards(c,setSort);
   }
 
   function renderSetDetailCards() {
     const grid=document.getElementById('set-detail-grid'); if(!grid) return;
     const cards=applySetDetailFilters(lastSetCards);
-    if (cards.length===0){grid.className='card-grid';grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No cards match</h3><p>Try adjusting your filters</p></div>`;return;}
-    if (setView==='list'){grid.className='set-list-view';grid.innerHTML=cards.map(listCardHTML).join('');}
-    else {grid.className='card-grid';grid.innerHTML=cards.map(c=>qtyCardHTML(c,'set')).join('');}
+    if(!cards.length){grid.className='card-grid';grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No cards match</h3><p>Try adjusting filters</p></div>`;return;}
+    if(setView==='list'){grid.className='set-list-view';grid.innerHTML=cards.map(listCardHTML).join('');}
+    else{grid.className='card-grid';grid.innerHTML=cards.map(c=>qtyCardHTML(c,'set')).join('');}
   }
 
   function updateSetDetailStat() {
-    if (!currentSetId) return;
+    if(!currentSetId) return;
     const set=setsData?.find(s=>s.id===currentSetId);
     document.getElementById('set-detail-stat').textContent=`${ownedCountForSet(currentSetId)} / ${set?.total||'?'} owned`;
   }
 
-  // Set detail filter controls
   document.getElementById('set-search').addEventListener('input',e=>{setQ=e.target.value.trim();renderSetDetailCards();});
   document.querySelectorAll('[data-sdo]').forEach(p=>p.addEventListener('click',()=>{setOwn=p.dataset.sdo;S.set('sd_own',setOwn);renderSetDetailCards();}));
   document.querySelectorAll('[data-sds]').forEach(p=>p.addEventListener('click',()=>{setSort=p.dataset.sds;S.set('sd_sort',setSort);renderSetDetailCards();}));
   document.querySelectorAll('[data-sdv]').forEach(p=>p.addEventListener('click',()=>{setView=p.dataset.sdv;S.set('sd_view',setView);renderSetDetailCards();}));
   document.getElementById('clear-set-detail').addEventListener('click',()=>{
-    setQ='';setOwn='all';setSort='#';setView='grid';
-    S.del('sd_own','sd_sort','sd_view');
+    setQ='';setOwn='all';setSort='#';setView='grid';S.del('sd_own','sd_sort','sd_view');
     document.getElementById('set-search').value='';
     activatePill('data-sdo','all');activatePill('data-sds','#');activatePill('data-sdv','grid');
     renderSetDetailCards();
   });
-
   document.getElementById('btn-back-sets').addEventListener('click',()=>{
     currentSetId=null;lastSetCards=[];setHash('sets');
     document.getElementById('set-detail-view').style.display='none';
     document.getElementById('sets-list-view').style.display='block';
   });
 
-  // ── COLLECTION ─────────────────────────────────────────
+  // ── Collection ───────────────────────────────────────
   function startCollectionListener() {
-    if (!currentUser) return;
+    if(!currentUser) return;
     unsubscribe=onSnapshot(collection(db,'users',currentUser.uid,'collection'),snap=>{
       collectionMap={};
       snap.forEach(d=>{collectionMap[d.id]=d.data();});
       renderCollection();
-      if (rawSearchCards.length) renderSearchResults(rawSearchCards);
-      else refreshQtyGrid([], 'src');
-      if (setOwn!=='all'||setQ) renderSetDetailCards();
-      else refreshQtyGrid(lastSetCards,'set');
-      if (currentSetId) updateSetDetailStat();
-      if (setsData) renderSetsList();
+      if(rawSearchCards.length) renderSearchResults(rawSearchCards);
+      if(lastSetCards.length) renderSetDetailCards();
+      if(currentSetId) updateSetDetailStat();
+      if(setsData) renderSetsList();
     });
   }
 
   function applyCollectionFilters(entries) {
     let e=[...entries];
-    if (collQ){const q=collQ.toLowerCase();e=e.filter(([,c])=>c.name.toLowerCase().includes(q)||(c.setName||'').toLowerCase().includes(q));}
-    if (collCond!=='all') e=e.filter(([,c])=>getConditions(c).some(r=>r.condition===collCond));
-    if (collSort==='name') e.sort(([,a],[,b])=>a.name.localeCompare(b.name));
-    else if (collSort==='set') e.sort(([,a],[,b])=>{const s=(a.setName||'').localeCompare(b.setName||'');return s||a.name.localeCompare(b.name);});
-    else if (collSort==='date') e.sort(([,a],[,b])=>(b.addedAt||'').localeCompare(a.addedAt||''));
+    if(collQ){const q=collQ.toLowerCase();e=e.filter(([,c])=>c.name.toLowerCase().includes(q)||(c.setName||'').toLowerCase().includes(q));}
+    if(collCond!=='all')   e=e.filter(([,c])=>getConditions(c).some(r=>r.condition===collCond));
+    if(collStatus!=='all') e=e.filter(([,c])=>getConditions(c).some(r=>r.status===collStatus));
+    if(collSort==='name')  e.sort(([,a],[,b])=>a.name.localeCompare(b.name));
+    if(collSort==='set')   e.sort(([,a],[,b])=>{const s=(a.setName||'').localeCompare(b.setName||'');return s||a.name.localeCompare(b.name);});
+    if(collSort==='date')  e.sort(([,a],[,b])=>(b.addedAt||'').localeCompare(a.addedAt||''));
     return e;
   }
 
@@ -791,19 +783,18 @@
     const grid=document.getElementById('collection-grid');
     const total=Object.values(collectionMap).reduce((s,c)=>s+getTotalQty(c),0);
     document.getElementById('collection-stat').textContent=`${total} card${total!==1?'s':''}`;
-
-    if (Object.keys(collectionMap).length===0){
+    if(!Object.keys(collectionMap).length){
       grid.innerHTML=`<div class="empty-state"><div class="icon">📦</div><h3>Your collection is empty</h3><p>Search for cards and use + to add them</p></div>`;return;
     }
     const entries=applyCollectionFilters(Object.entries(collectionMap));
-    if (entries.length===0){
-      grid.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try adjusting your filters or clearing them</p></div>`;return;
+    if(!entries.length){
+      grid.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try adjusting or clearing filters</p></div>`;return;
     }
     grid.innerHTML=entries.map(([id,c])=>{
-      const conds=getConditions(c), totalQty=getTotalQty(c), anyOrd=conds.some(r=>r.condition==='Ordered');
-      const badges=conds.map(r=>`<span class="condition-badge${r.condition==='Ordered'?' is-ordered':''}">${r.quantity}× ${r.condition}</span>`).join('');
+      const conds=getConditions(c),totalQty=getTotalQty(c);
+      const badges=conds.map(r=>`<span class="cond-badge ${statusClass(r.status)}">${r.quantity}× ${r.condition} · ${r.status}</span>`).join('');
       return `<div class="card-item owned">
-        ${anyOrd?'<div class="ordered-badge">ORDERED</div>':''}
+        ${cornerBadge(conds)}
         <div class="card-img-wrap"><img src="${c.image||''}" alt="${c.name}" loading="lazy"></div>
         <div class="card-info"><div class="card-name">${c.name}</div><div class="card-meta">${c.setName||''} · #${c.number||''}</div></div>
         <div class="coll-strip">Qty: ${totalQty}</div>
@@ -815,62 +806,93 @@
     }).join('');
   }
 
-  // Collection filter controls
   document.getElementById('collection-filter').addEventListener('input',e=>{collQ=e.target.value;S.set('co_q',collQ);renderCollection();});
   document.querySelectorAll('[data-cs]').forEach(p=>p.addEventListener('click',()=>{collSort=p.dataset.cs;S.set('co_sort',collSort);renderCollection();}));
   document.querySelectorAll('[data-cc]').forEach(p=>p.addEventListener('click',()=>{collCond=p.dataset.cc;S.set('co_cond',collCond);renderCollection();}));
+  document.querySelectorAll('[data-cst]').forEach(p=>p.addEventListener('click',()=>{collStatus=p.dataset.cst;S.set('co_stat',collStatus);renderCollection();}));
   document.getElementById('clear-collection').addEventListener('click',()=>{
-    collQ='';collSort='name';collCond='all';
-    S.del('co_q','co_sort','co_cond');
+    collQ='';collSort='name';collCond='all';collStatus='all';S.del('co_q','co_sort','co_cond','co_stat');
     document.getElementById('collection-filter').value='';
-    activatePill('data-cs','name');activatePill('data-cc','all');
+    activatePill('data-cs','name');activatePill('data-cc','all');activatePill('data-cst','all');
     renderCollection();
   });
 
-  // ── CARD OPERATIONS ────────────────────────────────────
+  // ── Card operations ───────────────────────────────────
   window._sqChange = async function(cardId, dataEnc, delta) {
-    if (!currentUser) return;
-    const c=JSON.parse(decodeURIComponent(dataEnc)), entry=collectionMap[cardId];
+    if(!currentUser) return;
+    const c=JSON.parse(decodeURIComponent(dataEnc));
     const ref=doc(db,'users',currentUser.uid,'collection',cardId);
-    if (!entry && delta>0){
-      await setDoc(ref,{name:c.name,number:c.number||'',setId:c.set?.id||'',setName:c.set?.name||'',image:c.images?.small||'',addedAt:new Date().toISOString(),conditions:[{condition:'NM',quantity:1}]});
+    const entry=collectionMap[cardId];
+    if(!entry && delta>0) {
+      // New card: default NM / Personal Collection
+      await setDoc(ref,{name:c.name,number:c.number||'',setId:c.set?.id||'',setName:c.set?.name||'',image:c.images?.small||'',addedAt:new Date().toISOString(),conditions:[{condition:'NM',status:'Personal Collection',quantity:1}]});
       return;
     }
-    if (!entry) return;
+    if(!entry) return;
     const conds=getConditions(entry);
-    if (delta>0){const nm=conds.find(r=>r.condition==='NM');if(nm)nm.quantity++;else conds.unshift({condition:'NM',quantity:1});await updateDoc(ref,{conditions:conds});}
-    else {const t=conds.find(r=>r.condition==='NM')||conds[0];if(!t)return;t.quantity--;const cl=conds.filter(r=>r.quantity>0);if(cl.length===0)await deleteDoc(ref);else await updateDoc(ref,{conditions:cl});}
+    if(delta>0) {
+      // Increment NM/Personal Collection row
+      const row=conds.find(r=>r.condition==='NM'&&r.status==='Personal Collection');
+      if(row) row.quantity++; else conds.unshift({condition:'NM',status:'Personal Collection',quantity:1});
+      await updateDoc(ref,{conditions:conds});
+    } else {
+      // Decrement NM/Personal Collection first, then any in-hand row
+      const row=conds.find(r=>r.condition==='NM'&&r.status==='Personal Collection')||conds.find(r=>r.status!=='Ordered');
+      if(!row) return;
+      row.quantity--;
+      const remaining=conds.filter(r=>r.quantity>0);
+      if(!remaining.length) await deleteDoc(ref); else await updateDoc(ref,{conditions:remaining});
+    }
   };
 
   window._remove = async function(id){
-    if (!currentUser) return;
-    if (!confirm('Remove this card from your collection?')) return;
+    if(!currentUser) return;
+    if(!confirm('Remove this card from your collection?')) return;
     await deleteDoc(doc(db,'users',currentUser.uid,'collection',id));
   };
 
-  // ── EDIT MODAL ─────────────────────────────────────────
+  // ── Edit modal ────────────────────────────────────────
   function renderEditConditions() {
     const list=document.getElementById('edit-conditions-list');
-    list.innerHTML=editConditions.length===0
-      ?`<p style="color:var(--text-muted);font-size:0.85rem;padding:4px 0">No copies — use "Add a row" below.</p>`
-      :editConditions.map((r,i)=>`<div class="cond-row${r.condition==='Ordered'?' is-ordered':''}">
-          <span class="cond-row-label">${r.condition}</span>
+    if(!editConditions.length){
+      list.innerHTML=`<p style="color:var(--text-muted);font-size:0.85rem;padding:4px 0">No copies — use "Add copies" below.</p>`;
+    } else {
+      list.innerHTML=editConditions.map((r,i)=>`
+        <div class="cond-row ${statusRowClass(r.status)}">
+          <div class="cond-row-labels">
+            <span class="cond-row-cond">${r.condition}</span>
+            <span class="cond-row-status">${r.status}</span>
+          </div>
           <div class="cond-row-controls">
             <button class="btn-qty-modal" onclick="window._editQty(${i},-1)">−</button>
             <span class="cond-qty-num">${r.quantity}</span>
             <button class="btn-qty-modal" onclick="window._editQty(${i},1)">+</button>
-          </div></div>`).join('');
-    const used=new Set(editConditions.map(r=>r.condition));
-    const sel=document.getElementById('add-cond-select');
-    sel.innerHTML=ALL_CONDITIONS.filter(c=>!used.has(c)).map(c=>`<option value="${c}">${c}</option>`).join('');
-    document.getElementById('add-cond-section').style.display=used.size>=ALL_CONDITIONS.length?'none':'block';
+          </div>
+        </div>`).join('');
+    }
+    // Populate add-row dropdowns — all conditions and statuses always available
+    document.getElementById('add-cond-select').innerHTML=ALL_CONDITIONS.map(c=>`<option value="${c}">${c}</option>`).join('');
+    document.getElementById('add-status-select').innerHTML=ALL_STATUSES.map(s=>`<option value="${s}">${s}</option>`).join('');
   }
 
-  window._editQty=function(idx,delta){const r=editConditions[idx];if(!r)return;r.quantity+=delta;if(r.quantity<=0)editConditions.splice(idx,1);renderEditConditions();};
-  document.getElementById('btn-add-cond').addEventListener('click',()=>{const c=document.getElementById('add-cond-select').value;if(!c||editConditions.find(r=>r.condition===c))return;editConditions.push({condition:c,quantity:1});renderEditConditions();});
+  window._editQty = function(idx,delta){
+    const r=editConditions[idx]; if(!r) return;
+    r.quantity+=delta; if(r.quantity<=0) editConditions.splice(idx,1);
+    renderEditConditions();
+  };
 
-  window._openEdit=function(id){
-    editingId=id;const entry=collectionMap[id];if(!entry)return;
+  document.getElementById('btn-add-cond').addEventListener('click',()=>{
+    const cond=document.getElementById('add-cond-select').value;
+    const stat=document.getElementById('add-status-select').value;
+    const existing=editConditions.find(r=>r.condition===cond&&r.status===stat);
+    if(existing){ existing.quantity++; }
+    else { editConditions.push({condition:cond,status:stat,quantity:1}); }
+    renderEditConditions();
+  });
+
+  window._openEdit = function(id){
+    editingId=id;
+    const entry=collectionMap[id]; if(!entry) return;
     editConditions=getConditions(entry).map(r=>({...r}));
     document.getElementById('edit-modal-name').textContent=entry.name;
     renderEditConditions();
@@ -880,11 +902,16 @@
   function closeModal(){document.getElementById('edit-modal').classList.remove('open');editingId=null;editConditions=[];}
   document.getElementById('edit-cancel').addEventListener('click',closeModal);
   document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
   document.getElementById('edit-save').addEventListener('click',async()=>{
-    if (!editingId||!currentUser) return;
+    if(!editingId||!currentUser) return;
     const ref=doc(db,'users',currentUser.uid,'collection',editingId);
-    if (editConditions.length===0){if(confirm('All copies removed. Delete this card?'))await deleteDoc(ref);else return;}
-    else await updateDoc(ref,{conditions:editConditions});
+    if(!editConditions.length){
+      if(confirm('All copies removed. Delete this card from your collection?')) await deleteDoc(ref);
+      else return;
+    } else {
+      await updateDoc(ref,{conditions:editConditions});
+    }
     closeModal();
   });
 </script>
