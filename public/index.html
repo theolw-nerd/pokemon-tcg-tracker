@@ -19,699 +19,162 @@
       --radius: 12px;
       --radius-sm: 8px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ===== LOGIN ===== */
-    #login-screen {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    .login-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 48px 40px;
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-    }
-
+    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+    .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 48px 40px; max-width: 420px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; }
     .login-logo { font-size: 3.5rem; }
     .login-card h1 { font-size: 1.8rem; font-weight: 700; }
     .login-card p { color: var(--text-muted); line-height: 1.5; }
-
-    .btn-google {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: white;
-      color: #333;
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 13px 24px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: opacity 0.2s;
-    }
+    .btn-google { display: flex; align-items: center; justify-content: center; gap: 12px; background: white; color: #333; border: none; border-radius: var(--radius-sm); padding: 13px 24px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; transition: opacity 0.2s; }
     .btn-google:hover { opacity: 0.92; }
 
     /* ===== APP SHELL ===== */
     #app { display: none; }
-
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      height: 56px;
-      gap: 8px;
-    }
-
+    .nav { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; height: 56px; gap: 8px; }
     .nav-logo { font-weight: 700; font-size: 1.05rem; color: var(--accent); margin-right: 8px; white-space: nowrap; }
     .nav-pills { display: flex; gap: 4px; }
-
-    .nav-pill {
-      padding: 6px 16px;
-      border-radius: 20px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
+    .nav-pill { padding: 6px 16px; border-radius: 20px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.15s; white-space: nowrap; }
     .nav-pill:hover { background: var(--surface2); color: var(--text); }
     .nav-pill.active { background: var(--accent); color: white; }
-
     .nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
     #user-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: none; }
-
-    .btn-signout {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .btn-signout { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: 4px 12px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; }
     .btn-signout:hover { border-color: var(--text-muted); color: var(--text); }
 
     /* ===== PAGES ===== */
     .page { display: none; padding: 24px 20px; max-width: 1200px; margin: 0 auto; }
     .page.active { display: block; }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
+    .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
     .page-title { font-size: 1.4rem; font-weight: 700; }
-
-    .stat-chip {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-left: auto;
-    }
+    .stat-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 0.85rem; color: var(--text-muted); margin-left: auto; }
 
     /* ===== SHARED BUTTONS ===== */
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 12px 22px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-      white-space: nowrap;
-    }
+    .btn-primary { background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 12px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: var(--radius-sm);
-      padding: 10px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      transition: all 0.15s;
-    }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 10px; cursor: pointer; font-size: 0.95rem; transition: all 0.15s; }
     .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
-
-    .btn-back {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: var(--radius-sm);
-      padding: 6px 14px;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
+    .btn-back { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 6px 14px; font-size: 0.88rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .btn-back:hover { border-color: var(--accent); color: var(--text); }
 
-    /* ===== SEARCH BAR ===== */
+    /* ===== SEARCH BAR (API query) ===== */
     .search-bar-wrap { display: flex; gap: 10px; margin-bottom: 8px; }
-
-    .search-input {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      color: var(--text);
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
+    .search-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; color: var(--text); font-size: 1rem; outline: none; transition: border-color 0.15s; }
     .search-input:focus { border-color: var(--accent); }
     .search-input::placeholder { color: var(--text-muted); }
+    .search-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
 
-    .search-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; }
+    /* ===== UNIVERSAL FILTER BAR ===== */
+    .filter-bar { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-bar .text-filter { flex: 1; min-width: 160px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 14px; color: var(--text); font-size: 0.9rem; outline: none; transition: border-color 0.15s; }
+    .filter-bar .text-filter:focus { border-color: var(--accent); }
+    .filter-bar .text-filter::placeholder { color: var(--text-muted); }
+    .filter-group { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; }
+    .fp { padding: 7px 13px; border: none; background: transparent; color: var(--text-muted); font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; line-height: 1; }
+    .fp + .fp { border-left: 1px solid var(--border); }
+    .fp:hover { background: var(--surface2); color: var(--text); }
+    .fp.active { background: var(--accent); color: white; }
+    .btn-clear { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-sm); padding: 7px 14px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .btn-clear:hover { border-color: var(--danger); color: var(--danger); }
 
-    /* ===== FILTER ===== */
-    .filter-wrap { margin-bottom: 16px; }
-
-    .filter-input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 10px 16px;
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .filter-input:focus { border-color: var(--accent); }
-    .filter-input::placeholder { color: var(--text-muted); }
-
-    /* ===== CARD GRID (search + set detail + collection) ===== */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-      gap: 14px;
-    }
-
-    .card-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      position: relative;
-      transition: transform 0.15s, border-color 0.15s;
-      display: flex;
-      flex-direction: column;
-    }
+    /* ===== CARD GRID ===== */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 14px; }
+    .card-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; transition: transform 0.15s, border-color 0.15s; display: flex; flex-direction: column; }
     .card-item:hover { transform: translateY(-2px); border-color: var(--accent); }
     .card-item.owned { border-color: var(--accent); }
-
     .card-img-wrap { aspect-ratio: 2.5 / 3.5; background: var(--surface2); overflow: hidden; }
     .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
     .card-info { padding: 10px 12px 8px; }
     .card-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .card-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Search qty controls */
+    /* Search / Set qty controls */
     .search-qty-row { display: flex; align-items: center; border-top: 1px solid var(--border); }
-
-    .btn-sq {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 1.1rem;
-      padding: 8px 0;
-      cursor: pointer;
-      transition: background 0.15s;
-      line-height: 1;
-    }
+    .btn-sq { flex: 1; background: transparent; border: none; color: var(--text); font-size: 1.1rem; padding: 8px 0; cursor: pointer; transition: background 0.15s; line-height: 1; }
     .btn-sq:hover:not(:disabled) { background: var(--surface2); }
     .btn-sq:disabled { color: var(--border); cursor: default; }
-
     .sq-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
-
-    .sq-num {
-      flex: 1;
-      text-align: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-      padding: 8px 0;
-      transition: background 0.15s, color 0.15s;
-    }
+    .sq-num { flex: 1; text-align: center; font-weight: 700; font-size: 0.95rem; padding: 8px 0; transition: background 0.15s, color 0.15s; }
     .sq-num.owned { background: var(--accent); color: white; }
 
-    /* Collection card badges */
-    .coll-strip {
-      background: var(--accent);
-      color: white;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-align: center;
-      padding: 5px 8px;
-    }
-
+    /* Collection card parts */
+    .coll-strip { background: var(--accent); color: white; font-size: 0.78rem; font-weight: 700; text-align: center; padding: 5px 8px; }
     .cond-badges { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 12px 6px; }
-
-    .condition-badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-    }
+    .condition-badge { font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); }
     .condition-badge.is-ordered { border-color: var(--warning); color: var(--warning); }
-
-    .ordered-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: var(--warning);
-      color: #000;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-    }
-
+    .ordered-badge { position: absolute; top: 8px; left: 8px; background: var(--warning); color: #000; font-size: 0.65rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; }
     .card-actions { display: flex; gap: 6px; padding: 0 12px 10px; margin-top: auto; }
-
-    .btn-sm {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: 6px;
-      padding: 5px 8px;
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .btn-sm { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: 5px 8px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; }
     .btn-sm:hover { border-color: var(--accent); color: var(--text); }
     .btn-sm.danger:hover { border-color: var(--danger); color: var(--danger); }
 
-    /* ===== SETS TAB ===== */
+    /* ===== SETS ===== */
     .series-section { margin-bottom: 32px; }
-
-    .series-header {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .set-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 10px;
-    }
-
-    .set-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      display: flex;
-      gap: 14px;
-      align-items: center;
-      cursor: pointer;
-      transition: border-color 0.15s, transform 0.1s;
-    }
+    .series-header { font-size: 1rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .set-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+    .set-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; gap: 14px; align-items: center; cursor: pointer; transition: border-color 0.15s, transform 0.1s; }
     .set-card:hover { border-color: var(--accent); transform: translateY(-1px); }
     .set-card.has-cards { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
-
-    .set-logo {
-      width: 72px;
-      height: 52px;
-      object-fit: contain;
-      flex-shrink: 0;
-      border-radius: 6px;
-      background: var(--surface2);
-    }
-
-    .set-logo-placeholder {
-      width: 72px;
-      height: 52px;
-      border-radius: 6px;
-      background: var(--surface2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-
+    .set-logo { width: 72px; height: 52px; object-fit: contain; flex-shrink: 0; border-radius: 6px; background: var(--surface2); }
+    .set-logo-placeholder { width: 72px; height: 52px; border-radius: 6px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
     .set-info { flex: 1; min-width: 0; }
-
-    .set-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 3px;
-    }
-
+    .set-name { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
     .set-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
-
-    .set-progress-bar {
-      height: 4px;
-      background: var(--surface2);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 5px;
-    }
-
-    .set-progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      transition: width 0.4s ease;
-    }
-
-    .set-progress-text {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-    }
-
+    .set-progress-bar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+    .set-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+    .set-progress-text { font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between; }
     .set-progress-text .owned-count { color: var(--accent); font-weight: 700; }
-
-    /* Set detail header */
-    .set-detail-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .set-detail-logo {
-      height: 44px;
-      object-fit: contain;
-    }
-
+    .set-detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .set-detail-logo { height: 44px; object-fit: contain; }
     .set-detail-meta { font-size: 0.85rem; color: var(--text-muted); }
-
-    /* ===== MODAL ===== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.72);
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-overlay.open { display: flex; }
-
-    .modal {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
-      width: 100%;
-      max-width: 420px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    .form-group { margin-bottom: 16px; }
-
-    .form-group > .form-label {
-      display: block;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .cond-row {
-      display: flex;
-      align-items: center;
-      padding: 9px 12px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      margin-bottom: 6px;
-      gap: 8px;
-    }
-    .cond-row.is-ordered { border-color: var(--warning); }
-
-    .cond-row-label { font-weight: 700; font-size: 0.88rem; flex: 1; min-width: 0; }
-
-    .cond-row-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-
-    .btn-qty-modal {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-    .btn-qty-modal:hover { background: var(--accent); border-color: var(--accent); }
-
-    .cond-qty-num { font-weight: 700; font-size: 1rem; min-width: 24px; text-align: center; }
-
-    .add-cond-row { display: flex; gap: 8px; align-items: center; }
-
-    .form-select {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 9px 12px;
-      color: var(--text);
-      font-size: 0.9rem;
-      outline: none;
-      cursor: pointer;
-    }
-    .form-select:focus { border-color: var(--accent); }
-
-    .btn-add-cond {
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 9px 16px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
-    .btn-add-cond:hover { background: var(--accent-hover); }
-
-    .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
-
-    /* ===== SET DETAIL FILTER BAR ===== */
-    .set-filter-bar {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .set-filter-bar .filter-input { flex: 1; min-width: 160px; }
-
-    .ownership-pills { display: flex; gap: 4px; flex-shrink: 0; }
-
-    .ownership-pill {
-      padding: 8px 16px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .ownership-pill:hover { border-color: var(--accent); color: var(--text); }
-    .ownership-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
-
-    /* ===== VIEW TOGGLE ===== */
-    .view-toggle { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; }
-
-    .view-pill {
-      padding: 7px 14px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .view-pill:hover { background: var(--surface2); color: var(--text); }
-    .view-pill.active { background: var(--accent); color: white; }
-    .view-pill + .view-pill { border-left: 1px solid var(--border); }
 
     /* ===== LIST VIEW ===== */
     .set-list-view { display: flex; flex-direction: column; gap: 3px; }
-
-    .list-card-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 12px 6px 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      transition: border-color 0.15s;
-    }
+    .list-card-item { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); transition: border-color 0.15s; }
     .list-card-item:hover { border-color: var(--accent); }
     .list-card-item.owned { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
-
-    .list-card-thumb {
-      width: 44px;
-      height: 62px;
-      object-fit: cover;
-      border-radius: 4px;
-      flex-shrink: 0;
-      background: var(--surface2);
-      display: block;
-    }
-
-    .list-card-num {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      min-width: 36px;
-      text-align: right;
-      flex-shrink: 0;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .list-card-info {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .list-card-name {
-      font-size: 0.88rem;
-      font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .list-card-sub {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .type-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: inline-block;
-    }
-
+    .list-card-thumb { width: 44px; height: 62px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background: var(--surface2); display: block; }
+    .list-card-num { font-size: 0.75rem; color: var(--text-muted); min-width: 36px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .list-card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .list-card-name { font-size: 0.88rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .list-card-sub { font-size: 0.72rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .type-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
     .list-sub-sep { opacity: 0.35; }
-
-    .list-qty-controls {
-      display: flex;
-      align-items: center;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .btn-sq-sm {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 0.95rem;
-      width: 28px;
-      height: 28px;
-      cursor: pointer;
-      transition: background 0.15s;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .list-qty-controls { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; flex-shrink: 0; }
+    .btn-sq-sm { background: transparent; border: none; color: var(--text); font-size: 0.95rem; width: 28px; height: 28px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; }
     .btn-sq-sm:hover:not(:disabled) { background: var(--surface2); }
     .btn-sq-sm:disabled { color: var(--border); cursor: default; }
-
-    .sq-num-sm {
-      font-weight: 700;
-      font-size: 0.82rem;
-      min-width: 26px;
-      text-align: center;
-      padding: 0 2px;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s, color 0.15s;
-    }
+    .sq-num-sm { font-weight: 700; font-size: 0.82rem; min-width: 26px; text-align: center; border-left: 1px solid var(--border); border-right: 1px solid var(--border); height: 28px; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
     .sq-num-sm.owned { background: var(--accent); color: white; }
 
+    /* ===== MODAL ===== */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .cond-row { display: flex; align-items: center; padding: 9px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; gap: 8px; }
+    .cond-row.is-ordered { border-color: var(--warning); }
+    .cond-row-label { font-weight: 700; font-size: 0.88rem; flex: 1; }
+    .cond-row-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .btn-qty-modal { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; line-height: 1; flex-shrink: 0; }
+    .btn-qty-modal:hover { background: var(--accent); border-color: var(--accent); }
+    .cond-qty-num { font-weight: 700; font-size: 1rem; min-width: 24px; text-align: center; }
+    .add-cond-row { display: flex; gap: 8px; align-items: center; }
+    .form-select { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text); font-size: 0.9rem; outline: none; cursor: pointer; }
+    .form-select:focus { border-color: var(--accent); }
+    .btn-add-cond { background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); padding: 9px 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.15s; flex-shrink: 0; }
+    .btn-add-cond:hover { background: var(--accent-hover); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+
     /* ===== EMPTY / LOADING ===== */
-    .empty-state {
-      text-align: center;
-      padding: 64px 20px;
-      color: var(--text-muted);
-      grid-column: 1 / -1;
-    }
+    .empty-state { text-align: center; padding: 64px 20px; color: var(--text-muted); grid-column: 1 / -1; }
     .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
     .empty-state h3 { font-size: 1.15rem; color: var(--text); margin-bottom: 6px; }
-
     .loading { text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: 0.95rem; }
 
     ::-webkit-scrollbar { width: 5px; }
@@ -728,12 +191,7 @@
     <h1>Pokémon TCG Tracker</h1>
     <p>Track your collection, plan your binders, and manage your wishlist — from any device.</p>
     <button class="btn-google" id="btn-google-login">
-      <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/>
-        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
-      </svg>
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
       Sign in with Google
     </button>
   </div>
@@ -756,49 +214,74 @@
 
   <!-- SEARCH -->
   <div class="page active" id="page-search">
-    <div class="page-header">
-      <h2 class="page-title">Search Cards</h2>
-    </div>
+    <div class="page-header"><h2 class="page-title">Search Cards</h2></div>
     <div class="search-bar-wrap">
-      <input class="search-input" id="search-input" type="text"
-        placeholder='Try "pikachu", "charizard 4", or "mega darkrai"' />
+      <input class="search-input" id="search-input" type="text" placeholder='Try "pikachu", "charizard 4", or "mega darkrai"'>
       <button class="btn-primary" id="btn-search">Search</button>
     </div>
-    <p class="search-hint">Search by name · number · or name + number together (e.g. "pikachu 25")</p>
+    <p class="search-hint">Search by name · number · or both (e.g. "pikachu 25")</p>
+    <div class="filter-bar" id="search-filter-bar" style="display:none">
+      <div class="filter-group">
+        <button class="fp active" data-so="all">All</button>
+        <button class="fp" data-so="owned">Owned</button>
+        <button class="fp" data-so="missing">Missing</button>
+      </div>
+      <div class="filter-group">
+        <button class="fp active" data-ss="default">Default</button>
+        <button class="fp" data-ss="name">Name</button>
+        <button class="fp" data-ss="number">Number</button>
+        <button class="fp" data-ss="set">Set</button>
+      </div>
+      <button class="btn-clear" id="clear-search">Clear</button>
+    </div>
     <div id="search-results"></div>
   </div>
 
   <!-- SETS -->
   <div class="page" id="page-sets">
-    <!-- Sets list -->
     <div id="sets-list-view">
-      <div class="page-header">
-        <h2 class="page-title">Sets</h2>
+      <div class="page-header"><h2 class="page-title">Sets</h2></div>
+      <div class="filter-bar">
+        <input class="text-filter" id="sets-search" placeholder="Search sets by name…">
+        <div class="filter-group">
+          <button class="fp active" data-sp="all">All</button>
+          <button class="fp" data-sp="started">Started</button>
+          <button class="fp" data-sp="complete">Complete</button>
+        </div>
+        <div class="filter-group">
+          <button class="fp active" data-st="date">Date</button>
+          <button class="fp" data-st="name">Name</button>
+        </div>
+        <button class="btn-clear" id="clear-sets">Clear</button>
       </div>
       <div id="sets-content"></div>
     </div>
-    <!-- Set detail -->
     <div id="set-detail-view" style="display:none">
       <div class="set-detail-header">
         <button class="btn-back" id="btn-back-sets">← Sets</button>
-        <img class="set-detail-logo" id="set-detail-logo" src="" alt="">
+        <img class="set-detail-logo" id="set-detail-logo" src="" alt="" style="display:none">
         <div>
           <div class="page-title" id="set-detail-name"></div>
           <div class="set-detail-meta" id="set-detail-meta"></div>
         </div>
         <span class="stat-chip" id="set-detail-stat"></span>
       </div>
-      <div class="set-filter-bar">
-        <input class="filter-input" id="set-search" placeholder="Search within set…">
-        <div class="ownership-pills">
-          <button class="ownership-pill active" data-ownership="all">All</button>
-          <button class="ownership-pill" data-ownership="owned">Owned</button>
-          <button class="ownership-pill" data-ownership="missing">Missing</button>
+      <div class="filter-bar">
+        <input class="text-filter" id="set-search" placeholder="Search within set…">
+        <div class="filter-group">
+          <button class="fp active" data-sdo="all">All</button>
+          <button class="fp" data-sdo="owned">Owned</button>
+          <button class="fp" data-sdo="missing">Missing</button>
         </div>
-        <div class="view-toggle">
-          <button class="view-pill active" data-view="grid">Grid</button>
-          <button class="view-pill" data-view="list">List</button>
+        <div class="filter-group">
+          <button class="fp active" data-sds="#">#</button>
+          <button class="fp" data-sds="name">Name</button>
         </div>
+        <div class="filter-group">
+          <button class="fp active" data-sdv="grid">Grid</button>
+          <button class="fp" data-sdv="list">List</button>
+        </div>
+        <button class="btn-clear" id="clear-set-detail">Clear</button>
       </div>
       <div id="set-detail-grid" class="card-grid"></div>
     </div>
@@ -810,8 +293,23 @@
       <h2 class="page-title">My Collection</h2>
       <span class="stat-chip" id="collection-stat">0 cards</span>
     </div>
-    <div class="filter-wrap">
-      <input class="filter-input" id="collection-filter" type="text" placeholder="Filter by name or set…" />
+    <div class="filter-bar">
+      <input class="text-filter" id="collection-filter" placeholder="Search by name or set…">
+      <div class="filter-group">
+        <button class="fp active" data-cs="name">Name</button>
+        <button class="fp" data-cs="set">Set</button>
+        <button class="fp" data-cs="date">Date Added</button>
+      </div>
+      <div class="filter-group">
+        <button class="fp active" data-cc="all">All</button>
+        <button class="fp" data-cc="NM">NM</button>
+        <button class="fp" data-cc="LP">LP</button>
+        <button class="fp" data-cc="MP">MP</button>
+        <button class="fp" data-cc="HP">HP</button>
+        <button class="fp" data-cc="DMG">DMG</button>
+        <button class="fp" data-cc="Ordered">Ordered</button>
+      </div>
+      <button class="btn-clear" id="clear-collection">Clear</button>
     </div>
     <div id="collection-grid" class="card-grid"></div>
   </div>
@@ -839,680 +337,554 @@
   </div>
 </div>
 
-<!-- ===== SCRIPT ===== -->
 <script type="module">
-  import { initializeApp }
-    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
-    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-  import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot }
-    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+  import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
   const fbApp = initializeApp({
-    apiKey:            "AIzaSyCHGYmIdQQHHirsyGv_LCCHG_X2SFjv-Ds",
-    authDomain:        "pokemon-tcg-tracker-tlw.firebaseapp.com",
-    projectId:         "pokemon-tcg-tracker-tlw",
-    storageBucket:     "pokemon-tcg-tracker-tlw.firebasestorage.app",
+    apiKey: "AIzaSyCHGYmIdQQHHirsyGv_LCCHG_X2SFjv-Ds",
+    authDomain: "pokemon-tcg-tracker-tlw.firebaseapp.com",
+    projectId: "pokemon-tcg-tracker-tlw",
+    storageBucket: "pokemon-tcg-tracker-tlw.firebasestorage.app",
     messagingSenderId: "137900201924",
-    appId:             "1:137900201924:web:47e0adb3edacb142e0b691"
+    appId: "1:137900201924:web:47e0adb3edacb142e0b691"
   });
+  const auth = getAuth(fbApp), db = getFirestore(fbApp), provider = new GoogleAuthProvider();
 
-  const auth     = getAuth(fbApp);
-  const db       = getFirestore(fbApp);
-  const provider = new GoogleAuthProvider();
+  // ── Persistent state (sessionStorage-backed) ───────────
+  const ss = sessionStorage;
+  const S = {
+    get: k => ss.getItem(k),
+    set: (k,v) => ss.setItem(k, v),
+    del: (...ks) => ks.forEach(k => ss.removeItem(k))
+  };
 
-  // ── State ──────────────────────────────────────────────
-  let currentUser    = null;
-  let collectionMap  = {};       // cardId → Firestore data
-  let unsubscribe    = null;
+  // Search
+  let rawSearchCards = [];
+  let searchOwn  = S.get('sr_own')  || 'all';
+  let searchSort = S.get('sr_sort') || 'default';
 
-  let lastSearchCards = [];      // cards shown in search results
-  let lastSetCards    = [];      // cards shown in set detail
-  let activePage      = 'search';
+  // Sets list
+  let setsQ        = S.get('sl_q')    || '';
+  let setsProgress = S.get('sl_prog') || 'all';
+  let setsSortBy   = S.get('sl_sort') || 'date';
 
-  let setsData        = null;    // cached sets list from API
-  let currentSetId    = null;
-  let setNameFilter      = '';
-  let setOwnershipFilter = 'all'; // 'all' | 'owned' | 'missing'
-  let setViewMode        = 'grid'; // 'grid' | 'list'
+  // Set detail
+  let setQ   = '';
+  let setOwn  = S.get('sd_own')  || 'all';
+  let setSort = S.get('sd_sort') || '#';
+  let setView = S.get('sd_view') || 'grid';
 
-  let editingId       = null;
-  let editConditions  = [];
+  // Collection
+  let collQ    = S.get('co_q')    || '';
+  let collSort = S.get('co_sort') || 'name';
+  let collCond = S.get('co_cond') || 'all';
 
-  const searchCache = new Map(); // query → card array
-  const setCardCache = new Map();// setId → card array
+  // App state
+  let currentUser   = null;
+  let collectionMap = {};
+  let unsubscribe   = null;
+  let activePage    = 'search';
+  let setsData      = null;
+  let currentSetId  = null;
+  let lastSetCards  = [];
+  let editingId     = null, editConditions = [];
 
-  const ALL_CONDITIONS = ['Ordered', 'NM', 'LP', 'MP', 'HP', 'DMG'];
+  const searchCache  = new Map();
+  const setCardCache = new Map();
+  const ALL_CONDITIONS = ['Ordered','NM','LP','MP','HP','DMG'];
+  const TYPE_COLORS = { Grass:'#5DB85B',Fire:'#FF6B35',Water:'#4BA3C3',Lightning:'#F7C948',Psychic:'#A958B0',Fighting:'#C4783A',Darkness:'#4A4A4A',Metal:'#8C8C8C',Colorless:'#A8A8A8',Dragon:'#2B6CB0',Fairy:'#E84B8A' };
 
-  // ── Data helpers ───────────────────────────────────────
-  function getConditions(entry) {
-    if (!entry) return [];
-    if (Array.isArray(entry.conditions)) {
-      return entry.conditions.map(r => ({
-        condition: r.condition || 'NM',
-        quantity:  r.quantity  || 1
-      }));
+  // ── Helpers ────────────────────────────────────────────
+  function getConditions(e) {
+    if (!e) return [];
+    if (Array.isArray(e.conditions)) return e.conditions.map(r=>({condition:r.condition||'NM',quantity:r.quantity||1}));
+    return [{condition:e.condition||'NM',quantity:e.quantity||1}];
+  }
+  function getTotalQty(e) { return getConditions(e).reduce((s,r)=>s+r.quantity,0); }
+
+  async function fetchWithRetry(url, retries=3, delay=800) {
+    for (let i=0; i<retries; i++) {
+      try { const r=await fetch(url); if(!r.ok) throw new Error(r.status); return await r.json(); }
+      catch(e) { if(i===retries-1) throw e; await new Promise(r=>setTimeout(r,delay)); }
     }
-    return [{ condition: entry.condition || 'NM', quantity: entry.quantity || 1 }];
   }
 
-  function getTotalQty(entry) {
-    return getConditions(entry).reduce((s, r) => s + r.quantity, 0);
+  function sortCards(cards, by) {
+    const c=[...cards];
+    if (by==='name')   return c.sort((a,b)=>a.name.localeCompare(b.name));
+    if (by==='number') return c.sort((a,b)=>{const na=parseInt(a.number)||a.number||'',nb=parseInt(b.number)||b.number||'';return typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1);});
+    if (by==='set')    return c.sort((a,b)=>{const s=(a.set?.name||'').localeCompare(b.set?.name||'');return s||parseInt(a.number)-parseInt(b.number);});
+    if (by==='#')      return c.sort((a,b)=>{const na=parseInt(a.number)||a.number||'',nb=parseInt(b.number)||b.number||'';return typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1);});
+    return c;
   }
 
-  // ── Fetch helper with auto-retry ───────────────────────
-  async function fetchWithRetry(url, retries = 3, delayMs = 800) {
-    for (let i = 0; i < retries; i++) {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
-      } catch (e) {
-        if (i === retries - 1) throw e;
-        await new Promise(r => setTimeout(r, delayMs));
-      }
-    }
+  function getTypeLabel(c) {
+    const sup=c.supertype||'', sub=Array.isArray(c.subtypes)?c.subtypes:[], typ=Array.isArray(c.types)?c.types:[];
+    if (sup==='Pokémon') return {label:typ.length?`Pokémon · ${typ.join(' / ')}`:'Pokémon',color:TYPE_COLORS[typ[0]]};
+    if (sup==='Trainer') return {label:sub.length?`Trainer · ${sub[0]}`:'Trainer',color:null};
+    if (sup==='Energy')  return {label:typ.length?`Energy · ${typ[0]}`:(sub.length?`Energy · ${sub[0]}`:'Energy'),color:TYPE_COLORS[typ[0]]};
+    return {label:sup,color:null};
   }
 
-  // ── ROUTING HELPERS ────────────────────────────────────
-  function setHash(hash) {
-    history.replaceState(null, '', location.pathname + '#' + hash);
+  // ── Pill helpers ───────────────────────────────────────
+  function activatePill(attr, val) {
+    document.querySelectorAll(`[${attr}]`).forEach(p=>p.classList.toggle('active',p.getAttribute(attr)===val));
   }
+
+  // ── Routing ────────────────────────────────────────────
+  function setHash(h) { history.replaceState(null,'',location.pathname+'#'+h); }
 
   function switchPage(page) {
-    activePage = page;
-    document.querySelectorAll('.nav-pill').forEach(p => p.classList.toggle('active', p.dataset.page === page));
-    document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
+    activePage=page;
+    document.querySelectorAll('.nav-pill').forEach(p=>p.classList.toggle('active',p.dataset.page===page));
+    document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));
   }
 
   async function restoreFromHash() {
-    const hash = location.hash.replace('#', '') || 'search';
-
-    if (hash === 'collection') {
+    const hash=(location.hash||'').replace('#','') || 'search';
+    if (hash.startsWith('sets/')) {
+      const setId=hash.slice(5);
+      switchPage('sets');
+      if (!setsData) await loadSets();
+      await openSet(setId);
+    } else if (hash==='sets') {
+      switchPage('sets');
+      if (!setsData) await loadSets();
+    } else if (hash==='collection') {
       switchPage('collection');
-      const saved = sessionStorage.getItem('tcg_collection_filter') || '';
-      document.getElementById('collection-filter').value = saved;
-      collectionFilter = saved.toLowerCase();
-
-    } else if (hash.startsWith('sets/')) {
-      const setId = hash.slice(5);
-      switchPage('sets');
-      if (!setsData) await loadSets();
-      await window._openSet(setId);
-
-    } else if (hash === 'sets') {
-      switchPage('sets');
-      if (!setsData) await loadSets();
-
+      restoreCollectionUI();
     } else {
       switchPage('search');
-      const savedQ = sessionStorage.getItem('tcg_search_q') || '';
-      if (savedQ) {
-        document.getElementById('search-input').value = savedQ;
-        await doSearch();
-      }
+      const q=S.get('sr_q')||'';
+      if (q) { document.getElementById('search-input').value=q; await doSearch(); }
     }
   }
 
+  function restoreCollectionUI() {
+    document.getElementById('collection-filter').value = collQ;
+    activatePill('data-cs', collSort);
+    activatePill('data-cc', collCond);
+  }
+
   // ── AUTH ───────────────────────────────────────────────
-  document.getElementById('btn-google-login').addEventListener('click', () =>
-    signInWithPopup(auth, provider).catch(e => alert('Sign-in failed: ' + e.message)));
+  document.getElementById('btn-google-login').addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>alert('Sign-in failed: '+e.message)));
+  document.getElementById('btn-signout').addEventListener('click',()=>signOut(auth));
 
-  document.getElementById('btn-signout').addEventListener('click', () => signOut(auth));
-
-  onAuthStateChanged(auth, user => {
-    currentUser = user;
+  onAuthStateChanged(auth, user=>{
+    currentUser=user;
     if (user) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      const av = document.getElementById('user-avatar');
-      if (user.photoURL) { av.src = user.photoURL; av.style.display = 'block'; }
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      const av=document.getElementById('user-avatar');
+      if (user.photoURL){av.src=user.photoURL;av.style.display='block';}
       startCollectionListener();
       restoreFromHash();
     } else {
-      document.getElementById('login-screen').style.display = 'flex';
-      document.getElementById('app').style.display = 'none';
-      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-      collectionMap = {};
+      document.getElementById('login-screen').style.display='flex';
+      document.getElementById('app').style.display='none';
+      if (unsubscribe){unsubscribe();unsubscribe=null;}
+      collectionMap={};
     }
   });
 
   // ── NAVIGATION ─────────────────────────────────────────
-  document.querySelectorAll('.nav-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      const page = pill.dataset.page;
-      switchPage(page);
-      setHash(page);
-      if (page === 'sets' && !setsData) loadSets();
-      // Restore collection filter text when switching to collection
-      if (page === 'collection') {
-        const saved = sessionStorage.getItem('tcg_collection_filter') || '';
-        document.getElementById('collection-filter').value = saved;
-        collectionFilter = saved.toLowerCase();
-        renderCollection();
-      }
+  document.querySelectorAll('.nav-pill').forEach(pill=>{
+    pill.addEventListener('click',()=>{
+      const page=pill.dataset.page;
+      switchPage(page); setHash(page);
+      if (page==='sets' && !setsData) loadSets();
+      if (page==='collection') restoreCollectionUI();
     });
   });
 
   // ── SEARCH ─────────────────────────────────────────────
   function buildQuery(raw) {
-    const tokens = raw.trim().split(/\s+/);
-    const nums   = tokens.filter(t => /^\d+$/.test(t));
-    const words  = tokens.filter(t => !/^\d+$/.test(t));
-    const parts  = [];
-    if (words.length === 1) parts.push(`name:*${words[0]}*`);
-    else if (words.length > 1) parts.push(`name:"${words.join(' ')}"`);
+    const tokens=raw.trim().split(/\s+/), nums=tokens.filter(t=>/^\d+$/.test(t)), words=tokens.filter(t=>!/^\d+$/.test(t)), parts=[];
+    if (words.length===1) parts.push(`name:*${words[0]}*`);
+    else if (words.length>1) parts.push(`name:"${words.join(' ')}"`);
     if (nums.length) parts.push(`number:${nums[0]}`);
-    return parts.join(' ') || raw;
+    return parts.join(' ')||raw;
   }
 
   async function doSearch() {
-    const raw = document.getElementById('search-input').value.trim();
+    const raw=document.getElementById('search-input').value.trim();
     if (!raw) return;
-    const resultsEl = document.getElementById('search-results');
-    document.getElementById('btn-search').disabled = true;
-    const q   = buildQuery(raw);
-    const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30&select=id,name,number,set,images`;
-
-    sessionStorage.setItem('tcg_search_q', raw);
-
-    if (searchCache.has(q)) {
-      renderSearchResults(searchCache.get(q));
-      document.getElementById('btn-search').disabled = false;
-      return;
-    }
-
-    resultsEl.innerHTML = '<div class="loading">Searching…</div>';
+    const btn=document.getElementById('btn-search');
+    btn.disabled=true;
+    S.set('sr_q', raw);
+    const q=buildQuery(raw);
+    const url=`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30&select=id,name,number,set,images`;
+    if (searchCache.has(q)){renderSearchResults(searchCache.get(q));btn.disabled=false;return;}
+    document.getElementById('search-results').innerHTML='<div class="loading">Searching…</div>';
     try {
-      const { data } = await fetchWithRetry(url);
-      if (!data || data.length === 0) {
-        resultsEl.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>No results</h3><p>Try a different search</p></div>`;
-        return;
-      }
-      searchCache.set(q, data);
-      if (searchCache.size > 20) searchCache.delete(searchCache.keys().next().value);
+      const {data}=await fetchWithRetry(url);
+      if (!data||data.length===0){document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No results</h3><p>Try a different search</p></div>`;return;}
+      searchCache.set(q,data); if(searchCache.size>20) searchCache.delete(searchCache.keys().next().value);
+      rawSearchCards=data;
       renderSearchResults(data);
-    } catch {
-      resultsEl.innerHTML = `<div class="empty-state"><h3>Search failed</h3><p>Please try again.</p></div>`;
-    } finally {
-      document.getElementById('btn-search').disabled = false;
-    }
+    } catch { document.getElementById('search-results').innerHTML=`<div class="empty-state"><h3>Search failed</h3><p>Please try again.</p></div>`; }
+    finally { btn.disabled=false; }
   }
 
-  document.getElementById('btn-search').addEventListener('click', doSearch);
-  document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
-
-  function qtyCardHTML(c, gridId) {
-    const entry = collectionMap[c.id];
-    const qty   = getTotalQty(entry);
-    const data  = encodeURIComponent(JSON.stringify(c));
-    return `
-      <div class="card-item${qty > 0 ? ' owned' : ''}" id="${gridId}-${c.id}">
-        <div class="card-img-wrap">
-          <img src="${c.images?.small || ''}" alt="${c.name}" loading="lazy">
-        </div>
-        <div class="card-info">
-          <div class="card-name">${c.name}</div>
-          <div class="card-meta">${c.set?.name || ''} · #${c.number || ''}</div>
-        </div>
-        <div class="search-qty-row">
-          <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',-1)" ${qty === 0 ? 'disabled' : ''}>−</button>
-          <div class="sq-divider"></div>
-          <span class="sq-num${qty > 0 ? ' owned' : ''}">${qty}</span>
-          <div class="sq-divider"></div>
-          <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',1)">+</button>
-        </div>
-      </div>`;
+  function applySearchFilters(cards) {
+    let c=[...cards];
+    if (searchOwn==='owned')   c=c.filter(x=>getTotalQty(collectionMap[x.id])>0);
+    if (searchOwn==='missing') c=c.filter(x=>getTotalQty(collectionMap[x.id])===0);
+    return sortCards(c, searchSort);
   }
 
   function renderSearchResults(cards) {
-    lastSearchCards = cards;
-    document.getElementById('search-results').innerHTML =
-      `<div class="card-grid">${cards.map(c => qtyCardHTML(c, 'src')).join('')}</div>`;
+    rawSearchCards=cards;
+    const filtered=applySearchFilters(cards);
+    const fb=document.getElementById('search-filter-bar');
+    fb.style.display='flex';
+    activatePill('data-so', searchOwn);
+    activatePill('data-ss', searchSort);
+    if (filtered.length===0) {
+      document.getElementById('search-results').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try adjusting your filters</p></div>`;
+      return;
+    }
+    document.getElementById('search-results').innerHTML=`<div class="card-grid">${filtered.map(c=>qtyCardHTML(c,'src')).join('')}</div>`;
+  }
+
+  document.getElementById('btn-search').addEventListener('click',doSearch);
+  document.getElementById('search-input').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+
+  // Search filter controls
+  document.querySelectorAll('[data-so]').forEach(p=>p.addEventListener('click',()=>{
+    searchOwn=p.dataset.so; S.set('sr_own',searchOwn); renderSearchResults(rawSearchCards);
+  }));
+  document.querySelectorAll('[data-ss]').forEach(p=>p.addEventListener('click',()=>{
+    searchSort=p.dataset.ss; S.set('sr_sort',searchSort); renderSearchResults(rawSearchCards);
+  }));
+  document.getElementById('clear-search').addEventListener('click',()=>{
+    searchOwn='all'; searchSort='default';
+    S.del('sr_q','sr_own','sr_sort');
+    document.getElementById('search-input').value='';
+    document.getElementById('search-results').innerHTML='';
+    document.getElementById('search-filter-bar').style.display='none';
+    rawSearchCards=[];
+  });
+
+  // ── CARD HTML ──────────────────────────────────────────
+  function qtyCardHTML(c, gridId) {
+    const qty=getTotalQty(collectionMap[c.id]), data=encodeURIComponent(JSON.stringify(c));
+    return `<div class="card-item${qty>0?' owned':''}" id="${gridId}-${c.id}">
+      <div class="card-img-wrap"><img src="${c.images?.small||''}" alt="${c.name}" loading="lazy"></div>
+      <div class="card-info"><div class="card-name">${c.name}</div><div class="card-meta">${c.set?.name||''} · #${c.number||''}</div></div>
+      <div class="search-qty-row">
+        <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',-1)" ${qty===0?'disabled':''}>−</button>
+        <div class="sq-divider"></div>
+        <span class="sq-num${qty>0?' owned':''}">${qty}</span>
+        <div class="sq-divider"></div>
+        <button class="btn-sq" onclick="window._sqChange('${c.id}','${data}',1)">+</button>
+      </div></div>`;
+  }
+
+  function listCardHTML(c) {
+    const qty=getTotalQty(collectionMap[c.id]), data=encodeURIComponent(JSON.stringify(c)), ti=getTypeLabel(c);
+    const dot=ti.color?`<span class="type-dot" style="background:${ti.color}"></span>`:'';
+    const rar=c.rarity?`<span class="list-sub-sep">·</span><span>${c.rarity}</span>`:'';
+    return `<div class="list-card-item${qty>0?' owned':''}" id="set-${c.id}">
+      <img class="list-card-thumb" src="${c.images?.small||''}" alt="${c.name}" loading="lazy">
+      <span class="list-card-num">#${c.number||'—'}</span>
+      <div class="list-card-info">
+        <span class="list-card-name">${c.name}</span>
+        <span class="list-card-sub">${dot}<span>${ti.label}</span>${rar}</span>
+      </div>
+      <div class="list-qty-controls">
+        <button class="btn-sq-sm" onclick="window._sqChange('${c.id}','${data}',-1)" ${qty===0?'disabled':''}>−</button>
+        <span class="sq-num-sm${qty>0?' owned':''}">${qty}</span>
+        <button class="btn-sq-sm" onclick="window._sqChange('${c.id}','${data}',1)">+</button>
+      </div></div>`;
   }
 
   function refreshQtyGrid(cards, gridId) {
-    cards.forEach(c => {
-      const tile = document.getElementById(`${gridId}-${c.id}`);
-      if (!tile) return;
-      const qty   = getTotalQty(collectionMap[c.id]);
-      tile.classList.toggle('owned', qty > 0);
-      const num   = tile.querySelector('.sq-num');
-      const minus = tile.querySelector('.btn-sq');
-      if (num)   { num.textContent = qty; num.classList.toggle('owned', qty > 0); }
-      if (minus) minus.disabled = qty === 0;
+    cards.forEach(c=>{
+      const tile=document.getElementById(`${gridId}-${c.id}`); if(!tile) return;
+      const qty=getTotalQty(collectionMap[c.id]);
+      tile.classList.toggle('owned',qty>0);
+      const num=tile.querySelector('.sq-num,.sq-num-sm'), minus=tile.querySelector('.btn-sq,.btn-sq-sm');
+      if(num){num.textContent=qty;num.classList.toggle('owned',qty>0);}
+      if(minus) minus.disabled=qty===0;
     });
   }
 
-  // ── SETS ───────────────────────────────────────────────
+  // ── SETS LIST ──────────────────────────────────────────
   async function loadSets() {
-    document.getElementById('sets-content').innerHTML = '<div class="loading">Loading sets…</div>';
+    document.getElementById('sets-content').innerHTML='<div class="loading">Loading sets…</div>';
     try {
-      const { data } = await fetchWithRetry(
-        'https://api.pokemontcg.io/v2/sets?orderBy=-releaseDate&pageSize=250&select=id,name,series,total,releaseDate,images'
-      );
-      setsData = data;
-      renderSetsList();
-      return data;
-    } catch {
-      document.getElementById('sets-content').innerHTML =
-        `<div class="empty-state"><h3>Failed to load sets</h3><p>Please try again.</p></div>`;
-    }
+      const {data}=await fetchWithRetry('https://api.pokemontcg.io/v2/sets?orderBy=-releaseDate&pageSize=250&select=id,name,series,total,releaseDate,images');
+      setsData=data; renderSetsList(); return data;
+    } catch { document.getElementById('sets-content').innerHTML=`<div class="empty-state"><h3>Failed to load sets</h3><p>Please try again.</p></div>`; }
   }
 
-  function ownedCountForSet(setId) {
-    return Object.values(collectionMap).filter(c => c.setId === setId).length;
+  function ownedCountForSet(id) { return Object.values(collectionMap).filter(c=>c.setId===id).length; }
+
+  function formatDate(s) {
+    if(!s) return '';
+    const [y,m,d]=s.split('/');
+    return new Date(y,m-1,d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   }
 
-  function formatDate(str) {
-    if (!str) return '';
-    const [y, m, d] = str.split('/');
-    return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  function applySetListFilters(sets) {
+    let s=[...sets];
+    if (setsQ) { const q=setsQ.toLowerCase(); s=s.filter(x=>x.name.toLowerCase().includes(q)); }
+    if (setsProgress==='started')  s=s.filter(x=>ownedCountForSet(x.id)>0);
+    if (setsProgress==='complete') s=s.filter(x=>ownedCountForSet(x.id)>=x.total);
+    if (setsSortBy==='name') s=[...s].sort((a,b)=>a.name.localeCompare(b.name));
+    return s;
   }
 
   function renderSetsList() {
     if (!setsData) return;
+    // Update UI to match state
+    document.getElementById('sets-search').value=setsQ;
+    activatePill('data-sp',setsProgress);
+    activatePill('data-st',setsSortBy);
 
-    // Group by series, preserving the order series first appear
-    const seriesOrder = [];
-    const grouped = {};
-    setsData.forEach(s => {
-      if (!grouped[s.series]) { grouped[s.series] = []; seriesOrder.push(s.series); }
-      grouped[s.series].push(s);
-    });
+    const filtered=applySetListFilters(setsData);
+    if (filtered.length===0){
+      document.getElementById('sets-content').innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No sets match</h3><p>Try a different search or filter</p></div>`;
+      return;
+    }
 
-    const html = seriesOrder.map(series => {
-      const sets = grouped[series];
-      const cardsHTML = sets.map(s => {
-        const owned   = ownedCountForSet(s.id);
-        const total   = s.total || 1;
-        const pct     = Math.min(100, Math.round((owned / total) * 100));
-        const hasCols = owned > 0;
-        const logo    = s.images?.logo
-          ? `<img class="set-logo" src="${s.images.logo}" alt="${s.name}" loading="lazy">`
-          : `<div class="set-logo-placeholder">🃏</div>`;
-        return `
-          <div class="set-card${hasCols ? ' has-cards' : ''}" onclick="window._openSet('${s.id}')">
+    // Group by series (preserving order)
+    const seriesOrder=[], grouped={};
+    filtered.forEach(s=>{if(!grouped[s.series]){grouped[s.series]=[];seriesOrder.push(s.series);}grouped[s.series].push(s);});
+
+    document.getElementById('sets-content').innerHTML=seriesOrder.map(series=>`
+      <div class="series-section">
+        <div class="series-header">${series}</div>
+        <div class="set-grid">${grouped[series].map(s=>{
+          const owned=ownedCountForSet(s.id), total=s.total||1, pct=Math.min(100,Math.round(owned/total*100));
+          const logo=s.images?.logo?`<img class="set-logo" src="${s.images.logo}" alt="${s.name}" loading="lazy">`:`<div class="set-logo-placeholder">🃏</div>`;
+          return `<div class="set-card${owned>0?' has-cards':''}" onclick="window._openSet('${s.id}')">
             ${logo}
             <div class="set-info">
               <div class="set-name">${s.name}</div>
               <div class="set-date">${formatDate(s.releaseDate)}</div>
-              <div class="set-progress-bar">
-                <div class="set-progress-fill" style="width:${pct}%"></div>
-              </div>
-              <div class="set-progress-text">
-                <span><span class="owned-count">${owned}</span> of ${total}</span>
-                <span>${pct}%</span>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-      return `
-        <div class="series-section">
-          <div class="series-header">${series}</div>
-          <div class="set-grid">${cardsHTML}</div>
-        </div>`;
-    }).join('');
-
-    document.getElementById('sets-content').innerHTML = html;
+              <div class="set-progress-bar"><div class="set-progress-fill" style="width:${pct}%"></div></div>
+              <div class="set-progress-text"><span><span class="owned-count">${owned}</span> of ${total}</span><span>${pct}%</span></div>
+            </div></div>`;
+        }).join('')}</div>
+      </div>`).join('');
   }
 
-  const TYPE_COLORS = {
-    Grass: '#5DB85B', Fire: '#FF6B35', Water: '#4BA3C3',
-    Lightning: '#F7C948', Psychic: '#A958B0', Fighting: '#C4783A',
-    Darkness: '#4A4A4A', Metal: '#8C8C8C', Colorless: '#A8A8A8',
-    Dragon: '#2B6CB0', Fairy: '#E84B8A'
+  // Sets list filter controls
+  document.getElementById('sets-search').addEventListener('input',e=>{setsQ=e.target.value;S.set('sl_q',setsQ);renderSetsList();});
+  document.querySelectorAll('[data-sp]').forEach(p=>p.addEventListener('click',()=>{setsProgress=p.dataset.sp;S.set('sl_prog',setsProgress);renderSetsList();}));
+  document.querySelectorAll('[data-st]').forEach(p=>p.addEventListener('click',()=>{setsSortBy=p.dataset.st;S.set('sl_sort',setsSortBy);renderSetsList();}));
+  document.getElementById('clear-sets').addEventListener('click',()=>{
+    setsQ='';setsProgress='all';setsSortBy='date';
+    S.del('sl_q','sl_prog','sl_sort');
+    renderSetsList();
+  });
+
+  // ── SET DETAIL ─────────────────────────────────────────
+  window._openSet = async function openSet(setId) {
+    const set=setsData?.find(s=>s.id===setId); if(!set) return;
+    currentSetId=setId; setHash('sets/'+setId);
+
+    setQ=''; // reset in-set text search only
+    // restore persisted filters
+    activatePill('data-sdo', setOwn);
+    activatePill('data-sds', setSort);
+    activatePill('data-sdv', setView);
+    document.getElementById('set-search').value='';
+
+    document.getElementById('sets-list-view').style.display='none';
+    document.getElementById('set-detail-view').style.display='block';
+    const logo=document.getElementById('set-detail-logo');
+    if (set.images?.logo){logo.src=set.images.logo;logo.style.display='block';}else{logo.style.display='none';}
+    document.getElementById('set-detail-name').textContent=set.name;
+    document.getElementById('set-detail-meta').textContent=`${set.series} · ${formatDate(set.releaseDate)} · ${set.total} cards`;
+    updateSetDetailStat();
+
+    const grid=document.getElementById('set-detail-grid');
+    grid.innerHTML='<div class="loading" style="grid-column:1/-1">Loading cards…</div>';
+
+    try {
+      let cards=setCardCache.get(setId);
+      if (!cards){
+        const {data}=await fetchWithRetry(`https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=250&select=id,name,number,set,images,supertype,subtypes,types,rarity`);
+        cards=data||[]; setCardCache.set(setId,cards);
+      }
+      lastSetCards=cards;
+      if (cards.length===0){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>No cards found</h3></div>';return;}
+      renderSetDetailCards();
+    } catch { document.getElementById('set-detail-grid').innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>Failed to load</h3><p>Please try again.</p></div>'; }
   };
+  // expose for restoreFromHash
+  const openSet = window._openSet;
 
-  function getTypeLabel(c) {
-    const supertype = c.supertype || '';
-    const subtypes  = Array.isArray(c.subtypes) ? c.subtypes : [];
-    const types     = Array.isArray(c.types)    ? c.types    : [];
-    if (supertype === 'Pokémon') return { label: types.length ? `Pokémon · ${types.join(' / ')}` : 'Pokémon', color: TYPE_COLORS[types[0]] };
-    if (supertype === 'Trainer') return { label: subtypes.length ? `Trainer · ${subtypes[0]}` : 'Trainer', color: null };
-    if (supertype === 'Energy')  return { label: types.length ? `Energy · ${types[0]}` : (subtypes.length ? `Energy · ${subtypes[0]}` : 'Energy'), color: TYPE_COLORS[types[0]] };
-    return { label: supertype, color: null };
-  }
-
-  function listCardHTML(c) {
-    const entry    = collectionMap[c.id];
-    const qty      = getTotalQty(entry);
-    const data     = encodeURIComponent(JSON.stringify(c));
-    const typeInfo = getTypeLabel(c);
-    const dotHTML  = typeInfo.color
-      ? `<span class="type-dot" style="background:${typeInfo.color}"></span>`
-      : '';
-    const rarityHTML = c.rarity
-      ? `<span class="list-sub-sep">·</span><span>${c.rarity}</span>`
-      : '';
-
-    return `
-      <div class="list-card-item${qty > 0 ? ' owned' : ''}" id="set-${c.id}">
-        <img class="list-card-thumb" src="${c.images?.small || ''}" alt="${c.name}" loading="lazy">
-        <span class="list-card-num">#${c.number || '—'}</span>
-        <div class="list-card-info">
-          <span class="list-card-name">${c.name}</span>
-          <span class="list-card-sub">
-            ${dotHTML}
-            <span>${typeInfo.label}</span>
-            ${rarityHTML}
-          </span>
-        </div>
-        <div class="list-qty-controls">
-          <button class="btn-sq-sm" onclick="window._sqChange('${c.id}','${data}',-1)" ${qty === 0 ? 'disabled' : ''}>−</button>
-          <span class="sq-num-sm${qty > 0 ? ' owned' : ''}">${qty}</span>
-          <button class="btn-sq-sm" onclick="window._sqChange('${c.id}','${data}',1)">+</button>
-        </div>
-      </div>`;
+  function applySetDetailFilters(cards) {
+    let c=[...cards];
+    if (setQ){const q=setQ.toLowerCase();c=c.filter(x=>x.name.toLowerCase().includes(q));}
+    if (setOwn==='owned')   c=c.filter(x=>getTotalQty(collectionMap[x.id])>0);
+    if (setOwn==='missing') c=c.filter(x=>getTotalQty(collectionMap[x.id])===0);
+    return sortCards(c, setSort);
   }
 
   function renderSetDetailCards() {
-    const grid = document.getElementById('set-detail-grid');
-    if (!grid) return;
-
-    let cards = lastSetCards;
-
-    if (setNameFilter) {
-      const q = setNameFilter.toLowerCase();
-      cards = cards.filter(c => c.name.toLowerCase().includes(q));
-    }
-
-    if (setOwnershipFilter === 'owned') {
-      cards = cards.filter(c => getTotalQty(collectionMap[c.id]) > 0);
-    } else if (setOwnershipFilter === 'missing') {
-      cards = cards.filter(c => getTotalQty(collectionMap[c.id]) === 0);
-    }
-
-    if (cards.length === 0) {
-      grid.className = 'card-grid';
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No cards match</h3><p>Try a different search or filter</p></div>`;
-      return;
-    }
-
-    if (setViewMode === 'list') {
-      grid.className = 'set-list-view';
-      grid.innerHTML = cards.map(listCardHTML).join('');
-    } else {
-      grid.className = 'card-grid';
-      grid.innerHTML = cards.map(c => qtyCardHTML(c, 'set')).join('');
-    }
+    const grid=document.getElementById('set-detail-grid'); if(!grid) return;
+    const cards=applySetDetailFilters(lastSetCards);
+    if (cards.length===0){grid.className='card-grid';grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No cards match</h3><p>Try adjusting your filters</p></div>`;return;}
+    if (setView==='list'){grid.className='set-list-view';grid.innerHTML=cards.map(listCardHTML).join('');}
+    else {grid.className='card-grid';grid.innerHTML=cards.map(c=>qtyCardHTML(c,'set')).join('');}
   }
-
-  // Filter bar event listeners
-  document.getElementById('set-search').addEventListener('input', e => {
-    setNameFilter = e.target.value.trim();
-    renderSetDetailCards();
-  });
-
-  document.querySelectorAll('.ownership-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.ownership-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      setOwnershipFilter = pill.dataset.ownership;
-      sessionStorage.setItem('tcg_ownership_filter', setOwnershipFilter);
-      renderSetDetailCards();
-    });
-  });
-
-  document.querySelectorAll('.view-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.view-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      setViewMode = pill.dataset.view;
-      sessionStorage.setItem('tcg_view_mode', setViewMode);
-      renderSetDetailCards();
-    });
-  });
-
-  window._openSet = async function(setId) {
-    const set = setsData?.find(s => s.id === setId);
-    if (!set) return;
-    currentSetId = setId;
-
-    // Switch to detail view
-    document.getElementById('sets-list-view').style.display = 'none';
-    document.getElementById('set-detail-view').style.display = 'block';
-
-    const logo = document.getElementById('set-detail-logo');
-    logo.src = set.images?.logo || '';
-    logo.style.display = set.images?.logo ? 'block' : 'none';
-    document.getElementById('set-detail-name').textContent = set.name;
-    document.getElementById('set-detail-meta').textContent = `${set.series} · ${formatDate(set.releaseDate)} · ${set.total} cards`;
-
-    setHash('sets/' + setId);
-
-    // Restore persisted filter state; reset only the set-specific text search
-    setNameFilter      = '';
-    setOwnershipFilter = sessionStorage.getItem('tcg_ownership_filter') || 'all';
-    setViewMode        = sessionStorage.getItem('tcg_view_mode')        || 'grid';
-    document.getElementById('set-search').value = '';
-    document.querySelectorAll('.ownership-pill').forEach(p =>
-      p.classList.toggle('active', p.dataset.ownership === setOwnershipFilter));
-    document.querySelectorAll('.view-pill').forEach(p =>
-      p.classList.toggle('active', p.dataset.view === setViewMode));
-
-    const grid = document.getElementById('set-detail-grid');
-    grid.innerHTML = '<div class="loading" style="grid-column:1/-1">Loading cards…</div>';
-    updateSetDetailStat();
-
-    try {
-      let cards = setCardCache.get(setId);
-      if (!cards) {
-        const { data } = await fetchWithRetry(
-          `https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=250&select=id,name,number,set,images,supertype,subtypes,types,rarity`
-        );
-        cards = data || [];
-        setCardCache.set(setId, cards);
-      }
-      lastSetCards = cards;
-      if (cards.length === 0) {
-        grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>No cards found</h3></div>';
-        return;
-      }
-      renderSetDetailCards();
-    } catch {
-      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><h3>Failed to load cards</h3><p>Please try again.</p></div>';
-    }
-  };
 
   function updateSetDetailStat() {
     if (!currentSetId) return;
-    const set   = setsData?.find(s => s.id === currentSetId);
-    const owned = ownedCountForSet(currentSetId);
-    const total = set?.total || '?';
-    document.getElementById('set-detail-stat').textContent = `${owned} / ${total} owned`;
+    const set=setsData?.find(s=>s.id===currentSetId);
+    document.getElementById('set-detail-stat').textContent=`${ownedCountForSet(currentSetId)} / ${set?.total||'?'} owned`;
   }
 
-  document.getElementById('btn-back-sets').addEventListener('click', () => {
-    currentSetId = null;
-    lastSetCards = [];
-    setHash('sets');
-    document.getElementById('set-detail-view').style.display  = 'none';
-    document.getElementById('sets-list-view').style.display   = 'block';
+  // Set detail filter controls
+  document.getElementById('set-search').addEventListener('input',e=>{setQ=e.target.value.trim();renderSetDetailCards();});
+  document.querySelectorAll('[data-sdo]').forEach(p=>p.addEventListener('click',()=>{setOwn=p.dataset.sdo;S.set('sd_own',setOwn);renderSetDetailCards();}));
+  document.querySelectorAll('[data-sds]').forEach(p=>p.addEventListener('click',()=>{setSort=p.dataset.sds;S.set('sd_sort',setSort);renderSetDetailCards();}));
+  document.querySelectorAll('[data-sdv]').forEach(p=>p.addEventListener('click',()=>{setView=p.dataset.sdv;S.set('sd_view',setView);renderSetDetailCards();}));
+  document.getElementById('clear-set-detail').addEventListener('click',()=>{
+    setQ='';setOwn='all';setSort='#';setView='grid';
+    S.del('sd_own','sd_sort','sd_view');
+    document.getElementById('set-search').value='';
+    activatePill('data-sdo','all');activatePill('data-sds','#');activatePill('data-sdv','grid');
+    renderSetDetailCards();
+  });
+
+  document.getElementById('btn-back-sets').addEventListener('click',()=>{
+    currentSetId=null;lastSetCards=[];setHash('sets');
+    document.getElementById('set-detail-view').style.display='none';
+    document.getElementById('sets-list-view').style.display='block';
   });
 
   // ── COLLECTION ─────────────────────────────────────────
   function startCollectionListener() {
     if (!currentUser) return;
-    const colRef = collection(db, 'users', currentUser.uid, 'collection');
-    unsubscribe = onSnapshot(colRef, snap => {
-      collectionMap = {};
-      snap.forEach(d => { collectionMap[d.id] = d.data(); });
+    unsubscribe=onSnapshot(collection(db,'users',currentUser.uid,'collection'),snap=>{
+      collectionMap={};
+      snap.forEach(d=>{collectionMap[d.id]=d.data();});
       renderCollection();
-      refreshQtyGrid(lastSearchCards, 'src');
-      if (setOwnershipFilter !== 'all' || setNameFilter || setViewMode === 'list') renderSetDetailCards();
-      else refreshQtyGrid(lastSetCards, 'set');
+      if (rawSearchCards.length) renderSearchResults(rawSearchCards);
+      else refreshQtyGrid([], 'src');
+      if (setOwn!=='all'||setQ) renderSetDetailCards();
+      else refreshQtyGrid(lastSetCards,'set');
       if (currentSetId) updateSetDetailStat();
       if (setsData) renderSetsList();
     });
   }
 
-  let collectionFilter = '';
-
-  document.getElementById('collection-filter').addEventListener('input', e => {
-    collectionFilter = e.target.value.toLowerCase();
-    sessionStorage.setItem('tcg_collection_filter', e.target.value);
-    renderCollection();
-  });
+  function applyCollectionFilters(entries) {
+    let e=[...entries];
+    if (collQ){const q=collQ.toLowerCase();e=e.filter(([,c])=>c.name.toLowerCase().includes(q)||(c.setName||'').toLowerCase().includes(q));}
+    if (collCond!=='all') e=e.filter(([,c])=>getConditions(c).some(r=>r.condition===collCond));
+    if (collSort==='name') e.sort(([,a],[,b])=>a.name.localeCompare(b.name));
+    else if (collSort==='set') e.sort(([,a],[,b])=>{const s=(a.setName||'').localeCompare(b.setName||'');return s||a.name.localeCompare(b.name);});
+    else if (collSort==='date') e.sort(([,a],[,b])=>(b.addedAt||'').localeCompare(a.addedAt||''));
+    return e;
+  }
 
   function renderCollection() {
-    const grid = document.getElementById('collection-grid');
-    let entries = Object.entries(collectionMap).sort(([,a],[,b]) => a.name.localeCompare(b.name));
-    if (collectionFilter) {
-      entries = entries.filter(([,c]) =>
-        c.name.toLowerCase().includes(collectionFilter) ||
-        (c.setName || '').toLowerCase().includes(collectionFilter)
-      );
-    }
+    const grid=document.getElementById('collection-grid');
+    const total=Object.values(collectionMap).reduce((s,c)=>s+getTotalQty(c),0);
+    document.getElementById('collection-stat').textContent=`${total} card${total!==1?'s':''}`;
 
-    const total = Object.values(collectionMap).reduce((s,c) => s + getTotalQty(c), 0);
-    document.getElementById('collection-stat').textContent = `${total} card${total !== 1 ? 's' : ''}`;
-
-    if (Object.keys(collectionMap).length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="icon">📦</div><h3>Your collection is empty</h3><p>Search for cards and use the + button to add them</p></div>`;
-      return;
+    if (Object.keys(collectionMap).length===0){
+      grid.innerHTML=`<div class="empty-state"><div class="icon">📦</div><h3>Your collection is empty</h3><p>Search for cards and use + to add them</p></div>`;return;
     }
-    if (entries.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try a different filter</p></div>`;
-      return;
+    const entries=applyCollectionFilters(Object.entries(collectionMap));
+    if (entries.length===0){
+      grid.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><h3>No matches</h3><p>Try adjusting your filters or clearing them</p></div>`;return;
     }
-
-    grid.innerHTML = entries.map(([id, c]) => {
-      const conds      = getConditions(c);
-      const totalQty   = getTotalQty(c);
-      const anyOrdered = conds.some(r => r.condition === 'Ordered');
-      const badgesHTML = conds.map(r => {
-        const isOrd = r.condition === 'Ordered';
-        return `<span class="condition-badge${isOrd ? ' is-ordered' : ''}">${r.quantity}× ${r.condition}</span>`;
-      }).join('');
-      return `
-        <div class="card-item owned">
-          ${anyOrdered ? '<div class="ordered-badge">ORDERED</div>' : ''}
-          <div class="card-img-wrap">
-            <img src="${c.image || ''}" alt="${c.name}" loading="lazy">
-          </div>
-          <div class="card-info">
-            <div class="card-name">${c.name}</div>
-            <div class="card-meta">${c.setName || ''} · #${c.number || ''}</div>
-          </div>
-          <div class="coll-strip">Qty: ${totalQty}</div>
-          <div class="cond-badges">${badgesHTML}</div>
-          <div class="card-actions">
-            <button class="btn-sm" onclick="window._openEdit('${id}')">Edit</button>
-            <button class="btn-sm danger" onclick="window._remove('${id}')">Remove</button>
-          </div>
-        </div>`;
+    grid.innerHTML=entries.map(([id,c])=>{
+      const conds=getConditions(c), totalQty=getTotalQty(c), anyOrd=conds.some(r=>r.condition==='Ordered');
+      const badges=conds.map(r=>`<span class="condition-badge${r.condition==='Ordered'?' is-ordered':''}">${r.quantity}× ${r.condition}</span>`).join('');
+      return `<div class="card-item owned">
+        ${anyOrd?'<div class="ordered-badge">ORDERED</div>':''}
+        <div class="card-img-wrap"><img src="${c.image||''}" alt="${c.name}" loading="lazy"></div>
+        <div class="card-info"><div class="card-name">${c.name}</div><div class="card-meta">${c.setName||''} · #${c.number||''}</div></div>
+        <div class="coll-strip">Qty: ${totalQty}</div>
+        <div class="cond-badges">${badges}</div>
+        <div class="card-actions">
+          <button class="btn-sm" onclick="window._openEdit('${id}')">Edit</button>
+          <button class="btn-sm danger" onclick="window._remove('${id}')">Remove</button>
+        </div></div>`;
     }).join('');
   }
+
+  // Collection filter controls
+  document.getElementById('collection-filter').addEventListener('input',e=>{collQ=e.target.value;S.set('co_q',collQ);renderCollection();});
+  document.querySelectorAll('[data-cs]').forEach(p=>p.addEventListener('click',()=>{collSort=p.dataset.cs;S.set('co_sort',collSort);renderCollection();}));
+  document.querySelectorAll('[data-cc]').forEach(p=>p.addEventListener('click',()=>{collCond=p.dataset.cc;S.set('co_cond',collCond);renderCollection();}));
+  document.getElementById('clear-collection').addEventListener('click',()=>{
+    collQ='';collSort='name';collCond='all';
+    S.del('co_q','co_sort','co_cond');
+    document.getElementById('collection-filter').value='';
+    activatePill('data-cs','name');activatePill('data-cc','all');
+    renderCollection();
+  });
 
   // ── CARD OPERATIONS ────────────────────────────────────
   window._sqChange = async function(cardId, dataEnc, delta) {
     if (!currentUser) return;
-    const c     = JSON.parse(decodeURIComponent(dataEnc));
-    const entry = collectionMap[cardId];
-    const ref   = doc(db, 'users', currentUser.uid, 'collection', cardId);
-
-    if (!entry && delta > 0) {
-      await setDoc(ref, {
-        name:       c.name,
-        number:     c.number        || '',
-        setId:      c.set?.id       || '',
-        setName:    c.set?.name     || '',
-        image:      c.images?.small || '',
-        addedAt:    new Date().toISOString(),
-        conditions: [{ condition: 'NM', quantity: 1 }]
-      });
+    const c=JSON.parse(decodeURIComponent(dataEnc)), entry=collectionMap[cardId];
+    const ref=doc(db,'users',currentUser.uid,'collection',cardId);
+    if (!entry && delta>0){
+      await setDoc(ref,{name:c.name,number:c.number||'',setId:c.set?.id||'',setName:c.set?.name||'',image:c.images?.small||'',addedAt:new Date().toISOString(),conditions:[{condition:'NM',quantity:1}]});
       return;
     }
     if (!entry) return;
-
-    const conds = getConditions(entry);
-    if (delta > 0) {
-      const nmRow = conds.find(r => r.condition === 'NM');
-      if (nmRow) nmRow.quantity++;
-      else conds.unshift({ condition: 'NM', quantity: 1 });
-      await updateDoc(ref, { conditions: conds });
-    } else {
-      const target = conds.find(r => r.condition === 'NM') || conds[0];
-      if (!target) return;
-      target.quantity--;
-      const cleaned = conds.filter(r => r.quantity > 0);
-      if (cleaned.length === 0) await deleteDoc(ref);
-      else await updateDoc(ref, { conditions: cleaned });
-    }
+    const conds=getConditions(entry);
+    if (delta>0){const nm=conds.find(r=>r.condition==='NM');if(nm)nm.quantity++;else conds.unshift({condition:'NM',quantity:1});await updateDoc(ref,{conditions:conds});}
+    else {const t=conds.find(r=>r.condition==='NM')||conds[0];if(!t)return;t.quantity--;const cl=conds.filter(r=>r.quantity>0);if(cl.length===0)await deleteDoc(ref);else await updateDoc(ref,{conditions:cl});}
   };
 
-  window._remove = async function(id) {
+  window._remove = async function(id){
     if (!currentUser) return;
     if (!confirm('Remove this card from your collection?')) return;
-    await deleteDoc(doc(db, 'users', currentUser.uid, 'collection', id));
+    await deleteDoc(doc(db,'users',currentUser.uid,'collection',id));
   };
 
   // ── EDIT MODAL ─────────────────────────────────────────
   function renderEditConditions() {
-    const list = document.getElementById('edit-conditions-list');
-    list.innerHTML = editConditions.length === 0
-      ? `<p style="color:var(--text-muted);font-size:0.85rem;padding:4px 0">No copies — use "Add a row" below.</p>`
-      : editConditions.map((row, i) => `
-          <div class="cond-row${row.condition === 'Ordered' ? ' is-ordered' : ''}">
-            <span class="cond-row-label">${row.condition}</span>
-            <div class="cond-row-controls">
-              <button class="btn-qty-modal" onclick="window._editQty(${i},-1)">−</button>
-              <span class="cond-qty-num">${row.quantity}</span>
-              <button class="btn-qty-modal" onclick="window._editQty(${i},1)">+</button>
-            </div>
-          </div>`).join('');
-
-    const used   = new Set(editConditions.map(r => r.condition));
-    const select = document.getElementById('add-cond-select');
-    select.innerHTML = ALL_CONDITIONS.filter(c => !used.has(c))
-      .map(c => `<option value="${c}">${c}</option>`).join('');
-    document.getElementById('add-cond-section').style.display =
-      used.size >= ALL_CONDITIONS.length ? 'none' : 'block';
+    const list=document.getElementById('edit-conditions-list');
+    list.innerHTML=editConditions.length===0
+      ?`<p style="color:var(--text-muted);font-size:0.85rem;padding:4px 0">No copies — use "Add a row" below.</p>`
+      :editConditions.map((r,i)=>`<div class="cond-row${r.condition==='Ordered'?' is-ordered':''}">
+          <span class="cond-row-label">${r.condition}</span>
+          <div class="cond-row-controls">
+            <button class="btn-qty-modal" onclick="window._editQty(${i},-1)">−</button>
+            <span class="cond-qty-num">${r.quantity}</span>
+            <button class="btn-qty-modal" onclick="window._editQty(${i},1)">+</button>
+          </div></div>`).join('');
+    const used=new Set(editConditions.map(r=>r.condition));
+    const sel=document.getElementById('add-cond-select');
+    sel.innerHTML=ALL_CONDITIONS.filter(c=>!used.has(c)).map(c=>`<option value="${c}">${c}</option>`).join('');
+    document.getElementById('add-cond-section').style.display=used.size>=ALL_CONDITIONS.length?'none':'block';
   }
 
-  window._editQty = function(idx, delta) {
-    const row = editConditions[idx];
-    if (!row) return;
-    row.quantity += delta;
-    if (row.quantity <= 0) editConditions.splice(idx, 1);
-    renderEditConditions();
-  };
+  window._editQty=function(idx,delta){const r=editConditions[idx];if(!r)return;r.quantity+=delta;if(r.quantity<=0)editConditions.splice(idx,1);renderEditConditions();};
+  document.getElementById('btn-add-cond').addEventListener('click',()=>{const c=document.getElementById('add-cond-select').value;if(!c||editConditions.find(r=>r.condition===c))return;editConditions.push({condition:c,quantity:1});renderEditConditions();});
 
-  document.getElementById('btn-add-cond').addEventListener('click', () => {
-    const cond = document.getElementById('add-cond-select').value;
-    if (!cond || editConditions.find(r => r.condition === cond)) return;
-    editConditions.push({ condition: cond, quantity: 1 });
-    renderEditConditions();
-  });
-
-  window._openEdit = function(id) {
-    editingId      = id;
-    const entry    = collectionMap[id];
-    if (!entry) return;
-    editConditions = getConditions(entry).map(r => ({ ...r }));
-    document.getElementById('edit-modal-name').textContent = entry.name;
+  window._openEdit=function(id){
+    editingId=id;const entry=collectionMap[id];if(!entry)return;
+    editConditions=getConditions(entry).map(r=>({...r}));
+    document.getElementById('edit-modal-name').textContent=entry.name;
     renderEditConditions();
     document.getElementById('edit-modal').classList.add('open');
   };
 
-  function closeModal() {
-    document.getElementById('edit-modal').classList.remove('open');
-    editingId = null; editConditions = [];
-  }
-
-  document.getElementById('edit-cancel').addEventListener('click', closeModal);
-  document.getElementById('edit-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-
-  document.getElementById('edit-save').addEventListener('click', async () => {
-    if (!editingId || !currentUser) return;
-    const ref = doc(db, 'users', currentUser.uid, 'collection', editingId);
-    if (editConditions.length === 0) {
-      if (confirm('All copies removed. Delete this card from your collection?')) await deleteDoc(ref);
-      else return;
-    } else {
-      await updateDoc(ref, { conditions: editConditions });
-    }
+  function closeModal(){document.getElementById('edit-modal').classList.remove('open');editingId=null;editConditions=[];}
+  document.getElementById('edit-cancel').addEventListener('click',closeModal);
+  document.getElementById('edit-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+  document.getElementById('edit-save').addEventListener('click',async()=>{
+    if (!editingId||!currentUser) return;
+    const ref=doc(db,'users',currentUser.uid,'collection',editingId);
+    if (editConditions.length===0){if(confirm('All copies removed. Delete this card?'))await deleteDoc(ref);else return;}
+    else await updateDoc(ref,{conditions:editConditions});
     closeModal();
   });
 </script>
