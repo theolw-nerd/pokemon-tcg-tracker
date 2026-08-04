@@ -572,6 +572,100 @@
     .ownership-pill:hover { border-color: var(--accent); color: var(--text); }
     .ownership-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
 
+    /* ===== VIEW TOGGLE ===== */
+    .view-toggle { display: flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; flex-shrink: 0; }
+
+    .view-pill {
+      padding: 7px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .view-pill:hover { background: var(--surface2); color: var(--text); }
+    .view-pill.active { background: var(--accent); color: white; }
+    .view-pill + .view-pill { border-left: 1px solid var(--border); }
+
+    /* ===== LIST VIEW ===== */
+    .set-list-view { display: flex; flex-direction: column; gap: 3px; }
+
+    .list-card-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: border-color 0.15s;
+    }
+    .list-card-item:hover { border-color: var(--accent); }
+    .list-card-item.owned { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+
+    .list-card-num {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      min-width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .list-card-name {
+      flex: 1;
+      font-size: 0.88rem;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .list-qty-controls {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .btn-sq-sm {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.95rem;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      transition: background 0.15s;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-sq-sm:hover:not(:disabled) { background: var(--surface2); }
+    .btn-sq-sm:disabled { color: var(--border); cursor: default; }
+
+    .sq-num-sm {
+      font-weight: 700;
+      font-size: 0.82rem;
+      min-width: 26px;
+      text-align: center;
+      padding: 0 2px;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sq-num-sm.owned { background: var(--accent); color: white; }
+
     /* ===== EMPTY / LOADING ===== */
     .empty-state {
       text-align: center;
@@ -665,6 +759,10 @@
           <button class="ownership-pill" data-ownership="owned">Owned</button>
           <button class="ownership-pill" data-ownership="missing">Missing</button>
         </div>
+        <div class="view-toggle">
+          <button class="view-pill active" data-view="grid">Grid</button>
+          <button class="view-pill" data-view="list">List</button>
+        </div>
       </div>
       <div id="set-detail-grid" class="card-grid"></div>
     </div>
@@ -738,8 +836,9 @@
 
   let setsData        = null;    // cached sets list from API
   let currentSetId    = null;
-  let setNameFilter   = '';
+  let setNameFilter      = '';
   let setOwnershipFilter = 'all'; // 'all' | 'owned' | 'missing'
+  let setViewMode        = 'grid'; // 'grid' | 'list'
 
   let editingId       = null;
   let editConditions  = [];
@@ -973,6 +1072,22 @@
     document.getElementById('sets-content').innerHTML = html;
   }
 
+  function listCardHTML(c) {
+    const entry = collectionMap[c.id];
+    const qty   = getTotalQty(entry);
+    const data  = encodeURIComponent(JSON.stringify(c));
+    return `
+      <div class="list-card-item${qty > 0 ? ' owned' : ''}" id="set-${c.id}">
+        <span class="list-card-num">#${c.number || '—'}</span>
+        <span class="list-card-name">${c.name}</span>
+        <div class="list-qty-controls">
+          <button class="btn-sq-sm" onclick="window._sqChange('${c.id}','${data}',-1)" ${qty === 0 ? 'disabled' : ''}>−</button>
+          <span class="sq-num-sm${qty > 0 ? ' owned' : ''}">${qty}</span>
+          <button class="btn-sq-sm" onclick="window._sqChange('${c.id}','${data}',1)">+</button>
+        </div>
+      </div>`;
+  }
+
   function renderSetDetailCards() {
     const grid = document.getElementById('set-detail-grid');
     if (!grid) return;
@@ -991,11 +1106,18 @@
     }
 
     if (cards.length === 0) {
+      grid.className = 'card-grid';
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No cards match</h3><p>Try a different search or filter</p></div>`;
       return;
     }
 
-    grid.innerHTML = cards.map(c => qtyCardHTML(c, 'set')).join('');
+    if (setViewMode === 'list') {
+      grid.className = 'set-list-view';
+      grid.innerHTML = cards.map(listCardHTML).join('');
+    } else {
+      grid.className = 'card-grid';
+      grid.innerHTML = cards.map(c => qtyCardHTML(c, 'set')).join('');
+    }
   }
 
   // Filter bar event listeners
@@ -1009,6 +1131,15 @@
       document.querySelectorAll('.ownership-pill').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       setOwnershipFilter = pill.dataset.ownership;
+      renderSetDetailCards();
+    });
+  });
+
+  document.querySelectorAll('.view-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.view-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      setViewMode = pill.dataset.view;
       renderSetDetailCards();
     });
   });
@@ -1028,12 +1159,15 @@
     document.getElementById('set-detail-name').textContent = set.name;
     document.getElementById('set-detail-meta').textContent = `${set.series} · ${formatDate(set.releaseDate)} · ${set.total} cards`;
 
-    // Reset filters when opening a set
+    // Reset filters and view when opening a set
     setNameFilter      = '';
     setOwnershipFilter = 'all';
+    setViewMode        = 'grid';
     document.getElementById('set-search').value = '';
     document.querySelectorAll('.ownership-pill').forEach(p =>
       p.classList.toggle('active', p.dataset.ownership === 'all'));
+    document.querySelectorAll('.view-pill').forEach(p =>
+      p.classList.toggle('active', p.dataset.view === 'grid'));
 
     const grid = document.getElementById('set-detail-grid');
     grid.innerHTML = '<div class="loading" style="grid-column:1/-1">Loading cards…</div>';
@@ -1083,7 +1217,7 @@
       snap.forEach(d => { collectionMap[d.id] = d.data(); });
       renderCollection();
       refreshQtyGrid(lastSearchCards, 'src');
-      if (setOwnershipFilter !== 'all' || setNameFilter) renderSetDetailCards();
+      if (setOwnershipFilter !== 'all' || setNameFilter || setViewMode === 'list') renderSetDetailCards();
       else refreshQtyGrid(lastSetCards, 'set');
       if (currentSetId) updateSetDetailStat();
       if (setsData) renderSetsList();
