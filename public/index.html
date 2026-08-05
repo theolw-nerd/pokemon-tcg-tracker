@@ -144,6 +144,25 @@
     .sq-num-sm{font-weight:700;font-size:.82rem;min-width:26px;text-align:center;border-left:1px solid var(--border);border-right:1px solid var(--border);height:28px;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
     .sq-num-sm.owned{background:var(--accent);color:white;}
 
+    /* DRAG AND DROP */
+    .binder-card[draggable]{cursor:grab;}
+    .binder-card[draggable]:active{cursor:grabbing;}
+    .binder-card.drag-over-top{border-top:3px solid var(--accent);}
+    .binder-card.drag-over-bottom{border-bottom:3px solid var(--accent);}
+    .binder-card.dragging{opacity:.4;}
+    .set-group-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:grab;user-select:none;transition:border-color .15s;}
+    .set-group-row:active{cursor:grabbing;}
+    .set-group-row.drag-over-top{border-top:3px solid var(--accent);}
+    .set-group-row.drag-over-bottom{border-bottom:3px solid var(--accent);}
+    .set-group-row.dragging{opacity:.4;}
+    .set-group-drag-handle{color:var(--text-muted);font-size:1.1rem;flex-shrink:0;}
+    .set-group-info{flex:1;min-width:0;}
+    .set-group-name{font-size:.9rem;font-weight:700;}
+    .set-group-meta{font-size:.75rem;color:var(--text-muted);}
+    .sort-dir-btn{background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;font-size:.82rem;cursor:pointer;color:var(--text-muted);transition:all .15s;}
+    .sort-dir-btn:hover{border-color:var(--accent);color:var(--text);}
+    .sort-dir-btn.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--text);}
+
     /* ===== BINDERS ===== */
     .binders-list-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
     .binder-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s,transform .1s;}
@@ -371,6 +390,19 @@
         <h2 class="page-title">Binders</h2>
         <button class="btn-primary" id="btn-new-binder" style="margin-left:auto">+ New Binder</button>
       </div>
+      <div class="filter-bar">
+        <div class="filter-group">
+          <button class="fp active" data-bls="date-created">Created</button>
+          <button class="fp" data-bls="date-modified">Modified</button>
+          <button class="fp" data-bls="name">Name</button>
+          <button class="fp" data-bls="completion">% Done</button>
+          <button class="fp" data-bls="manual">Custom ⠿</button>
+        </div>
+        <div class="filter-group" id="binder-sort-dir-group">
+          <button class="fp active" data-bld="desc">↓</button>
+          <button class="fp" data-bld="asc">↑</button>
+        </div>
+      </div>
       <div id="binders-grid" class="binders-list-grid"></div>
     </div>
     <div id="binder-detail-view" style="display:none">
@@ -382,6 +414,7 @@
           <button class="fp active" data-bv="single">Single</button>
           <button class="fp" data-bv="spread">Spread</button>
         </div>
+        <button class="btn-secondary" id="btn-reorder-sets" style="font-size:.85rem;padding:7px 14px;white-space:nowrap">↕ Sets</button>
         <button class="btn-primary" id="btn-add-to-binder">+ Add Cards</button>
       </div>
       <div class="binder-page-nav">
@@ -390,6 +423,26 @@
         <button class="btn-secondary" id="btn-binder-next">›</button>
       </div>
       <div id="binder-page-display"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SET REORDER MODAL -->
+<div class="modal-overlay" id="set-reorder-modal">
+  <div class="modal modal-wide">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h3 style="margin:0">Reorder Sets</h3>
+      <button class="btn-secondary" id="sr-close" style="padding:6px 10px">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">Drag rows to reorder, or sort all sets by release date.</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="sort-dir-btn" id="sr-sort-asc">↑ Release Date (oldest first)</button>
+      <button class="sort-dir-btn" id="sr-sort-desc">↓ Release Date (newest first)</button>
+    </div>
+    <div id="sr-groups-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="sr-cancel" style="flex:1">Cancel</button>
+      <button class="btn-primary" id="sr-apply" style="flex:1">Apply Order</button>
     </div>
   </div>
 </div>
@@ -465,6 +518,20 @@
         <div class="form-group">
           <span class="form-label">Filter by Rarity <small style="color:var(--text-muted);text-transform:none;letter-spacing:0">(all selected)</small></span>
           <div class="ac-rarity-wrap" id="ac-rarity-pills"></div>
+        </div>
+        <div class="form-group">
+          <span class="form-label">Sort By</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div class="filter-group">
+              <button class="fp active" data-acso="number">Number</button>
+              <button class="fp" data-acso="name">Name</button>
+              <button class="fp" data-acso="rarity">Rarity</button>
+            </div>
+            <div class="filter-group">
+              <button class="fp active" data-acsd="asc">↑ Asc</button>
+              <button class="fp" data-acsd="desc">↓ Desc</button>
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <span class="form-label">Spacing Before</span>
@@ -551,8 +618,11 @@
   // Binder state
   let bindersData=[],currentBinderId=null,binderPageIdx=0,binderView='single';
   let binderAllocations={};
+  let binderSortBy='date-created',binderSortDir='desc';
+  let srSetGroups=[];  // working copy of set groups for the reorder modal
   let newBinderGridSize='3x3';
   let acMode='set',acSetCards=[],acSelectedRarities=new Set(),acSetSpacing='none';
+  let acSetSortBy='number',acSetSortDir='asc';
   let acIndQueue=[],acIndSpacing='none';
 
   // ── Data helpers ─────────────────────────────────────
@@ -967,30 +1037,71 @@
   }
 
   // ── Binders list ─────────────────────────────────────
+  // ── Manual binder order (localStorage) ───────────────
+  function getManualBinderOrder(){
+    if(!currentUser)return[];
+    try{return JSON.parse(localStorage.getItem('binderOrder_'+currentUser.uid)||'[]');}catch{return[];}
+  }
+  function saveManualBinderOrder(ids){
+    if(!currentUser)return;
+    localStorage.setItem('binderOrder_'+currentUser.uid,JSON.stringify(ids));
+  }
+
+  function getSortedBinders(){
+    const sorted=[...bindersData];
+    if(binderSortBy==='manual'){
+      const order=getManualBinderOrder();
+      if(order.length){
+        sorted.sort((a,b)=>{
+          const ai=order.indexOf(a.id),bi=order.indexOf(b.id);
+          return(ai===-1?9999:ai)-(bi===-1?9999:bi);
+        });
+      }
+      return sorted;
+    }
+    const dir=binderSortDir==='asc'?1:-1;
+    sorted.sort((a,b)=>{
+      if(binderSortBy==='name') return dir*a.name.localeCompare(b.name);
+      if(binderSortBy==='date-modified') return dir*(a.modifiedAt||a.createdAt).localeCompare(b.modifiedAt||b.createdAt);
+      if(binderSortBy==='completion'){
+        const pa=getSlotsPlanned(a)?getSlotsFilled(a)/getSlotsPlanned(a):0;
+        const pb=getSlotsPlanned(b)?getSlotsFilled(b)/getSlotsPlanned(b):0;
+        return dir*(pa-pb);
+      }
+      return dir*(a.createdAt||'').localeCompare(b.createdAt||'');
+    });
+    return sorted;
+  }
+
   function renderBindersList(){
     const grid=document.getElementById('binders-grid');
+    // Update sort dir visibility
+    document.getElementById('binder-sort-dir-group').style.display=binderSortBy==='manual'?'none':'flex';
+    activatePill('data-bls',binderSortBy);activatePill('data-bld',binderSortDir);
     if(!bindersData.length){
       grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="icon">📒</div><h3>No binders yet</h3><p>Create one to start planning your card layout.</p></div>`;
       return;
     }
-    grid.innerHTML=bindersData.map(b=>{
-      const {cols,rows}=GRID_SIZES[b.gridSize]||GRID_SIZES['3x3'];
-      const slotsPerPage=cols*rows;
+    const sorted=getSortedBinders();
+    grid.innerHTML=sorted.map(b=>{
+      const{cols}=GRID_SIZES[b.gridSize]||GRID_SIZES['3x3'];
+      const spp=cols*(GRID_SIZES[b.gridSize]||GRID_SIZES['3x3']).rows;
       const firstPage=(b.pages||[])[0];
-      const previewSlots=firstPage?firstPage.slots.slice(0,slotsPerPage):[];
+      const previewSlots=firstPage?firstPage.slots.slice(0,spp):[];
       const alloc=binderAllocations[b.id]||new Set();
       const filled=getSlotsFilled(b),planned=getSlotsPlanned(b);
       const pct=planned?Math.round(filled/planned*100):0;
-      const miniSlots=Array.from({length:slotsPerPage},(_,i)=>{
+      const miniSlots=Array.from({length:spp},(_,i)=>{
         const slot=previewSlots[i];
-        if(slot===undefined||slot===null) return`<div class="binder-mini-slot${slot===null?' empty-int':''}"></div>`;
-        const isAlloc=alloc.has(`0-${i}`);
-        return`<div class="binder-mini-slot${isAlloc?' filled':''}"></div>`;
+        if(slot===undefined) return`<div class="binder-mini-slot"></div>`;
+        if(slot===null) return`<div class="binder-mini-slot empty-int"></div>`;
+        return`<div class="binder-mini-slot${alloc.has(`0-${i}`)?' filled':''}"></div>`;
       }).join('');
-      return`<div class="binder-card" onclick="window._openBinder('${b.id}')">
+      const isManual=binderSortBy==='manual';
+      return`<div class="binder-card" data-bid="${b.id}" ${isManual?'draggable="true"':''} onclick="window._openBinder('${b.id}')">
         <div class="binder-mini" style="grid-template-columns:repeat(${cols},1fr)">${miniSlots}</div>
         <div class="binder-card-body">
-          <div class="binder-card-name">${b.name}</div>
+          <div class="binder-card-name">${isManual?'⠿ ':''}${b.name}</div>
           <div class="binder-card-meta">${b.gridSize} · ${filled} / ${planned} filled · ${(b.pages||[]).length} pages</div>
           <div class="set-progress-bar"><div class="set-progress-fill" style="width:${pct}%"></div></div>
         </div>
@@ -1001,7 +1112,45 @@
           </div>
         </div></div>`;
     }).join('');
+    if(binderSortBy==='manual') initBinderDragDrop();
   }
+
+  function initBinderDragDrop(){
+    const grid=document.getElementById('binders-grid');
+    let dragSrc=null;
+    grid.querySelectorAll('.binder-card[draggable]').forEach(card=>{
+      card.addEventListener('dragstart',e=>{
+        dragSrc=card;card.classList.add('dragging');
+        e.dataTransfer.effectAllowed='move';
+      });
+      card.addEventListener('dragend',()=>{
+        card.classList.remove('dragging');
+        grid.querySelectorAll('.binder-card').forEach(c=>c.classList.remove('drag-over-top','drag-over-bottom'));
+        // Save new order
+        const ids=[...grid.querySelectorAll('.binder-card[data-bid]')].map(c=>c.dataset.bid);
+        saveManualBinderOrder(ids);
+      });
+      card.addEventListener('dragover',e=>{
+        e.preventDefault();e.dataTransfer.dropEffect='move';
+        if(!dragSrc||dragSrc===card)return;
+        grid.querySelectorAll('.binder-card').forEach(c=>c.classList.remove('drag-over-top','drag-over-bottom'));
+        const r=card.getBoundingClientRect(),mid=r.top+r.height/2;
+        card.classList.add(e.clientY<mid?'drag-over-top':'drag-over-bottom');
+      });
+      card.addEventListener('drop',e=>{
+        e.preventDefault();if(!dragSrc||dragSrc===card)return;
+        const r=card.getBoundingClientRect(),mid=r.top+r.height/2;
+        const before=e.clientY<mid;
+        grid.insertBefore(dragSrc,before?card:card.nextSibling);
+        const ids=[...grid.querySelectorAll('.binder-card[data-bid]')].map(c=>c.dataset.bid);
+        saveManualBinderOrder(ids);
+      });
+    });
+  }
+
+  // Binder list sort controls
+  document.querySelectorAll('[data-bls]').forEach(p=>p.addEventListener('click',()=>{binderSortBy=p.dataset.bls;renderBindersList();}));
+  document.querySelectorAll('[data-bld]').forEach(p=>p.addEventListener('click',()=>{binderSortDir=p.dataset.bld;renderBindersList();}));
 
   // ── Binder detail ─────────────────────────────────────
   window._openBinder=function(id){
@@ -1108,6 +1257,126 @@
     await deleteDoc(doc(db,'users',currentUser.uid,'binders',id));
   };
 
+  // ── Set group detection & reorder ────────────────────
+  function detectSetGroups(pages){
+    // Returns array of { setId, setName, slots[] }
+    // Consecutive slots sharing the same setId form one group.
+    // null (intentional empty) slots attach to the preceding group.
+    const allSlots=(pages||[]).flatMap(p=>p.slots||[]);
+    const groups=[];
+    let cur=null;
+    for(const slot of allSlots){
+      if(slot!==null&&slot.setId){
+        if(!cur||cur.setId!==slot.setId){
+          cur={setId:slot.setId,setName:slot.setName||slot.setId,slots:[]};
+          groups.push(cur);
+        }
+        cur.slots.push(slot);
+      } else {
+        // null or no setId — attach to preceding group or create unassigned bucket
+        if(!cur){
+          cur={setId:null,setName:'(unassigned)',slots:[]};
+          groups.push(cur);
+        }
+        cur.slots.push(slot);
+      }
+    }
+    return groups;
+  }
+
+  function rebuildPagesFromGroups(groups,gridSize){
+    const pages=[];
+    const spp=slotsPerPage(gridSize);
+    groups.flatMap(g=>g.slots).forEach(slot=>appendSlot(pages,slot,spp));
+    return pages;
+  }
+
+  function openSetReorderModal(){
+    const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
+    srSetGroups=detectSetGroups(binder.pages||[]);
+    if(srSetGroups.length<2){alert('This binder only has cards from one set — nothing to reorder.');return;}
+    renderSrGroupsList();
+    document.getElementById('set-reorder-modal').classList.add('open');
+  }
+
+  function renderSrGroupsList(){
+    const list=document.getElementById('sr-groups-list');
+    list.innerHTML=srSetGroups.map((g,i)=>{
+      const releaseDate=setsData?.find(s=>s.id===g.setId)?.releaseDate||'';
+      const dateTxt=releaseDate?` · ${formatDate(releaseDate)}`:'';
+      return`<div class="set-group-row" draggable="true" data-gi="${i}">
+        <span class="set-group-drag-handle">⠿</span>
+        <div class="set-group-info">
+          <div class="set-group-name">${g.setName||g.setId||'(unassigned)'}</div>
+          <div class="set-group-meta">${g.slots.filter(s=>s!==null).length} cards${dateTxt}</div>
+        </div>
+      </div>`;
+    }).join('');
+    initSrDragDrop();
+  }
+
+  function initSrDragDrop(){
+    const list=document.getElementById('sr-groups-list');
+    let dragSrc=null,dragIdx=null;
+    list.querySelectorAll('.set-group-row').forEach(row=>{
+      row.addEventListener('dragstart',e=>{
+        dragSrc=row;dragIdx=parseInt(row.dataset.gi);
+        row.classList.add('dragging');e.dataTransfer.effectAllowed='move';
+      });
+      row.addEventListener('dragend',()=>{
+        row.classList.remove('dragging');
+        list.querySelectorAll('.set-group-row').forEach(r=>r.classList.remove('drag-over-top','drag-over-bottom'));
+      });
+      row.addEventListener('dragover',e=>{
+        e.preventDefault();if(!dragSrc||dragSrc===row)return;
+        list.querySelectorAll('.set-group-row').forEach(r=>r.classList.remove('drag-over-top','drag-over-bottom'));
+        const r2=row.getBoundingClientRect(),mid=r2.top+r2.height/2;
+        row.classList.add(e.clientY<mid?'drag-over-top':'drag-over-bottom');
+      });
+      row.addEventListener('drop',e=>{
+        e.preventDefault();if(!dragSrc||dragSrc===row)return;
+        const targetIdx=parseInt(row.dataset.gi);
+        const r2=row.getBoundingClientRect(),mid=r2.top+r2.height/2;
+        const insertBefore=e.clientY<mid;
+        // Reorder srSetGroups
+        const moved=srSetGroups.splice(dragIdx,1)[0];
+        const newTarget=insertBefore?targetIdx:targetIdx+1;
+        const adj=dragIdx<newTarget?newTarget-1:newTarget;
+        srSetGroups.splice(adj,0,moved);
+        renderSrGroupsList();
+      });
+    });
+  }
+
+  document.getElementById('sr-sort-asc').addEventListener('click',async()=>{
+    if(!setsData) await loadSets();
+    srSetGroups.sort((a,b)=>{
+      const da=setsData.find(s=>s.id===a.setId)?.releaseDate||'';
+      const db2=setsData.find(s=>s.id===b.setId)?.releaseDate||'';
+      return da.localeCompare(db2);
+    });
+    renderSrGroupsList();
+  });
+  document.getElementById('sr-sort-desc').addEventListener('click',async()=>{
+    if(!setsData) await loadSets();
+    srSetGroups.sort((a,b)=>{
+      const da=setsData.find(s=>s.id===a.setId)?.releaseDate||'';
+      const db2=setsData.find(s=>s.id===b.setId)?.releaseDate||'';
+      return db2.localeCompare(da);
+    });
+    renderSrGroupsList();
+  });
+  document.getElementById('sr-apply').addEventListener('click',async()=>{
+    const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
+    const pages=rebuildPagesFromGroups(srSetGroups,binder.gridSize);
+    await saveBinderPages(currentBinderId,pages);
+    document.getElementById('set-reorder-modal').classList.remove('open');
+  });
+  document.getElementById('sr-cancel').addEventListener('click',()=>document.getElementById('set-reorder-modal').classList.remove('open'));
+  document.getElementById('sr-close').addEventListener('click',()=>document.getElementById('set-reorder-modal').classList.remove('open'));
+  document.getElementById('set-reorder-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('set-reorder-modal').classList.remove('open');});
+  document.getElementById('btn-reorder-sets').addEventListener('click',openSetReorderModal);
+
   // ── Slot insertion helpers ────────────────────────────
   function slotsPerPage(gridSize){const{cols,rows}=GRID_SIZES[gridSize]||GRID_SIZES['3x3'];return cols*rows;}
   function appendSlot(pages,slot,spp){
@@ -1129,7 +1398,7 @@
     }
   }
   async function saveBinderPages(binderId,pages){
-    await updateDoc(doc(db,'users',currentUser.uid,'binders',binderId),{pages});
+    await updateDoc(doc(db,'users',currentUser.uid,'binders',binderId),{pages,modifiedAt:new Date().toISOString()});
   }
 
   // ── Add Cards modal ───────────────────────────────────
@@ -1138,8 +1407,11 @@
   document.getElementById('add-cards-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('add-cards-modal').classList.remove('open');});
 
   function openAddCardsModal(){
-    acMode='set';acSetCards=[];acSelectedRarities=new Set();acSetSpacing='none';acIndQueue=[];acIndSpacing='none';
+    acMode='set';acSetCards=[];acSelectedRarities=new Set();acSetSpacing='none';
+    acSetSortBy='number';acSetSortDir='asc';
+    acIndQueue=[];acIndSpacing='none';
     setAcMode('set');
+    activatePill('data-acso','number');activatePill('data-acsd','asc');
     // Populate set picker
     const picker=document.getElementById('ac-set-picker');
     if(setsData){picker.innerHTML=setsData.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
@@ -1162,6 +1434,8 @@
   document.querySelectorAll('.ac-tab').forEach(t=>t.addEventListener('click',()=>setAcMode(t.dataset.acm)));
 
   // Spacing pills
+  document.querySelectorAll('[data-acso]').forEach(p=>p.addEventListener('click',()=>{acSetSortBy=p.dataset.acso;activatePill('data-acso',acSetSortBy);updateSetPreview();}));
+  document.querySelectorAll('[data-acsd]').forEach(p=>p.addEventListener('click',()=>{acSetSortDir=p.dataset.acsd;activatePill('data-acsd',acSetSortDir);updateSetPreview();}));
   document.querySelectorAll('[data-acs]').forEach(p=>p.addEventListener('click',()=>{acSetSpacing=p.dataset.acs;activatePill('data-acs',acSetSpacing);updateSetPreview();}));
   document.querySelectorAll('[data-acis]').forEach(p=>p.addEventListener('click',()=>{acIndSpacing=p.dataset.acis;activatePill('data-acis',acIndSpacing);}));
 
@@ -1191,6 +1465,25 @@
     finally{btn.disabled=false;btn.textContent='Load Cards';}
   });
 
+  const RARITY_ORDER=['Common','Uncommon','Rare','Rare Holo','Rare Holo EX','Rare Holo GX','Rare Holo V','Rare Holo VMAX','Rare Holo VSTAR','Rare Ultra','Rare Rainbow','Rare Secret','Special Illustration Rare','Hyper Rare','Illustration Rare','Double Rare','Triple Star'];
+  function sortAcSetCards(cards){
+    const natNum=s=>{const n=parseInt(s);return isNaN(n)?s:n;};
+    const c=[...cards];
+    c.sort((a,b)=>{
+      let cmp=0;
+      if(acSetSortBy==='name') cmp=a.name.localeCompare(b.name);
+      else if(acSetSortBy==='rarity'){
+        const ri=r=>RARITY_ORDER.indexOf(r||'')>-1?RARITY_ORDER.indexOf(r):RARITY_ORDER.length;
+        cmp=ri(a.rarity)-ri(b.rarity)||a.name.localeCompare(b.name);
+      } else {
+        const na=natNum(a.number),nb=natNum(b.number);
+        cmp=typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1);
+      }
+      return acSetSortDir==='desc'?-cmp:cmp;
+    });
+    return c;
+  }
+
   function updateSetPreview(){
     const filtered=acSetCards.filter(c=>!c.rarity||acSelectedRarities.has(c.rarity));
     document.getElementById('ac-set-preview').innerHTML=`<strong>${filtered.length}</strong> cards selected`;
@@ -1198,7 +1491,7 @@
 
   document.getElementById('ac-add-set').addEventListener('click',async()=>{
     const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
-    const filtered=acSetCards.filter(c=>!c.rarity||acSelectedRarities.has(c.rarity));
+    const filtered=sortAcSetCards(acSetCards.filter(c=>!c.rarity||acSelectedRarities.has(c.rarity)));
     if(!filtered.length)return;
     const pages=JSON.parse(JSON.stringify(binder.pages||[]));
     applySpacing(pages,acSetSpacing,binder.gridSize);
