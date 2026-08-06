@@ -187,6 +187,17 @@
     .binder-slot.filled{border-color:var(--accent);}
     .binder-slot.planned img{opacity:.2;filter:saturate(.2);}
     .binder-slot.int-empty{border:2px dashed var(--border);background:transparent;}
+    .binder-slot.drop-target{outline:2px solid var(--accent);outline-offset:-2px;}
+    .binder-slot.drag-src{opacity:.35;}
+    .slot-remove-btn{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:var(--danger);color:#fff;border:none;font-size:.85rem;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;z-index:2;font-weight:700;}
+    .binder-slot:hover .slot-remove-btn{display:flex;}
+    .slot-ghost{position:fixed;pointer-events:none;z-index:9999;border-radius:5px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.6);border:2px solid var(--accent);opacity:.85;}
+    .page-edge-zone{position:absolute;top:0;bottom:0;width:60px;z-index:10;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:1.6rem;color:var(--accent);}
+    .page-edge-zone.left{left:0;}
+    .page-edge-zone.right{right:0;}
+    .page-edge-zone.active{opacity:1;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 20%,transparent),transparent);}
+    .page-edge-zone.right.active{background:linear-gradient(-90deg,color-mix(in srgb,var(--accent) 20%,transparent),transparent);}
+    #binder-detail-view{position:relative;}
     .binder-empty-page{display:flex;align-items:center;justify-content:center;min-height:200px;color:var(--text-muted);font-size:.9rem;}
 
     /* GRID SIZE PICKER */
@@ -422,7 +433,11 @@
         <span class="binder-page-nav-label" id="binder-page-label">Page 1 of 1</span>
         <button class="btn-secondary" id="btn-binder-next">›</button>
       </div>
-      <div id="binder-page-display"></div>
+      <div style="position:relative">
+        <div class="page-edge-zone left" id="edge-prev">‹</div>
+        <div id="binder-page-display"></div>
+        <div class="page-edge-zone right" id="edge-next">›</div>
+      </div>
     </div>
   </div>
 </div>
@@ -434,15 +449,43 @@
       <h3 style="margin:0">Reorder Sets</h3>
       <button class="btn-secondary" id="sr-close" style="padding:6px 10px">✕</button>
     </div>
-    <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">Drag rows to reorder, or sort all sets by release date.</p>
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <p id="sr-desc-text" style="font-size:.82rem;color:var(--text-muted);margin-bottom:16px">Drag rows to reorder, or sort all sets by release date. Use Edit to change which cards are included in a group.</p>
+    <div id="sr-date-sort-bar" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
       <button class="sort-dir-btn" id="sr-sort-asc">↑ Release Date (oldest first)</button>
       <button class="sort-dir-btn" id="sr-sort-desc">↓ Release Date (newest first)</button>
     </div>
-    <div id="sr-groups-list" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto"></div>
-    <div class="modal-actions">
-      <button class="btn-secondary" id="sr-cancel" style="flex:1">Cancel</button>
-      <button class="btn-primary" id="sr-apply" style="flex:1">Apply Order</button>
+    <!-- Panel 1: group list -->
+    <div id="sr-panel-list">
+      <div id="sr-groups-list" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;margin-bottom:16px"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="sr-cancel" style="flex:1">Cancel</button>
+        <button class="btn-primary" id="sr-apply" style="flex:1">Apply Order</button>
+      </div>
+    </div>
+    <!-- Panel 2: group editor -->
+    <div id="sr-panel-editor" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <button class="btn-back" id="sr-editor-back">← Back</button>
+        <span id="sr-editor-title" style="font-weight:700;font-size:1rem"></span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <div class="filter-group">
+          <button class="fp active" data-srso="number">Number</button>
+          <button class="fp" data-srso="name">Name</button>
+          <button class="fp" data-srso="rarity">Rarity</button>
+        </div>
+        <div class="filter-group">
+          <button class="fp active" data-srsd="asc">↑ Asc</button>
+          <button class="fp" data-srsd="desc">↓ Desc</button>
+        </div>
+        <button class="btn-secondary" id="sr-editor-sort" style="font-size:.82rem;padding:6px 12px">Sort Checked</button>
+      </div>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-bottom:8px">Checked cards will be included. Order follows the sort above.</p>
+      <div id="sr-editor-cards" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;margin-bottom:16px"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="sr-editor-cancel" style="flex:1">Cancel</button>
+        <button class="btn-primary" id="sr-editor-apply" style="flex:1">Apply to Group</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1215,15 +1258,19 @@
       document.getElementById('btn-binder-next').disabled=binderPageIdx>=total-1;
       document.getElementById('binder-page-display').innerHTML=renderPageGrid(pages[binderPageIdx],binderPageIdx,cols,alloc);
     }
+    initSlotDragDrop();
   }
 
   function renderPageGrid(page,pageIdx,cols,alloc){
     const slots=page?.slots||[];
     const slotHTML=slots.map((slot,si)=>{
-      if(slot===null) return`<div class="binder-slot int-empty" title="Empty slot"></div>`;
+      if(slot===null) return`<div class="binder-slot int-empty" data-pi="${pageIdx}" data-si="${si}" title="Empty slot">
+        <button class="slot-remove-btn" onclick="window._removeSlot(${pageIdx},${si})" title="Remove">×</button>
+      </div>`;
       const isFilled=alloc.has(`${pageIdx}-${si}`);
-      return`<div class="binder-slot${isFilled?' filled':' planned'}" title="${slot.name} · #${slot.number}">
+      return`<div class="binder-slot${isFilled?' filled':' planned'}" data-pi="${pageIdx}" data-si="${si}" title="${slot.name} · #${slot.number}">
         <img src="${slot.image||''}" alt="${slot.name}" loading="lazy">
+        <button class="slot-remove-btn" onclick="event.stopPropagation();window._removeSlot(${pageIdx},${si})" title="Remove">×</button>
       </div>`;
     }).join('');
     return`<div class="binder-page-wrap">
@@ -1294,7 +1341,12 @@
   function openSetReorderModal(){
     const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
     srSetGroups=detectSetGroups(binder.pages||[]);
-    if(srSetGroups.length<2){alert('This binder only has cards from one set — nothing to reorder.');return;}
+    if(!srSetGroups.length){alert('This binder has no cards yet.');return;}
+    // Always start on panel 1
+    document.getElementById('sr-panel-list').style.display='block';
+    document.getElementById('sr-panel-editor').style.display='none';
+    document.getElementById('sr-date-sort-bar').style.display='flex';
+    document.getElementById('sr-desc-text').style.display='';
     renderSrGroupsList();
     document.getElementById('set-reorder-modal').classList.add('open');
   }
@@ -1310,10 +1362,119 @@
           <div class="set-group-name">${g.setName||g.setId||'(unassigned)'}</div>
           <div class="set-group-meta">${g.slots.filter(s=>s!==null).length} cards${dateTxt}</div>
         </div>
+        <button class="btn-sm" style="flex-shrink:0" onclick="event.stopPropagation();window._srOpenGroupEdit(${i})">Edit</button>
+        <button class="btn-sm danger" style="flex-shrink:0" onclick="event.stopPropagation();window._srRemoveGroup(${i})">Remove</button>
       </div>`;
     }).join('');
     initSrDragDrop();
   }
+
+  // ── Remove entire set group ───────────────────────────
+  window._srRemoveGroup=function(i){
+    if(!confirm(`Remove all ${srSetGroups[i].slots.filter(s=>s!==null).length} cards from "${srSetGroups[i].setName||'this group'}"?`))return;
+    srSetGroups.splice(i,1);
+    renderSrGroupsList();
+  };
+
+  // ── Group editor ──────────────────────────────────────
+  let srEditGroupIdx=null,srEditSortBy='number',srEditSortDir='asc';
+  let srEditSetCards=[],srEditChecked=new Set(),srEditOriginalOrder=[];
+
+  window._srOpenGroupEdit=async function(i){
+    srEditGroupIdx=i;
+    const g=srSetGroups[i];
+    document.getElementById('sr-editor-title').textContent=g.setName||g.setId||'Edit Group';
+    srEditChecked=new Set(g.slots.filter(s=>s!==null).map(s=>s.id));
+    srEditSortBy='number';srEditSortDir='asc';
+    activatePill('data-srso','number');activatePill('data-srsd','asc');
+
+    document.getElementById('sr-panel-list').style.display='none';
+    document.getElementById('sr-panel-editor').style.display='block';
+    document.getElementById('sr-date-sort-bar').style.display='none';
+    document.getElementById('sr-desc-text').style.display='none';
+
+    const editorCards=document.getElementById('sr-editor-cards');
+    if(g.setId){
+      let cards=setCardCache.get(g.setId);
+      if(!cards){
+        editorCards.innerHTML='<div class="loading" style="padding:16px">Loading…</div>';
+        const{data}=await fetchWithRetry(`https://api.pokemontcg.io/v2/cards?q=set.id:${g.setId}&orderBy=number&pageSize=250&select=id,name,number,set,images,rarity`);
+        cards=data||[];setCardCache.set(g.setId,cards);
+      }
+      srEditSetCards=cards;
+    } else {
+      srEditSetCards=g.slots.filter(s=>s!==null).map(s=>({id:s.id,name:s.name,number:s.number,rarity:'',images:{small:s.image}}));
+    }
+    srEditOriginalOrder=[...srEditSetCards];
+    renderGroupEditorCards();
+  };
+
+  function renderGroupEditorCards(){
+    document.getElementById('sr-editor-cards').innerHTML=srEditSetCards.map(c=>{
+      const checked=srEditChecked.has(c.id);
+      return`<label style="display:flex;align-items:center;gap:10px;padding:7px 8px;cursor:pointer;border-radius:6px;transition:background .12s"
+               onmouseenter="this.style.background='var(--surface2)'" onmouseleave="this.style.background=''">
+        <input type="checkbox" value="${c.id}" ${checked?'checked':''} style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent);flex-shrink:0"
+               onchange="if(this.checked)window._srCheck('${c.id}');else window._srUncheck('${c.id}')">
+        <img src="${c.images?.small||''}" style="width:32px;height:44px;object-fit:cover;border-radius:3px;flex-shrink:0;background:var(--surface2)" loading="lazy">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.88rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</div>
+          <div style="font-size:.72rem;color:var(--text-muted)">#${c.number||'?'}${c.rarity?` · ${c.rarity}`:''}</div>
+        </div>
+      </label>`;
+    }).join('');
+  }
+
+  window._srCheck=id=>srEditChecked.add(id);
+  window._srUncheck=id=>srEditChecked.delete(id);
+
+  function sortGroupEditorCards(cards){
+    const c=[...cards],natNum=s=>{const n=parseInt(s);return isNaN(n)?s:n;};
+    c.sort((a,b)=>{
+      let cmp=0;
+      if(srEditSortBy==='name') cmp=a.name.localeCompare(b.name);
+      else if(srEditSortBy==='rarity'){
+        const ri=r=>RARITY_ORDER.indexOf(r||'')>-1?RARITY_ORDER.indexOf(r):RARITY_ORDER.length;
+        cmp=ri(a.rarity)-ri(b.rarity)||a.name.localeCompare(b.name);
+      } else {
+        const na=natNum(a.number),nb=natNum(b.number);
+        cmp=typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1);
+      }
+      return srEditSortDir==='desc'?-cmp:cmp;
+    });
+    return c;
+  }
+
+  document.querySelectorAll('[data-srso]').forEach(p=>p.addEventListener('click',()=>{srEditSortBy=p.dataset.srso;activatePill('data-srso',srEditSortBy);}));
+  document.querySelectorAll('[data-srsd]').forEach(p=>p.addEventListener('click',()=>{srEditSortDir=p.dataset.srsd;activatePill('data-srsd',srEditSortDir);}));
+
+  document.getElementById('sr-editor-sort').addEventListener('click',()=>{
+    srEditSetCards=sortGroupEditorCards(srEditSetCards);
+    renderGroupEditorCards();
+  });
+
+  function closeGroupEditor(){
+    document.getElementById('sr-panel-editor').style.display='none';
+    document.getElementById('sr-panel-list').style.display='block';
+    document.getElementById('sr-date-sort-bar').style.display='flex';
+    document.getElementById('sr-desc-text').style.display='';
+    srEditGroupIdx=null;
+  }
+
+  document.getElementById('sr-editor-back').addEventListener('click',closeGroupEditor);
+  document.getElementById('sr-editor-cancel').addEventListener('click',closeGroupEditor);
+  document.getElementById('sr-editor-apply').addEventListener('click',()=>{
+    if(srEditGroupIdx===null)return;
+    const g=srSetGroups[srEditGroupIdx];
+    const newSlots=srEditSetCards.filter(c=>srEditChecked.has(c.id)).map(c=>({
+      id:c.id,name:c.name,number:c.number||'',
+      setId:g.setId,setName:g.setName,
+      image:c.images?.small||''
+    }));
+    srSetGroups[srEditGroupIdx]={...g,slots:newSlots};
+    closeGroupEditor();
+    renderSrGroupsList();
+  });
 
   function initSrDragDrop(){
     const list=document.getElementById('sr-groups-list');
@@ -1376,6 +1537,121 @@
   document.getElementById('sr-close').addEventListener('click',()=>document.getElementById('set-reorder-modal').classList.remove('open'));
   document.getElementById('set-reorder-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('set-reorder-modal').classList.remove('open');});
   document.getElementById('btn-reorder-sets').addEventListener('click',openSetReorderModal);
+
+  // ── Slot remove ──────────────────────────────────────
+  function binderFlatSlots(binder){return(binder.pages||[]).flatMap(p=>[...(p.slots||[])]);}
+  function slotGlobalIdx(binder,pageIdx,slotIdx){
+    let gi=0;for(let i=0;i<pageIdx;i++)gi+=(binder.pages[i]?.slots.length||0);return gi+slotIdx;
+  }
+  window._removeSlot=async function(pageIdx,slotIdx){
+    const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
+    const all=binderFlatSlots(binder);
+    all.splice(slotGlobalIdx(binder,pageIdx,slotIdx),1);
+    const spp=slotsPerPage(binder.gridSize),pages=[];
+    all.forEach(slot=>appendSlot(pages,slot,spp));
+    await saveBinderPages(currentBinderId,pages);
+  };
+
+  // ── Ghost drag (mouse-based, survives page turns) ────
+  const GD={active:false,srcGI:null,ghost:null,offX:0,offY:0,turnTimer:null,turnDir:null};
+  const EDGE_PX=70,TURN_DELAY=700;
+
+  function initSlotDragDrop(){
+    document.querySelectorAll('#binder-page-display .binder-slot[data-pi]').forEach(slot=>{
+      slot.addEventListener('mousedown',e=>{
+        if(e.button!==0||e.target.classList.contains('slot-remove-btn'))return;
+        const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
+        const pi=parseInt(slot.dataset.pi),si=parseInt(slot.dataset.si);
+        const gi=slotGlobalIdx(binder,pi,si);
+        // Check it's a real card (not int-empty handled separately via remove btn)
+        startGhostDrag(e,slot,gi,binder);
+      });
+    });
+  }
+
+  function startGhostDrag(e,slot,gi,binder){
+    e.preventDefault();
+    const img=slot.querySelector('img');
+    const rect=slot.getBoundingClientRect();
+    const ghost=document.createElement('div');
+    ghost.className='slot-ghost';
+    ghost.style.cssText=`width:${rect.width}px;height:${rect.height}px;`;
+    if(img){const gi2=img.cloneNode();gi2.style.cssText='width:100%;height:100%;object-fit:cover;display:block;';ghost.appendChild(gi2);}
+    GD.offX=e.clientX-rect.left;GD.offY=e.clientY-rect.top;
+    ghost.style.left=(e.clientX-GD.offX)+'px';ghost.style.top=(e.clientY-GD.offY)+'px';
+    document.body.appendChild(ghost);
+    GD.ghost=ghost;GD.active=true;GD.srcGI=gi;GD.srcSlot=slot;
+    slot.classList.add('drag-src');
+    document.addEventListener('mousemove',onGhostMove);
+    document.addEventListener('mouseup',onGhostUp);
+  }
+
+  function onGhostMove(e){
+    if(!GD.active)return;
+    GD.ghost.style.left=(e.clientX-GD.offX)+'px';
+    GD.ghost.style.top=(e.clientY-GD.offY)+'px';
+    // Edge-zone page turning
+    const wrap=document.getElementById('binder-page-display')?.parentElement;
+    let newDir=null;
+    if(wrap){
+      const r=wrap.getBoundingClientRect();
+      if(e.clientX<r.left+EDGE_PX) newDir='prev';
+      else if(e.clientX>r.right-EDGE_PX) newDir='next';
+    }
+    document.getElementById('edge-prev').classList.toggle('active',newDir==='prev');
+    document.getElementById('edge-next').classList.toggle('active',newDir==='next');
+    if(newDir!==GD.turnDir){
+      clearTimeout(GD.turnTimer);GD.turnTimer=null;GD.turnDir=newDir;
+      if(newDir){
+        GD.turnTimer=setTimeout(()=>{
+          const binder=bindersData.find(b=>b.id===currentBinderId);
+          const total=(binder?.pages||[]).length;
+          const step=binderView==='spread'?2:1;
+          if(GD.turnDir==='prev'&&binderPageIdx>0){binderPageIdx=Math.max(0,binderPageIdx-step);renderBinderPage();initSlotDragDrop();GD.srcSlot=null;}
+          else if(GD.turnDir==='next'&&binderPageIdx+step<total){binderPageIdx=Math.min(total-1,binderPageIdx+step);renderBinderPage();initSlotDragDrop();GD.srcSlot=null;}
+          GD.turnTimer=null;
+        },TURN_DELAY);
+      }
+    }
+    // Highlight drop target
+    GD.ghost.style.visibility='hidden';
+    const els=document.elementsFromPoint(e.clientX,e.clientY);
+    GD.ghost.style.visibility='';
+    document.querySelectorAll('.binder-slot.drop-target').forEach(s=>s.classList.remove('drop-target'));
+    const tgt=els.find(el=>el.classList.contains('binder-slot')&&el.dataset.pi!==undefined);
+    if(tgt)tgt.classList.add('drop-target');
+  }
+
+  async function onGhostUp(e){
+    if(!GD.active)return;
+    clearTimeout(GD.turnTimer);GD.turnTimer=null;GD.turnDir=null;
+    document.removeEventListener('mousemove',onGhostMove);
+    document.removeEventListener('mouseup',onGhostUp);
+    document.getElementById('edge-prev').classList.remove('active');
+    document.getElementById('edge-next').classList.remove('active');
+    GD.ghost.style.visibility='hidden';
+    const els=document.elementsFromPoint(e.clientX,e.clientY);
+    GD.ghost.remove();GD.ghost=null;
+    if(GD.srcSlot)GD.srcSlot.classList.remove('drag-src');
+    document.querySelectorAll('.binder-slot.drop-target').forEach(s=>s.classList.remove('drop-target'));
+    const tgt=els.find(el=>el.classList.contains('binder-slot')&&el.dataset.pi!==undefined);
+    if(tgt&&GD.srcGI!==null){
+      const binder=bindersData.find(b=>b.id===currentBinderId);
+      if(binder){
+        const tgtGI=slotGlobalIdx(binder,parseInt(tgt.dataset.pi),parseInt(tgt.dataset.si));
+        if(GD.srcGI!==tgtGI){
+          const all=binderFlatSlots(binder);
+          const moved=all.splice(GD.srcGI,1)[0];
+          const adj=GD.srcGI<tgtGI?tgtGI-1:tgtGI;
+          all.splice(adj,0,moved);
+          const spp=slotsPerPage(binder.gridSize),pages=[];
+          all.forEach(slot=>appendSlot(pages,slot,spp));
+          await saveBinderPages(currentBinderId,pages);
+        }
+      }
+    }
+    GD.active=false;GD.srcGI=null;GD.srcSlot=null;
+  }
 
   // ── Slot insertion helpers ────────────────────────────
   function slotsPerPage(gridSize){const{cols,rows}=GRID_SIZES[gridSize]||GRID_SIZES['3x3'];return cols*rows;}
