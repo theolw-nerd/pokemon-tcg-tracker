@@ -103,6 +103,9 @@
     .status-corner-badge.grading{background:#60a5fa;color:#000;}
     .card-actions{display:flex;gap:6px;padding:0 12px 10px;margin-top:auto;}
     .btn-sm{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);border-radius:6px;padding:5px 8px;font-size:.78rem;cursor:pointer;transition:all .15s;}
+    .btn-icon-sm{background:transparent;border:none;color:var(--text-muted);font-size:.95rem;cursor:pointer;padding:2px 4px;border-radius:4px;line-height:1;transition:color .15s;}
+    .btn-icon-sm:hover{color:var(--text);}
+    .binder-name-input{font-size:1.1rem;font-weight:600;background:var(--surface2);border:1px solid var(--accent);border-radius:6px;color:var(--text);padding:3px 8px;width:220px;}
     .btn-sm:hover{border-color:var(--accent);color:var(--text);}
     .btn-sm.danger:hover{border-color:var(--danger);color:var(--danger);}
 
@@ -422,6 +425,7 @@
       <div class="binder-detail-hdr">
         <button class="btn-back" id="btn-back-binders">← Binders</button>
         <span class="page-title" id="binder-detail-name"></span>
+        <button class="btn-icon-sm" id="btn-rename-binder" title="Rename binder">✏</button>
         <span class="stat-chip" id="binder-detail-stat"></span>
         <div class="filter-group">
           <button class="fp active" data-bv="single">Single</button>
@@ -1327,6 +1331,30 @@
     document.getElementById('binder-detail-view').style.display='none';
     document.getElementById('binders-list-view').style.display='block';
     renderBindersList();
+  });
+
+  document.getElementById('btn-rename-binder').addEventListener('click',()=>{
+    const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
+    const nameEl=document.getElementById('binder-detail-name');
+    const btn=document.getElementById('btn-rename-binder');
+    if(nameEl.querySelector('input'))return; // already editing
+    const input=document.createElement('input');
+    input.className='binder-name-input';
+    input.value=binder.name;
+    nameEl.textContent='';
+    nameEl.appendChild(input);
+    btn.style.display='none';
+    input.focus();input.select();
+    async function saveName(){
+      const newName=input.value.trim();
+      nameEl.textContent=newName||binder.name;
+      btn.style.display='';
+      if(newName&&newName!==binder.name){
+        await updateDoc(doc(db,'users',currentUser.uid,'binders',currentBinderId),{name:newName,modifiedAt:new Date().toISOString()});
+      }
+    }
+    input.addEventListener('keydown',e=>{if(e.key==='Enter')input.blur();if(e.key==='Escape'){input.value=binder.name;input.blur();}});
+    input.addEventListener('blur',saveName,{once:true});
   });
 
   document.querySelectorAll('[data-bv]').forEach(p=>p.addEventListener('click',()=>{binderView=p.dataset.bv;renderBinderPage();}));
