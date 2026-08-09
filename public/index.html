@@ -925,7 +925,7 @@
 
   // ── Card HTML ─────────────────────────────────────────
   function qtyCardHTML(c,gridId){
-    const qty=getTotalQty(collectionMap[c.id]),data=encodeURIComponent(JSON.stringify(c));
+    const qty=getTotalQty(collectionMap[c.id]),data=encodeURIComponent(JSON.stringify(c)).replace(/'/g,'%27');
     return`<div class="card-item${qty>0?' owned':''}" id="${gridId}-${c.id}">
       <div class="card-img-wrap"><img src="${c.images?.small||''}" alt="${c.name}" loading="lazy"></div>
       <div class="card-info"><div class="card-name">${c.name}</div><div class="card-meta">${c.set?.name||''} · #${c.number||''}</div></div>
@@ -938,7 +938,7 @@
       </div></div>`;
   }
   function listCardHTML(c){
-    const qty=getTotalQty(collectionMap[c.id]),data=encodeURIComponent(JSON.stringify(c)),ti=getTypeLabel(c);
+    const qty=getTotalQty(collectionMap[c.id]),data=encodeURIComponent(JSON.stringify(c)).replace(/'/g,'%27'),ti=getTypeLabel(c);
     const dot=ti.color?`<span class="type-dot" style="background:${ti.color}"></span>`:'';
     const rar=c.rarity?`<span style="opacity:.4">·</span><span>${c.rarity}</span>`:'';
     return`<div class="list-card-item${qty>0?' owned':''}" id="set-${c.id}">
@@ -1924,7 +1924,7 @@
     if(!acIndRawResults.length){div.innerHTML='<p style="color:var(--text-muted);padding:8px">No results.</p>';return;}
     div.innerHTML=acIndRawResults.map(c=>{
       const inQueue=acIndQueue.some(q=>q.id===c.id);
-      return`<div class="ac-result${inQueue?' queued':''}" onclick="window._acToggleCard('${c.id}','${encodeURIComponent(JSON.stringify(c))}')">
+      return`<div class="ac-result${inQueue?' queued':''}" onclick="window._acToggleCard('${c.id}','${encodeURIComponent(JSON.stringify(c)).replace(/'/g,'%27')}')">
         <img class="ac-result-thumb" src="${c.images?.small||''}" alt="${c.name}" loading="lazy">
         <div style="flex:1;min-width:0"><div class="ac-result-name">${c.name}</div><div class="ac-result-meta">${c.set?.name||''} · #${c.number||''}</div></div>
         ${inQueue?'<span class="ac-check">✓</span>':''}
