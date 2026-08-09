@@ -1041,7 +1041,7 @@
   // ── Sets list ─────────────────────────────────────────
   async function loadSets(){
     document.getElementById('sets-content').innerHTML='<div class="loading">Loading sets…</div>';
-    try{const{data}=await fetchWithRetry('https://api.pokemontcg.io/v2/sets?orderBy=-releaseDate&pageSize=250&select=id,name,series,total,printedTotal,releaseDate,images');setsData=data;renderSetsList();return data;}
+    try{const{data}=await fetchWithRetry('https://api.pokemontcg.io/v2/sets?orderBy=-releaseDate&pageSize=250&select=id,name,series,total,printedTotal,releaseDate,images');setsData=data;renderSetsList();preloadOwnedSetCards();return data;}
     catch{document.getElementById('sets-content').innerHTML=`<div class="empty-state"><h3>Failed to load sets</h3></div>`;}
   }
   function ownedCountForSet(id,includeRh=false){return Object.entries(collectionMap).filter(([k,c])=>c.setId===id&&(includeRh||!k.endsWith('_rh'))).length;}
@@ -1059,6 +1059,22 @@
     const cards=setCardCache.get(set.id);
     const rhCount=cards?cards.filter(c=>isRhEligible(c,set)).length:(set.printedTotal||0);
     return (set.total||0)+rhCount;
+  }
+  // Preload card data for owned sets in the background so masterSetTotal is accurate.
+  // Sets already in localStorage resolve instantly; only truly unvisited sets hit the API.
+  let _preloadInProgress=false;
+  async function preloadOwnedSetCards(){
+    if(!setsData||_preloadInProgress)return;
+    _preloadInProgress=true;
+    const toLoad=setsData.filter(s=>(s.printedTotal||0)>0&&ownedCountForSet(s.id)>0&&!setCardCache.has(s.id));
+    let rerendered=false;
+    for(const set of toLoad){
+      await fetchAllSetCards(set.id);
+      if(!setCardCache.has(set.id))continue; // fetch failed, skip
+      rerendered=true;
+      renderSetsList(); // update master totals as each set resolves
+    }
+    _preloadInProgress=false;
   }
   function masterSetOwned(setId){
     const rh=Object.entries(collectionMap).filter(([k,c])=>c.setId===setId&&k.endsWith('_rh')).length;
@@ -1111,6 +1127,7 @@
       const cards=await fetchAllSetCards(setId);
       lastSetCards=cards;if(!cards.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><h3>No cards</h3></div>';return;}
       renderSetDetailCards();
+      updateSetDetailStat(); // refresh now that card cache is populated for accurate master total
     }catch{document.getElementById('set-detail-grid').innerHTML=`<div class="empty-state" style="grid-column:1/-1"><h3>Failed to load</h3><p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px">The API may be busy — wait a moment and try again.</p><button class="btn-primary" onclick="window._openSet('${setId}')">Try again</button></div>`;}
   };
   const openSet=window._openSet;
@@ -1145,7 +1162,7 @@
     if(variantView==='split'){
       const regularOwned=ownedCountForSet(currentSetId,false);
       const rhOwned=Object.entries(collectionMap).filter(([k,c])=>c.setId===currentSetId&&k.endsWith('_rh')).length;
-      const masterTotal=(set?.total||0)+(set?.printedTotal||0);
+      const masterTotal=set?masterSetTotal(set):(0);
       document.getElementById('set-detail-stat').textContent=`${regularOwned+rhOwned} / ${masterTotal} master`;
     } else {
       document.getElementById('set-detail-stat').textContent=`${ownedCountForSet(currentSetId)} / ${set?.total||'?'} owned`;
