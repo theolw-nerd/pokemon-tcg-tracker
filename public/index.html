@@ -731,13 +731,19 @@
     const local=lcGet(setId);
     if(local){setCardCache.set(setId,local);return local;}
     // 3. API — paginate until all cards retrieved
-    const base=`https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=250&select=id,name,number,set,images,supertype,subtypes,types,rarity`;
-    let all=[],page=1;
+    // Use pageSize=100 (not 250) to avoid a pokemontcg.io quirk where requesting
+    // the max page size can cause totalCount to report as 250 instead of the real total.
+    const PAGE_SIZE=100;
+    const base=`https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=${PAGE_SIZE}&select=id,name,number,set,images,supertype,subtypes,types,rarity`;
+    let all=[],page=1,totalCount=null;
     while(true){
       if(onPage) onPage(page);
       const res=await fetchWithRetry(`${base}&page=${page}`);
-      all=all.concat(res.data||[]);
-      if(all.length>=(res.totalCount||0)||(res.data||[]).length<250) break;
+      const batch=res.data||[];
+      all=all.concat(batch);
+      if(totalCount===null) totalCount=res.totalCount||null;
+      // Stop if: we've hit the reported total, or the page returned fewer cards than requested
+      if((totalCount!==null&&all.length>=totalCount)||batch.length<PAGE_SIZE) break;
       page++;
     }
     setCardCache.set(setId,all);
