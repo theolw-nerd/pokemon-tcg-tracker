@@ -770,9 +770,23 @@
       // Brief pause between pages to avoid triggering rate limits
       await new Promise(r=>setTimeout(r,400));
     }
-    setCardCache.set(setId,all);
-    lcSet(setId,all);
-    return all;
+    // Slim down each card before caching — the full `set` object (logo URLs, legalities,
+    // series, releaseDate, etc.) is repeated on every card but only set.id and set.name
+    // are ever used. This roughly halves the storage footprint.
+    const slim=all.map(c=>({
+      id:c.id,
+      name:c.name,
+      number:c.number,
+      set:c.set?{id:c.set.id,name:c.set.name}:undefined,
+      images:c.images?.small?{small:c.images.small}:undefined,
+      supertype:c.supertype,
+      subtypes:c.subtypes,
+      types:c.types,
+      rarity:c.rarity
+    }));
+    setCardCache.set(setId,slim);
+    lcSet(setId,slim);
+    return slim;
   }
   function sortCards(cards,by){
     const c=[...cards],natNum=s=>{const n=parseInt(s);return isNaN(n)?s:n;},numCmp=(a,b)=>{const na=natNum(a.number),nb=natNum(b.number);return typeof na===typeof nb?(typeof na==='number'?na-nb:String(na).localeCompare(String(nb))):(typeof na==='number'?-1:1);};
