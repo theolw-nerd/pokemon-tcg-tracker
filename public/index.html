@@ -125,10 +125,12 @@
     .set-info{flex:1;min-width:0;}
     .set-name{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
     .set-date{font-size:.75rem;color:var(--text-muted);margin-bottom:8px;}
-    .set-progress-bar{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:5px;}
+    .set-progress-bar{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:3px;}
     .set-progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;}
-    .set-progress-text{font-size:.72rem;color:var(--text-muted);display:flex;justify-content:space-between;}
+    .set-progress-fill.master{background:linear-gradient(90deg,#f0c840,#c060ff,#40b0ff,#40e090);}
+    .set-progress-text{font-size:.72rem;color:var(--text-muted);display:flex;justify-content:space-between;margin-bottom:5px;}
     .set-progress-text .owned-count{color:var(--accent);font-weight:700;}
+    .set-progress-text .owned-count.master{background:linear-gradient(90deg,#c060ff,#40b0ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
     .set-detail-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
     .set-detail-logo{height:44px;object-fit:contain;}
     .set-detail-meta{font-size:.85rem;color:var(--text-muted);}
@@ -1052,6 +1054,16 @@
     if(setsSortBy==='name') s=[...s].sort((a,b)=>a.name.localeCompare(b.name));
     return s;
   }
+  function masterSetTotal(set){
+    // Use exact RH count from cached card data if available, otherwise approximate with printedTotal
+    const cards=setCardCache.get(set.id);
+    const rhCount=cards?cards.filter(c=>isRhEligible(c,set)).length:(set.printedTotal||0);
+    return (set.total||0)+rhCount;
+  }
+  function masterSetOwned(setId){
+    const rh=Object.entries(collectionMap).filter(([k,c])=>c.setId===setId&&k.endsWith('_rh')).length;
+    return ownedCountForSet(setId,false)+rh;
+  }
   function renderSetsList(){
     if(!setsData)return;
     document.getElementById('sets-search').value=setsQ;
@@ -1064,11 +1076,14 @@
       <div class="series-section"><div class="series-header">${series}</div>
       <div class="set-grid">${grouped[series].map(s=>{
         const owned=ownedCountForSet(s.id),total=s.total||1,pct=Math.min(100,Math.round(owned/total*100));
+        const mOwned=masterSetOwned(s.id),mTotal=masterSetTotal(s),mPct=mTotal>0?Math.min(100,Math.round(mOwned/mTotal*100)):0;
         const logo=s.images?.logo?`<img class="set-logo" src="${s.images.logo}" alt="${s.name}" loading="lazy">`:`<div class="set-logo-placeholder">🃏</div>`;
         return`<div class="set-card${owned>0?' has-cards':''}" onclick="window._openSet('${s.id}')">
           ${logo}<div class="set-info"><div class="set-name">${s.name}</div><div class="set-date">${formatDate(s.releaseDate)}</div>
           <div class="set-progress-bar"><div class="set-progress-fill" style="width:${pct}%"></div></div>
           <div class="set-progress-text"><span><span class="owned-count">${owned}</span> of ${total}</span><span>${pct}%</span></div>
+          <div class="set-progress-bar"><div class="set-progress-fill master" style="width:${mPct}%"></div></div>
+          <div class="set-progress-text"><span><span class="owned-count master">${mOwned}</span> of ${mTotal} master</span><span>${mPct}%</span></div>
           </div></div>`;
       }).join('')}</div></div>`).join('');
   }
