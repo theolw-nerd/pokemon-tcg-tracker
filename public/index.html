@@ -550,6 +550,7 @@
   // Binder state
   let bindersData=[],currentBinderId=null,binderPageIdx=0,binderView='single';
   let binderSortBy='date-created',binderSortDir='desc';
+  let fillTargetSlot=null; // {pageIdx,slotIdx} when opening modal to fill a specific blank slot
   let srSetGroups=[];  // working copy of set groups for the reorder modal
   let newBinderGridSize='3x3';
   let acMode='set',acSetCards=[],acSelectedRarities=new Set(),acSetSpacing='none';
@@ -970,9 +971,9 @@
   function renderPageGrid(page,pageIdx,cols){
     const slots=page?.slots||[];
     const slotHTML=slots.map((slot,si)=>{
-      if(slot===null) return`<div class="binder-slot int-empty" data-pi="${pageIdx}" data-si="${si}" title="Empty slot">
-        <button class="slot-insert-btn" onclick="window._insertSlot(${pageIdx},${si})" title="Insert empty slot before">+</button>
-        <button class="slot-remove-btn" onclick="window._removeSlot(${pageIdx},${si})" title="Remove">×</button>
+      if(slot===null) return`<div class="binder-slot int-empty" data-pi="${pageIdx}" data-si="${si}" title="Click to fill slot" onclick="window._openFillSlot(${pageIdx},${si})">
+        <button class="slot-insert-btn" onclick="event.stopPropagation();window._insertSlot(${pageIdx},${si})" title="Insert empty slot before">+</button>
+        <button class="slot-remove-btn" onclick="event.stopPropagation();window._removeSlot(${pageIdx},${si})" title="Remove">×</button>
       </div>`;
       return`<div class="binder-slot filled" data-pi="${pageIdx}" data-si="${si}" title="${slot.name} · #${slot.number}">
         <img src="${slot.image||''}" alt="${slot.name}" loading="lazy">
@@ -1388,12 +1389,38 @@
     await updateDoc(doc(db,'users',currentUser.uid,'binders',binderId),{pages,modifiedAt:new Date().toISOString()});
   }
 
+  // ── Fill a specific blank slot ────────────────────────
+  window._openFillSlot=function(pageIdx,slotIdx){
+    fillTargetSlot={pageIdx,slotIdx};
+    acIndRawResults=[];acIndQueue=[];
+    document.getElementById('ac-ind-results').innerHTML='';
+    document.getElementById('ac-ind-queue-info').textContent='';
+    document.getElementById('ac-add-individual').disabled=true;
+    document.getElementById('ac-ind-input').value='';
+    // Show individual tab only
+    document.querySelectorAll('.ac-tab').forEach(t=>t.style.display=t.dataset.acm==='individual'?'':'none');
+    setAcMode('individual');
+    document.querySelector('#add-cards-modal h3').textContent='Fill Slot';
+    document.getElementById('add-cards-modal').classList.add('open');
+  };
+
+  window._fillSlot=async function(pageIdx,slotIdx,card){
+    const binder=bindersData.find(b=>b.id===currentBinderId);if(!binder)return;
+    const pages=JSON.parse(JSON.stringify(binder.pages||[]));
+    if(!pages[pageIdx]||pages[pageIdx].slots[slotIdx]===undefined)return;
+    pages[pageIdx].slots[slotIdx]={id:card.id,name:card.name,number:card.number||'',setId:card.set?.id||'',setName:card.set?.name||'',image:card.images?.small||''};
+    await saveBinderPages(currentBinderId,pages);
+  };
+
   // ── Add Cards modal ───────────────────────────────────
   document.getElementById('btn-add-to-binder').addEventListener('click',()=>openAddCardsModal());
   document.getElementById('ac-close').addEventListener('click',()=>document.getElementById('add-cards-modal').classList.remove('open'));
   document.getElementById('add-cards-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)document.getElementById('add-cards-modal').classList.remove('open');});
 
   function openAddCardsModal(){
+    fillTargetSlot=null; // normal mode — reset any fill-slot state
+    document.querySelector('#add-cards-modal h3').textContent='Add Cards';
+    document.querySelectorAll('.ac-tab').forEach(t=>t.style.display=''); // restore all tabs
     acMode='set';acSetCards=[];acSelectedRarities=new Set();acSetSpacing='none';
     acSetSortBy='number';acSetSortDir='asc';
     acIndQueue=[];acIndSpacing='none';
@@ -1526,6 +1553,13 @@
 
   window._acToggleCard=function(cardId,dataEnc){
     const c=JSON.parse(decodeURIComponent(dataEnc));
+    // Fill-slot mode: place card immediately into the target slot and close
+    if(fillTargetSlot){
+      window._fillSlot(fillTargetSlot.pageIdx,fillTargetSlot.slotIdx,c);
+      fillTargetSlot=null;
+      document.getElementById('add-cards-modal').classList.remove('open');
+      return;
+    }
     const idx=acIndQueue.findIndex(q=>q.id===cardId);
     if(idx>=0)acIndQueue.splice(idx,1);
     else acIndQueue.push({id:c.id,name:c.name,number:c.number||'',setId:c.set?.id||'',setName:c.set?.name||'',image:c.images?.small||''});
