@@ -1172,7 +1172,7 @@
   function startCollectionListener(){
     if(!currentUser)return;
     unsubscribe=onSnapshot(collection(db,'users',currentUser.uid,'collection'),snap=>{
-      collectionMap={};snap.forEach(d=>{collectionMap[d.id]=d.data();});
+      collectionMap={};snap.forEach(d=>{collectionMap[d.id]=d.data();});window._collectionMap=collectionMap;
       recomputeAllocations();
       renderCollection();
       if(rawSearchCards.length)renderSearchResults(rawSearchCards);
