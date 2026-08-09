@@ -734,7 +734,7 @@
     // Use pageSize=100 (not 250) to avoid a pokemontcg.io quirk where requesting
     // the max page size can cause totalCount to report as 250 instead of the real total.
     const PAGE_SIZE=100;
-    const base=`https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&orderBy=number&pageSize=${PAGE_SIZE}&select=id,name,number,set,images,supertype,subtypes,types,rarity`;
+    const base=`https://api.pokemontcg.io/v2/cards?q=set.id:${setId}&pageSize=${PAGE_SIZE}&select=id,name,number,set,images,supertype,subtypes,types,rarity`;
     let all=[],page=1,totalCount=null;
     while(true){
       if(onPage) onPage(page);
