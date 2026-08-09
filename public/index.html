@@ -76,6 +76,10 @@
     .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;}
     .card-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;transition:transform .15s,border-color .15s;display:flex;flex-direction:column;}
     .card-item:hover{transform:translateY(-2px);border-color:var(--accent);}
+    .card-item.rh{border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(135deg,#f0c840,#c060ff,#40b0ff,#40e090,#f0c840) border-box;}
+    .card-item.rh:hover{transform:translateY(-2px);}
+    .rh-badge{position:absolute;top:5px;left:5px;background:linear-gradient(135deg,#c060ff,#40b0ff);color:#fff;font-size:.58rem;font-weight:700;padding:2px 5px;border-radius:3px;z-index:1;letter-spacing:.03em;text-shadow:0 1px 2px rgba(0,0,0,.4);}
+    .list-card-item.rh{border-left:3px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(135deg,#f0c840,#c060ff,#40b0ff,#40e090) border-box;}
     .card-item.owned{border-color:var(--accent);}
     .card-img-wrap{aspect-ratio:2.5/3.5;background:var(--surface2);overflow:hidden;}
     .card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -358,6 +362,10 @@
         <div class="filter-group">
           <button class="fp active" data-sdv="grid">Grid</button>
           <button class="fp" data-sdv="list">List</button>
+        </div>
+        <div class="filter-group">
+          <button class="fp active" data-sdvr="stack">Stack</button>
+          <button class="fp" data-sdvr="split">Split</button>
         </div>
         <button class="btn-clear" id="clear-set-detail">Clear</button>
       </div>
@@ -675,7 +683,7 @@
   // ── Filter state ─────────────────────────────────────
   let searchOwn=S.get('sr_own')||'all',searchSort=S.get('sr_sort')||'default';
   let setsQ=S.get('sl_q')||'',setsProgress=S.get('sl_prog')||'all',setsSortBy=S.get('sl_sort')||'date';
-  let setQ='',setOwn=S.get('sd_own')||'all',setSort=S.get('sd_sort')||'#',setView=S.get('sd_view')||'grid';
+  let setQ='',setOwn=S.get('sd_own')||'all',setSort=S.get('sd_sort')||'#',setView=S.get('sd_view')||'grid',variantView=S.get('sd_variant')||'stack';
   let collQ=S.get('co_q')||'',collSort=S.get('co_sort')||'name',collCond=S.get('co_cond')||'all',collStatus=S.get('co_stat')||'all';
 
   // ── App state ────────────────────────────────────────
@@ -961,6 +969,44 @@
   });
 
   // ── Card HTML ─────────────────────────────────────────
+  function isRhEligible(card,set){const n=parseInt(card.number);return !isNaN(n)&&n<=(set?.printedTotal||0);}
+
+  function rhCardHTML(c,gridId){
+    const rhId=c.id+'_rh';
+    const rhC={...c,id:rhId};
+    const qty=getTotalQty(collectionMap[rhId]);
+    const data=encodeURIComponent(JSON.stringify(rhC)).replace(/'/g,'%27');
+    return`<div class="card-item rh${qty>0?' owned':''}" id="${gridId}-${rhId}">
+      <div class="rh-badge">RH</div>
+      <div class="card-img-wrap"><img src="${c.images?.small||''}" alt="${c.name}" loading="lazy"></div>
+      <div class="card-info"><div class="card-name">${c.name}</div><div class="card-meta">#${c.number||''} · Reverse Holo</div></div>
+      <div class="search-qty-row">
+        <button class="btn-sq" onclick="window._sqChange('${rhId}','${data}',-1)" ${qty===0?'disabled':''}>−</button>
+        <div class="sq-divider"></div>
+        <span class="sq-num${qty>0?' owned':''}">${qty}</span>
+        <div class="sq-divider"></div>
+        <button class="btn-sq" onclick="window._sqChange('${rhId}','${data}',1)">+</button>
+      </div></div>`;
+  }
+
+  function rhListCardHTML(c){
+    const rhId=c.id+'_rh';
+    const rhC={...c,id:rhId};
+    const qty=getTotalQty(collectionMap[rhId]);
+    const data=encodeURIComponent(JSON.stringify(rhC)).replace(/'/g,'%27');
+    const ti=getTypeLabel(c);
+    const dot=ti.color?`<span class="type-dot" style="background:${ti.color}"></span>`:'';
+    return`<div class="list-card-item rh${qty>0?' owned':''}" id="set-${rhId}">
+      <img class="list-card-thumb" src="${c.images?.small||''}" alt="${c.name}" loading="lazy">
+      <span class="list-card-num">#${c.number||'—'}</span>
+      <div class="list-card-info"><span class="list-card-name">${c.name}</span><span class="list-card-sub">${dot}<span>${ti.label}</span><span style="opacity:.4">·</span><span>Reverse Holo</span></span></div>
+      <div class="list-qty-controls">
+        <button class="btn-sq-sm" onclick="window._sqChange('${rhId}','${data}',-1)" ${qty===0?'disabled':''}>−</button>
+        <span class="sq-num-sm${qty>0?' owned':''}">${qty}</span>
+        <button class="btn-sq-sm" onclick="window._sqChange('${rhId}','${data}',1)">+</button>
+      </div></div>`;
+  }
+
   function qtyCardHTML(c,gridId){
     const qty=getTotalQty(collectionMap[c.id]),data=encodeURIComponent(JSON.stringify(c)).replace(/'/g,'%27');
     return`<div class="card-item${qty>0?' owned':''}" id="${gridId}-${c.id}">
@@ -992,10 +1038,10 @@
   // ── Sets list ─────────────────────────────────────────
   async function loadSets(){
     document.getElementById('sets-content').innerHTML='<div class="loading">Loading sets…</div>';
-    try{const{data}=await fetchWithRetry('https://api.pokemontcg.io/v2/sets?orderBy=-releaseDate&pageSize=250&select=id,name,series,total,releaseDate,images');setsData=data;renderSetsList();return data;}
+    try{const{data}=await fetchWithRetry('https://api.pokemontcg.io/v2/sets?orderBy=-releaseDate&pageSize=250&select=id,name,series,total,printedTotal,releaseDate,images');setsData=data;renderSetsList();return data;}
     catch{document.getElementById('sets-content').innerHTML=`<div class="empty-state"><h3>Failed to load sets</h3></div>`;}
   }
-  function ownedCountForSet(id){return Object.values(collectionMap).filter(c=>c.setId===id).length;}
+  function ownedCountForSet(id,includeRh=false){return Object.entries(collectionMap).filter(([k,c])=>c.setId===id&&(includeRh||!k.endsWith('_rh'))).length;}
   function formatDate(s){if(!s)return'';const[y,m,d]=s.split('/');return new Date(y,m-1,d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
   function applySetListFilters(sets){
     let s=[...sets];
@@ -1034,7 +1080,7 @@
   window._openSet=async function(setId){
     const set=setsData?.find(s=>s.id===setId);if(!set)return;
     currentSetId=setId;setHash('sets/'+setId);setQ='';
-    activatePill('data-sdo',setOwn);activatePill('data-sds',setSort);activatePill('data-sdv',setView);
+    activatePill('data-sdo',setOwn);activatePill('data-sds',setSort);activatePill('data-sdv',setView);activatePill('data-sdvr',variantView);
     document.getElementById('set-search').value='';
     document.getElementById('sets-list-view').style.display='none';
     document.getElementById('set-detail-view').style.display='block';
@@ -1063,23 +1109,42 @@
     const grid=document.getElementById('set-detail-grid');if(!grid)return;
     const cards=applySetDetailFilters(lastSetCards);
     if(!cards.length){grid.className='card-grid';grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><div class="icon">🔍</div><h3>No cards match</h3></div>`;return;}
-    if(setView==='list'){grid.className='set-list-view';grid.innerHTML=cards.map(listCardHTML).join('');}
-    else{grid.className='card-grid';grid.innerHTML=cards.map(c=>qtyCardHTML(c,'set')).join('');}
+    const set=setsData?.find(s=>s.id===currentSetId);
+    if(variantView==='split'){
+      if(setView==='list'){
+        grid.className='set-list-view';
+        grid.innerHTML=cards.map(c=>listCardHTML(c)+(isRhEligible(c,set)?rhListCardHTML(c):'')).join('');
+      } else {
+        grid.className='card-grid';
+        grid.innerHTML=cards.map(c=>qtyCardHTML(c,'set')+(isRhEligible(c,set)?rhCardHTML(c,'set'):'')).join('');
+      }
+    } else {
+      if(setView==='list'){grid.className='set-list-view';grid.innerHTML=cards.map(listCardHTML).join('');}
+      else{grid.className='card-grid';grid.innerHTML=cards.map(c=>qtyCardHTML(c,'set')).join('');}
+    }
   }
   function updateSetDetailStat(){
     if(!currentSetId)return;
     const set=setsData?.find(s=>s.id===currentSetId);
-    document.getElementById('set-detail-stat').textContent=`${ownedCountForSet(currentSetId)} / ${set?.total||'?'} owned`;
+    if(variantView==='split'){
+      const regularOwned=ownedCountForSet(currentSetId,false);
+      const rhOwned=Object.entries(collectionMap).filter(([k,c])=>c.setId===currentSetId&&k.endsWith('_rh')).length;
+      const masterTotal=(set?.total||0)+(set?.printedTotal||0);
+      document.getElementById('set-detail-stat').textContent=`${regularOwned+rhOwned} / ${masterTotal} master`;
+    } else {
+      document.getElementById('set-detail-stat').textContent=`${ownedCountForSet(currentSetId)} / ${set?.total||'?'} owned`;
+    }
   }
   document.getElementById('set-search').addEventListener('input',e=>{setQ=e.target.value.trim();renderSetDetailCards();});
   document.querySelectorAll('[data-sdo]').forEach(p=>p.addEventListener('click',()=>{setOwn=p.dataset.sdo;S.set('sd_own',setOwn);renderSetDetailCards();}));
   document.querySelectorAll('[data-sds]').forEach(p=>p.addEventListener('click',()=>{setSort=p.dataset.sds;S.set('sd_sort',setSort);renderSetDetailCards();}));
   document.querySelectorAll('[data-sdv]').forEach(p=>p.addEventListener('click',()=>{setView=p.dataset.sdv;S.set('sd_view',setView);renderSetDetailCards();}));
+  document.querySelectorAll('[data-sdvr]').forEach(p=>p.addEventListener('click',()=>{variantView=p.dataset.sdvr;S.set('sd_variant',variantView);renderSetDetailCards();updateSetDetailStat();}));
   document.getElementById('clear-set-detail').addEventListener('click',()=>{
-    setQ='';setOwn='all';setSort='#';setView='grid';S.del('sd_own','sd_sort','sd_view');
+    setQ='';setOwn='all';setSort='#';setView='grid';variantView='stack';S.del('sd_own','sd_sort','sd_view','sd_variant');
     document.getElementById('set-search').value='';
-    activatePill('data-sdo','all');activatePill('data-sds','#');activatePill('data-sdv','grid');
-    renderSetDetailCards();
+    activatePill('data-sdo','all');activatePill('data-sds','#');activatePill('data-sdv','grid');activatePill('data-sdvr','stack');
+    renderSetDetailCards();updateSetDetailStat();
   });
   document.getElementById('btn-back-sets').addEventListener('click',()=>{
     currentSetId=null;lastSetCards=[];setHash('sets');
