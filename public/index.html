@@ -969,7 +969,8 @@
   });
 
   // ── Card HTML ─────────────────────────────────────────
-  function isRhEligible(card,set){const n=parseInt(card.number);return !isNaN(n)&&n<=(set?.printedTotal||0);}
+  const RH_RARITIES=new Set(['Common','Uncommon','Rare','Rare Holo']);
+  function isRhEligible(card,set){const n=parseInt(card.number);return !isNaN(n)&&n<=(set?.printedTotal||0)&&RH_RARITIES.has(card.rarity);}
 
   function rhCardHTML(c,gridId){
     const rhId=c.id+'_rh';
